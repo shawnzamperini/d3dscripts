@@ -75,14 +75,16 @@ for chord in range(0, chords):
     plt.plot(x, y, "bx", alpha=0.2)
 
 # Plot the avg TS values.
+plt.rcParams.update({'font.size': 22})
+plt.legend(prop={"size":18})
 plt.plot(x_avg_192, y_avg_192, "rx", label="TS 196192 (1800-4800 ms)")
 plt.plot(x_avg_196, y_avg_196, "bx", label="TS 196196 (1800-4800 ms)")
 # Then plot the Lp data on it.
 plt.plot(psin_lp_192p1, Te_lp_192p1, 'r>', label="LP 167192 P1")
-plt.plot(psin_lp_195p2, Te_lp_195p2, 'm>', label="LP 167195 P2")
+plt.plot(psin_lp_195p2, Te_lp_195p2, 'g>', label="LP 167195 P2")
 plt.xlabel(r"$\mathrm{\phi_n}$")
-plt.ylabel(r"$\mathrm{T_e}$")
+plt.ylabel(r"$\mathrm{T_e (eV)}$")
 plt.axis([0.96,1.4,0,80])
-plt.title("TS 167192/167196 with LP 167192/167195")
+plt.title("Comparing TS to LP on Similar Shots")
 plt.legend()
 plt.show()
