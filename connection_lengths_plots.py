@@ -20,9 +20,9 @@ def returnArray(sheet, lowRange, highRange):
 
 # Get the sampling length data. This is in R-Rsep vs. L.
 samp_R        = returnArray(samp_sheet, "M2", "M348")
-samp_L_A        = returnArray(samp_sheet, "P2", "P348")
-samp_L_B        = returnArray(samp_sheet, "Q2", "Q348")
-samp_L_C        = returnArray(samp_sheet, "R2", "R348")
+samp_L_A        = returnArray(samp_sheet, "P2", "P348") * 2  # To use the 4 in denominator expression
+samp_L_B        = returnArray(samp_sheet, "Q2", "Q348") * 2
+samp_L_C        = returnArray(samp_sheet, "R2", "R348") * 2
 
 # Get the connection length data. This is in R-Rsep_omp vs. L.
 conn_RminRsep_omp_A = returnArray(conn_sheet, "A17", "A113")
@@ -91,7 +91,7 @@ RminRsep_omp_A = (R_omp_A - R_omp) * 100.0
 RminRsep_omp_B = (R_omp_B - R_omp) * 100.0
 RminRsep_omp_C = (R_omp_C - R_omp) * 100.0
 
-plt.rcParams.update({'font.size': 22})
+plt.rcParams.update({'font.size': 34})
 plt.semilogy(RminRsep_omp_A, samp_L_A, label="Sampling Length A", linewidth=2.0)
 plt.semilogy(RminRsep_omp_B, samp_L_B, label="Sampling Length B", linewidth=2.0)
 plt.semilogy(RminRsep_omp_C, samp_L_C, label="Sampling Length C", linewidth=2.0)
@@ -101,7 +101,8 @@ plt.semilogy(conn_RminRsep_omp_B, conn_odf_B/2.0, label="Outer Divertor Connecti
 plt.semilogy(conn_RminRsep_omp_B, conn_idf_B/2.0, label="Inner Divertor Connection Length", linewidth=5.0)
 #plt.semilogy(conn_RminRsep_omp_C, conn_odf_C, label="Outer Divertor Facing C")
 #plt.semilogy(conn_RminRsep_omp_C, conn_idf_C, label="Inner Divertor Facing C")
-plt.legend(prop={"size":18})
+plt.legend(prop={"size":22})
+#plt.legend()
 plt.xlabel("R-Rsep omp (cm)")
 plt.ylabel("Length (m)")
 plt.title("Connection vs. Sampling Lengths")
