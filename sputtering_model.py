@@ -91,7 +91,6 @@ def Y(E0, ion, debug=False):
     else:
         return ans
 
-
 def Y_C_on_W(xmin=0, xmax=1000, plot_it1=False, plot_it2=False, return_it=True):
     # Constants needed.
     m1 = 12.01
@@ -202,7 +201,6 @@ def Y_C_on_W(xmin=0, xmax=1000, plot_it1=False, plot_it2=False, return_it=True):
     if return_it:
         return x1_fit, y1_fit_eck, x2_fit, y2_fit_eck
 
-
 def plot_of_yields(Emin=1, Emax=400):
     energies = np.linspace(Emin, Emax, 100)
     for ion in ["deuterium", "tungsten", "carbon"]:
@@ -215,7 +213,7 @@ def plot_of_yields(Emin=1, Emax=400):
     plt.legend()
     plt.show()
 
-def yields(Emin=0.001, Emax=1000):
+def yields(Emin=0.001, Emax=1200):
     energies = np.linspace(Emin, Emax, 10000)
     yields = {"deuterium": Y(energies, ion="deuterium"),
               "tungsten":  Y(energies, ion="tungsten"),
@@ -232,8 +230,6 @@ def get_yield(y_frame, ion, charge_state=1, kTe=25, verbose=True):
     Will return the yield of an ion at a specific charge state assuming Ti=Te.
     y_frame: DataFrame returned from "yields" function.
     """
-    # Constants
-    boltz = 8.617e-5 # Boltzmann constant in eV/K
 
     if ion == "carbon":
         if charge_state > 6:
@@ -256,3 +252,114 @@ def get_yield(y_frame, ion, charge_state=1, kTe=25, verbose=True):
         print("  Yield is {0:.4f}".format(ion_series[closest_energy]))
 
     return ion_series[closest_energy]
+
+def get_fluxes(carbon_frac=  np.array([0.001,  0.001,  0.001,  0.001,  0.001,  0.001]) / 6.0,
+               tungsten_frac=np.array([0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001]) / 6.0):
+    """
+    Calculates the fluxes of each ion charge state. The elements in the lists
+    passed in each correspond to a charge state (i.e. C1+, C2+, ..., C6+).
+
+    Default is [...] / 6.0 because if we assume 1% of the flux is C, then if we
+    want to evenly distribute it across the charge states, divide by the 6 states.
+    """
+
+    excel_file = "/home/shawn/d3dscripts/Data/LP_with_fit.xlsx"
+
+    # Use plunge 2 of 167195 since it gets the closest to the separatrix.
+    df_195_2 = pd.read_excel(excel_file,
+                             sheet_name="LP Data",
+                             skiprows=[0, 1],
+                             names=["Time (ms)", "R (cm)", "ne (e18 m-3)", "Te (eV)",
+                                    "Vfl (V)", "Vp (V)", "R-Rsep (cm)"],
+                             usecols=[57, 58, 59, 60, 61, 62, 63])
+
+    # Drop the null data it pulls.
+    df_195_2.drop(df_195_2.index[56:], inplace=True)
+
+    # Want the flow at probe face (= flow at sheath edge). It's ne*cs
+    m_deut = 2.01 * 931.49 * 10**6 / ((3*10**8)**2.0)
+    cs_series = (2 * df_195_2["Te (eV)"] / m_deut) ** (1/2)
+    flux_series = df_195_2['ne (e18 m-3)'] * cs_series * 10**(18)
+    df_195_2['D Flux (m-2 s-1)'] = flux_series
+
+    # Estimate of the carbon and tungsten flux as fractions of the deuterium flux.
+    for charge_state in range(0, 6):
+        df_195_2['C' + str(charge_state+1) +  '+ Flux (m-2 s-1)'] = \
+            df_195_2['D Flux (m-2 s-1)'] * carbon_frac[charge_state]
+        df_195_2['W' + str(charge_state+1) + '+ Flux (m-2 s-1)'] = \
+            df_195_2['D Flux (m-2 s-1)'] * tungsten_frac[charge_state]
+
+    return df_195_2
+
+def get_sput_flux():
+    y_df = yields()
+    fluxes_df = get_fluxes()
+    sput_df = pd.DataFrame()
+    sput_df["R (cm)"]      = fluxes_df["R (cm)"]
+    sput_df["R-Rsep (cm)"] = fluxes_df["R-Rsep (cm)"]
+
+    # Calculate the sputtered flux from each charge state of the ions.
+    for ion in ["Carbon", "Tungsten", "Deuterium"]:
+        # As of now only considering charge states 1-6.
+        for charge_state in range(1, 7):
+            if ion == "Carbon":
+                fluxes = fluxes_df["C" +str(charge_state) + "+ Flux (m-2 s-1)"].values
+                Tes    = fluxes_df["Te (eV)"].values
+                sput_flux = np.array([])
+                for flux, Te in zip(fluxes, Tes):
+                    tmp_y    = get_yield(y_df, ion.lower(), charge_state, Te, verbose=False)
+                    tmp_sput = tmp_y * flux
+                    sput_flux = np.append(sput_flux, tmp_sput)
+                sput_df['Sputt. Flux from C' + str(charge_state) + '+'] = sput_flux
+            elif ion == "Tungsten":
+                fluxes = fluxes_df["W" + str(charge_state) + "+ Flux (m-2 s-1)"].values
+                Tes    = fluxes_df["Te (eV)"].values
+                sput_flux = np.array([])
+                for flux, Te in zip(fluxes, Tes):
+                    tmp_y    = get_yield(y_df, ion.lower(), charge_state, Te, verbose=False)
+                    tmp_sput = tmp_y * flux
+                    sput_flux = np.append(sput_flux, tmp_sput)
+                sput_df['Sputt. Flux from W' + str(charge_state) + '+'] = sput_flux
+            elif ion == "Deuterium":
+                if charge_state > 1:
+                    pass
+                else:
+                    fluxes = fluxes_df["D Flux (m-2 s-1)"].values
+                    Tes    = fluxes_df["Te (eV)"].values
+                    sput_flux = np.array([])
+                    for flux, Te in zip(fluxes, Tes):
+                        tmp_y    = get_yield(y_df, ion.lower(), charge_state, Te, verbose=False)
+                        tmp_sput = tmp_y * flux
+                        sput_flux = np.append(sput_flux, tmp_sput)
+                    sput_df['Sputt. Flux from D'] = sput_flux
+
+    # Get the total sputtered flux from each ion by adding up each contribution.
+    sput_df["Sputt. Flux from C"] = sput_df["Sputt. Flux from C1+"].values + \
+                                    sput_df["Sputt. Flux from C2+"].values + \
+                                    sput_df["Sputt. Flux from C3+"].values + \
+                                    sput_df["Sputt. Flux from C4+"].values + \
+                                    sput_df["Sputt. Flux from C5+"].values + \
+                                    sput_df["Sputt. Flux from C6+"].values
+    sput_df["Sputt. Flux from W"] = sput_df["Sputt. Flux from W1+"].values + \
+                                    sput_df["Sputt. Flux from W2+"].values + \
+                                    sput_df["Sputt. Flux from W3+"].values + \
+                                    sput_df["Sputt. Flux from W4+"].values + \
+                                    sput_df["Sputt. Flux from W5+"].values + \
+                                    sput_df["Sputt. Flux from W6+"].values
+
+    return sput_df
+
+def plot_sput_flux():
+    sput_df = get_sput_flux()
+    x = sput_df["R-Rsep (cm)"]
+    yC = sput_df["Sputt. Flux from C"].values
+    yW = sput_df["Sputt. Flux from W"].values
+    yD = sput_df["Sputt. Flux from D"].values
+
+    plt.semilogy(x, yC, label='carbon 1%')
+    plt.semilogy(x, yW, label='tungsten 0.1%')
+    plt.semilogy(x, yD, label='deuterium')
+    plt.legend()
+    plt.xlabel("R-Rsep (cm)")
+    plt.ylabel(r"$\mathrm{Sputt. Flux (m^{-2}\ s^{-1)}}$")
+    plt.show()

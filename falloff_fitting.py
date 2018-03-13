@@ -73,7 +73,7 @@ while True:
         break
     exclude = None
     while True:
-        if probe == "q":
+        if probe == "Q":
             break
         elif probe == "A-ITF":
             x = r_omp_AITF
