@@ -2,6 +2,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
+import adf11_util_3 as adf11
+import warnings
+import calc_rsep as rsep
+
 
 
 def Y(E0, ion, debug=False):
@@ -27,7 +31,7 @@ def Y(E0, ion, debug=False):
     # Make sure in lowercase.
     ion = ion.lower()
     # Some weird error only with numpy.float64. Just use floats I guess.
-    #E0 = float(E0)
+    #E0 = [float(E) for E in E0]
 
     # Masses in amu since all it uses it the ratio between them.
     m2 = 183.84
@@ -85,11 +89,14 @@ def Y(E0, ion, debug=False):
             print("")
 
     # Return the yield using the above functions.
-    ans = q * nuclear_stopping() * (E0 / Eth - 1)**mu / (lamb + (E0 / Eth - 1)**mu)
-    if isinstance(ans, complex):
-        return 0
-    else:
-        return ans
+    # Weird warning only involving np.floats, but doesn't seem to cause problems so ignore it.
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        ans = q * nuclear_stopping() * (E0 / Eth - 1)**mu / (lamb + (E0 / Eth - 1)**mu)
+        if isinstance(ans, complex):
+            return 0
+        else:
+            return ans
 
 def Y_C_on_W(xmin=0, xmax=1000, plot_it1=False, plot_it2=False, return_it=True):
     # Constants needed.
@@ -261,35 +268,45 @@ def get_fluxes(carbon_frac=  np.array([0.001,  0.001,  0.001,  0.001,  0.001,  0
 
     Default is [...] / 6.0 because if we assume 1% of the flux is C, then if we
     want to evenly distribute it across the charge states, divide by the 6 states.
+    A better analysis would come from a model like DIVIMP or something.
     """
 
     excel_file = "/home/shawn/d3dscripts/Data/LP_with_fit.xlsx"
 
     # Use plunge 2 of 167195 since it gets the closest to the separatrix.
-    df_195_2 = pd.read_excel(excel_file,
-                             sheet_name="LP Data",
-                             skiprows=[0, 1],
-                             names=["Time (ms)", "R (cm)", "ne (e18 m-3)", "Te (eV)",
-                                    "Vfl (V)", "Vp (V)", "R-Rsep (cm)"],
-                             usecols=[57, 58, 59, 60, 61, 62, 63])
+    #df_195_2 = pd.read_excel(excel_file,
+    #                         sheet_name="LP Data",
+    #                         skiprows=[0, 1],
+    #                         names=["Time (ms)", "R (cm)", "ne (e18 m-3)", "Te (eV)",
+    #                                "Vfl (V)", "Vp (V)", "R-Rsep (cm)"],
+    #                         usecols=[57, 58, 59, 60, 61, 62, 63])
+
+    # Or use plunge 1 of 167192 since the separatrix location is more representative
+    # of the separatrix during the cp shots (196-220).
+    lp_df = pd.read_excel(excel_file,
+                          sheet_name="LP Data",
+                          skiprows=[0, 1],
+                          names=["Time (ms)", "R (cm)", "ne (e18 m-3)", "Te (eV)",
+                                 "Vfl (V)", "Vp (V)", "R-Rsep (cm)"],
+                          usecols=[0, 1, 2, 3, 4, 5, 6])
 
     # Drop the null data it pulls.
-    df_195_2.drop(df_195_2.index[56:], inplace=True)
+    lp_df.drop(lp_df.index[56:], inplace=True)
 
     # Want the flow at probe face (= flow at sheath edge). It's ne*cs
     m_deut = 2.01 * 931.49 * 10**6 / ((3*10**8)**2.0)
-    cs_series = (2 * df_195_2["Te (eV)"] / m_deut) ** (1/2)
-    flux_series = df_195_2['ne (e18 m-3)'] * cs_series * 10**(18)
-    df_195_2['D Flux (m-2 s-1)'] = flux_series
+    cs_series = (2 * lp_df["Te (eV)"] / m_deut) ** (1/2)
+    flux_series = lp_df['ne (e18 m-3)'] * cs_series * 10**(18)
+    lp_df['D Flux (m-2 s-1)'] = flux_series
 
     # Estimate of the carbon and tungsten flux as fractions of the deuterium flux.
     for charge_state in range(0, 6):
-        df_195_2['C' + str(charge_state+1) +  '+ Flux (m-2 s-1)'] = \
-            df_195_2['D Flux (m-2 s-1)'] * carbon_frac[charge_state]
-        df_195_2['W' + str(charge_state+1) + '+ Flux (m-2 s-1)'] = \
-            df_195_2['D Flux (m-2 s-1)'] * tungsten_frac[charge_state]
+        lp_df['C' + str(charge_state+1) +  '+ Flux (m-2 s-1)'] = \
+            lp_df['D Flux (m-2 s-1)'] * carbon_frac[charge_state]
+        lp_df['W' + str(charge_state+1) + '+ Flux (m-2 s-1)'] = \
+            lp_df['D Flux (m-2 s-1)'] * tungsten_frac[charge_state]
 
-    return df_195_2
+    return lp_df
 
 def get_sput_flux():
     y_df = yields()
@@ -363,3 +380,145 @@ def plot_sput_flux():
     plt.xlabel("R-Rsep (cm)")
     plt.ylabel(r"$\mathrm{Sputt. Flux (m^{-2}\ s^{-1)}}$")
     plt.show()
+
+def calc_iz_frac(lp_df, filename='Data/adf11/scd50/scd50_w.dat'):
+    # Probe widths in m
+    a_size = 3.0 / 100.0
+    b_size = 1.0 / 100.0
+    c_size = 0.5 / 100.0
+    # Mass of tungsten in eV s^2 m^-2.
+    mass_w = 183.84 * 931.49 * 10**6.0 / ((3*10**8.0)**2.0)
+
+    a = adf11.adf11(filename, debug=False)
+    a.interpolate()
+    # lambda_iz = speed_w * (ne * sigmanu_bar)^-1
+    # Let's get everything separately and in the right units.
+    # In eV.
+    Te = lp_df['Te (eV)']
+
+    # In e18 m-3.
+    ne = lp_df['ne (e18 m-3)']
+    # In m-3
+    ne = ne * 10**18
+
+    # In m/s.
+    v_w = np.sqrt(3 * Te / mass_w)
+
+    # In cm3/s. 0th ionization state since we assume anything > 1 will return.
+    sigmanu = np.array([])
+    for ne_tmp, te_tmp in zip(ne, Te):
+        sigmanu_tmp = a.EvalInterpolation(ne_tmp, te_tmp, 0)
+        # In m3/s.
+        sigmanu_tmp = sigmanu_tmp * 10**(-6)
+        sigmanu = np.append(sigmanu, sigmanu_tmp)
+
+    # Finally, lambda_iz in m.
+    lambda_iz = v_w * (ne * sigmanu)**(-1)
+
+    # Put into lp_df.
+    lp_df['Lambda_iz (m)'] = lambda_iz
+
+    # Calculate fraction that ionizes within each probe tube.
+    lp_df['A Frac. Ion.'] = 1.0 - np.exp(- a_size / lp_df['Lambda_iz (m)'])
+    lp_df['B Frac. Ion.'] = 1.0 - np.exp(- b_size / lp_df['Lambda_iz (m)'])
+    lp_df['C Frac. Ion.'] = 1.0 - np.exp(- c_size / lp_df['Lambda_iz (m)'])
+
+    return lp_df
+
+def calc_lost_flux(lp_df, sput_df):
+    # 1 - frac_ion bc that which does not ionize is lost.
+    a_lost_c = sput_df['Sputt. Flux from C'] * (1.0 - lp_df['A Frac. Ion.'])
+    b_lost_c = sput_df['Sputt. Flux from C'] * (1.0 - lp_df['B Frac. Ion.'])
+    c_lost_c = sput_df['Sputt. Flux from C'] * (1.0 - lp_df['C Frac. Ion.'])
+    a_lost_w = sput_df['Sputt. Flux from W'] * (1.0 - lp_df['A Frac. Ion.'])
+    b_lost_w = sput_df['Sputt. Flux from W'] * (1.0 - lp_df['B Frac. Ion.'])
+    c_lost_w = sput_df['Sputt. Flux from W'] * (1.0 - lp_df['C Frac. Ion.'])
+
+    lost_df = pd.DataFrame()
+    lost_df['A Lost Flux from C'] = a_lost_c
+    lost_df['B Lost Flux from C'] = b_lost_c
+    lost_df['C Lost Flux from C'] = c_lost_c
+    lost_df['A Lost Flux from W'] = a_lost_w
+    lost_df['B Lost Flux from W'] = b_lost_w
+    lost_df['C Lost Flux from W'] = c_lost_w
+
+    # Odds and ends to pass along.
+    lost_df['R (cm)']       = lp_df['R (cm)']
+    lost_df['Te (eV)']      = lp_df['Te (eV)']
+    lost_df['ne (e18 m-3)'] = lp_df['ne (e18 m-3)']
+    return lost_df
+
+def calc_net_flux():
+    exposed_time = 5.0 * 25.0
+    filename = 'Data/LModeProbes.xlsx'
+    lmode_df = pd.read_excel(filename, sheet_name='A2', usecols=range(0,14))
+    net_df = pd.DataFrame()
+    net_df['AU R-Rsep (cm)'] = lmode_df['rminrsep_U']
+    net_df['AD R-Rsep (cm)'] = lmode_df['rminrsep_D']
+
+    # Times 10^4 to go from cm-2 s-1 to m-2 s-1.
+    net_df['AU Net Flux (m-2 s-1)'] = lmode_df['w_areal_U'] * 10**15 * 10**4 / exposed_time
+    net_df['AD Net Flux (m-2 s-1)'] = lmode_df['w_areal_D'] * 10**15 * 10**4 / exposed_time
+
+    return net_df
+
+def plot_net_lost(net_df, lost_df, probe='AD'):
+    x1 = net_df[probe + " R-Rsep (cm)"]
+    y1 = net_df[probe + " Net Flux (m-2 s-1)"]
+    x2 = lost_df["A R-Rsep (cm)"]
+    y2_c = lost_df['A Lost Flux from C']
+    y2_w = lost_df['A Lost Flux from W']
+
+    plt.rcParams.update({'font.size': 34})
+    plt.plot(x1, y1, 'b', label='Net Flux to Probe')
+    plt.plot(x2, y2_c, 'r', label='Lost Flux off Probe (C)')
+    plt.plot(x2, y2_w, 'r--', label='Lost Flux off Probe (W)')
+    plt.xlabel('R-Rsep (cm)')
+    plt.ylabel(r"$\mathrm{Flux (m^{-2}\ s^{-1)}}$")
+    plt.title(probe + ' Fluxes due to Sputtering')
+    plt.legend()
+    plt.show()
+
+
+
+def run_script(get_rsep=True, time_start=1500, time_end=4500, time_step=500):
+
+    carbon_frac   = np.array([0.001,  0.001,  0.001,  0.001,  0.001,  0.001]) / 6.0
+    tungsten_frac = np.array([0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001]) / 6.0
+    print()
+    print("Calculating fluxes of each charge state as fractions of D flux...")
+    print("              1+       2+       3+       4+       5+       6+")
+    print("C Fraction    {0:3.5f}  {1:3.5f}  {2:3.5f}  {3:3.5f}  {4:3.5f}  {5:3.5f}"
+          .format(carbon_frac[0], carbon_frac[1], carbon_frac[2], carbon_frac[3],
+                  carbon_frac[4], carbon_frac[5]))
+    print("W Fraction    {0:3.5f}  {1:3.5f}  {2:3.5f}  {3:3.5f}  {4:3.5f}  {5:3.5f}"
+          .format(tungsten_frac[0], tungsten_frac[1], tungsten_frac[2], tungsten_frac[3],
+                  tungsten_frac[4], tungsten_frac[5]))
+    print()
+    lp_df = get_fluxes(carbon_frac, tungsten_frac)
+
+    print("Calculating sputtered flux...")
+    sput_df = get_sput_flux()
+    print("Calculating lost flux...")
+    lp_df = calc_iz_frac(lp_df)
+    lost_df = calc_lost_flux(lp_df, sput_df)
+
+    print("Calculating average Rsep for 167192 in range " + str(time_start) + "-" + str(time_end) + " ms")
+    if get_rsep == True:
+        rsep_dict = rsep.return_avg(167192, time_start, time_end, time_step)
+        # Note that LP data is ~ Z location of A probe only. B and C are approximations without
+        # mapping to psin and such.
+        lost_df['A R-Rsep (cm)'] = lost_df['R (cm)'] - rsep_dict['Average Rsep at A Probe'] * 100.0
+        lost_df['B R-Rsep (cm)'] = lost_df['R (cm)'] - rsep_dict['Average Rsep at B Probe'] * 100.0
+        lost_df['C R-Rsep (cm)'] = lost_df['R (cm)'] - rsep_dict['Average Rsep at C Probe'] * 100.0
+
+    print("Calculating net flux...")
+    net_df = calc_net_flux()
+    print("Plotting...")
+    plot_net_lost(net_df, lost_df, probe='AD')
+    plot_net_lost(net_df, lost_df, probe='AU')
+
+    print("\nDone.")
+
+
+    return lost_df
