@@ -5,8 +5,8 @@ import EFIT.load_gfile_d3d as loadg
 import scipy.interpolate as scinter
 import MDSplus as mds
 
-conn_wb = xl.load_workbook("Data/conn_lengths.xlsx", data_only=True)
-samp_wb = xl.load_workbook("Data/LP_with_fit.xlsx", data_only=True)
+conn_wb = xl.load_workbook("../Data/conn_lengths.xlsx", data_only=True)
+samp_wb = xl.load_workbook("../Data/LP_with_fit.xlsx", data_only=True)
 
 conn_sheet = conn_wb.get_sheet_by_name("Sheet1")
 samp_sheet = samp_wb.get_sheet_by_name("Fit Te's")
