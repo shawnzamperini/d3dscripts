@@ -381,7 +381,7 @@ def plot_sput_flux():
     plt.ylabel(r"$\mathrm{Sputt. Flux (m^{-2}\ s^{-1)}}$")
     plt.show()
 
-def calc_iz_frac(lp_df, filename='Data/adf11/scd50/scd50_w.dat'):
+def calc_iz_frac(lp_df, filename='/home/shawn/d3dscripts/Data/adf11/scd50/scd50_w.dat'):
     # Probe widths in m
     a_size = 3.0 / 100.0
     b_size = 1.0 / 100.0
@@ -389,6 +389,7 @@ def calc_iz_frac(lp_df, filename='Data/adf11/scd50/scd50_w.dat'):
     # Mass of tungsten in eV s^2 m^-2.
     mass_w = 183.84 * 931.49 * 10**6.0 / ((3*10**8.0)**2.0)
 
+    print("Loading ADAS file: " + filename)
     a = adf11.adf11(filename, debug=False)
     a.interpolate()
     # lambda_iz = speed_w * (ne * sigmanu_bar)^-1
@@ -483,8 +484,9 @@ def plot_net_lost(net_df, lost_df, probe='AD'):
 
 def run_script(get_rsep=True, time_start=1500, time_end=4500, time_step=500):
 
-    carbon_frac   = np.array([0.001,  0.001,  0.001,  0.001,  0.001,  0.001]) / 6.0
-    tungsten_frac = np.array([0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001]) / 6.0
+    #                         C1+     C2+     ...                     C6+
+    carbon_frac   = np.array([0.000,  0.005,  0.005,  0.000,  0.000,  0.000]) / 6.0
+    tungsten_frac = np.array([0.000, 0.000, 0.000, 0.000, 0.000, 0.000]) / 6.0
     print()
     print("Calculating fluxes of each charge state as fractions of D flux...")
     print("              1+       2+       3+       4+       5+       6+")
