@@ -13,7 +13,7 @@ def returnArray(sheet, lowRange, highRange):
     values = np.array([cell.value for cell in cells])
     return values
 
-wb = xl.load_workbook("Data/LP_with_fit.xlsx", data_only=True)
+wb = xl.load_workbook("../Data/LP_with_fit.xlsx", data_only=True)
 sheet = wb.get_sheet_by_name("LP Data")
 
 R_lp_192p1  = returnArray(sheet, "B3", "B54")

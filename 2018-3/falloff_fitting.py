@@ -118,6 +118,10 @@ while True:
                 x_fit = np.linspace(x_lower, x_upper, 100)
                 y_fit = exp_fit(x_fit, *popt)
                 plot_it(x, y, y_err, x_fit, y_fit, popt[1], probe)
+                print("\ta: {:.2f}".format(popt[0]))
+                print("\tb: {:.2f}".format(popt[1]))
+                print("\tc: {:.2f}".format(popt[2]))
+                print("\tW value at R-Rsep=0: {:.2e}".format(exp_fit(0.0, *popt)*10e15))
 
         try:
             exclude = -1 * int(input("Exclude the furthest ___ points (enter 'q' to quit/select new probe): "))

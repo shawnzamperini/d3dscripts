@@ -160,3 +160,96 @@ if True:
     plt.ylabel("Length (m)")
     plt.savefig('samp_otf_itf.png')
     plt.show()
+
+def weplot():
+    lw=2
+    alpha1 = 0.4
+    alpha2=1.0
+    fig, (ax2, ax1) = plt.subplots(2, 1, sharex=True)
+    #ax1 = plt.subplot(211)
+    ax1.semilogy(coll_omp_a, coll_odf_a, 'r-', alpha=alpha1, linewidth=lw, label='A OTF')
+    ax1.semilogy(coll_omp_b, coll_odf_b, 'b-', alpha=alpha1, linewidth=lw, label='B OTF')
+    ax1.semilogy(coll_omp_c, coll_odf_c, 'g-', alpha=alpha1, linewidth=lw, label='C OTF')
+    ax1.semilogy(coll_omp_a, coll_idf_a, 'r--', alpha=alpha2, linewidth=lw, label='A ITF')
+    ax1.semilogy(coll_omp_b, coll_idf_b, 'b--', alpha=alpha2, linewidth=lw, label='B ITF')
+    ax1.semilogy(coll_omp_c, coll_idf_c, 'g--', alpha=alpha2, linewidth=lw, label='C ITF')
+    ax1.set_xlabel(r'$\mathrm{R - R_{sep}\ omp\ (cm)}$')
+    ax1.set_ylabel('Sampling Length (m)')
+    ax1.legend()
+    ax1.grid(True, which='major', alpha=0.5)
+    #ax2 = plt.subplot(111)
+    ax2.semilogy(df['samp_omp_a'], df['samp_l_a'], 'r-', linewidth=lw,
+                 label='A Collection Length')
+    ax2.semilogy(df['conn_omp_a'], df['conn_odf_a'], 'g--', linewidth=lw,
+                 label='OTF Connection Length')
+    ax2.semilogy(df['conn_omp_a'], df['conn_idf_a'], 'b--', linewidth=lw,
+                 label='ITF Connection Length')
+    #ax2.set_xlabel(r'$\mathrm{R - R_{sep}\ omp\ (cm)}$')
+    ax2.set_ylabel('Length (m)')
+    ax2.legend()
+    ax2.grid(True, which='major', alpha=0.5)
+    fig.tight_layout()
+    params = {
+       'axes.labelsize': 12,
+       'font.size': 12,
+       'legend.fontsize': 10,
+       'xtick.labelsize': 10,
+       'ytick.labelsize': 10,
+       'text.usetex': False,
+       #'figure.figsize': [4.5, 4.5]
+       }
+    plt.rcParams.update(params)
+
+def yourplot():
+    lw=2
+    alpha=1.0
+    fig = plt.figure()
+    ax1 = plt.subplot(111)
+    ax1.semilogy(df['samp_omp_a'], df['samp_l_a'], 'r-', linewidth=lw,
+                 label='A Collection Length')
+    ax1.semilogy(df['conn_omp_a'], df['conn_odf_a'], 'g--', linewidth=lw,
+                 label='OTF Connection Length')
+    ax1.semilogy(df['conn_omp_a'], df['conn_idf_a'], 'b--', linewidth=lw,
+                 label='ITF Connection Length')
+    ax1.set_xlabel(r'$\mathrm{R - R_{sep}\ omp\ (cm)}$')
+    ax1.set_ylabel('Length (m)')
+    ax1.legend()
+    plt.grid(True, which='both', alpha=0.5)
+    params = {
+       'axes.labelsize': 16,
+       'font.size': 16,
+       'legend.fontsize': 10,
+       'xtick.labelsize': 10,
+       'ytick.labelsize': 10,
+       'text.usetex': False,
+       'figure.figsize': [4.5, 4.5]
+       }
+    plt.rcParams.update(params)
+
+def ourplot():
+    lw=2
+    alpha1 = 0.4
+    alpha2=1.0
+    fig = plt.figure()
+    ax1 = plt.subplot(111)
+    ax1.semilogy(coll_omp_a, coll_odf_a, 'r-', alpha=alpha1, linewidth=lw, label='A OTF')
+    ax1.semilogy(coll_omp_b, coll_odf_b, 'b-', alpha=alpha1, linewidth=lw, label='B OTF')
+    ax1.semilogy(coll_omp_c, coll_odf_c, 'g-', alpha=alpha1, linewidth=lw, label='C OTF')
+    ax1.semilogy(coll_omp_a, coll_idf_a, 'r--', alpha=alpha2, linewidth=lw, label='A ITF')
+    ax1.semilogy(coll_omp_b, coll_idf_b, 'b--', alpha=alpha2, linewidth=lw, label='B ITF')
+    ax1.semilogy(coll_omp_c, coll_idf_c, 'g--', alpha=alpha2, linewidth=lw, label='C ITF')
+    ax1.set_xlabel(r'$\mathrm{R - R_{sep}\ omp\ (cm)}$')
+    ax1.set_ylabel('Sampling Length (m)')
+    ax1.legend()
+    plt.grid(True, which='both', alpha=0.5)
+    params = {
+       'axes.labelsize': 16,
+       'font.size': 16,
+       'legend.fontsize': 10,
+       'xtick.labelsize': 10,
+       'ytick.labelsize': 10,
+       'text.usetex': False,
+       'figure.figsize': [4.5, 4.5]
+       }
+    plt.rcParams.update(params)
+    #fig.tight_layout()
