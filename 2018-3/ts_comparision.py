@@ -135,3 +135,33 @@ plt.ylim([0, 80])
 plt.title("Comparing TS to LP on Similar Shots")
 plt.legend(prop={"size":28})
 plt.show()
+
+def myplot():
+    ms=7
+    cs=5
+    alpha=0.5
+    st=2
+    fig = plt.figure()
+    ax1 = plt.subplot(111)
+    ax1.errorbar(x=psin_lp_195p2[::st], y=Te_lp_195p2[::st],
+                 xerr=0.01, yerr=(Te_lp_195p2*0.2)[::st],
+                 capsize=cs, ms=ms, fmt='r^', alpha=alpha, label='Langmuir Probe')
+    ax2 = plt.subplot(111)
+    ax2.errorbar(x=ts196['psins']['avg_psins'], y=ts192['psins']['avg_Tes'],
+                 xerr=0.01, yerr=ts192['psins']['avg_Tes_err'], capsize=cs,
+                 ms=ms, fmt='b^', alpha=alpha, label='Thomson Scattering')
+    ax1.set_xlabel(r'$\mathrm{\phi_n}$')
+    ax1.set_ylabel('Te (eV)')
+    ax1.legend()
+    ax1.set_xlim(1, 1.35)
+    ax1.set_ylim(0, 80)
+    params = {
+       'axes.labelsize': 16,
+       'font.size': 16,
+       'legend.fontsize': 10,
+       'xtick.labelsize': 10,
+       'ytick.labelsize': 10,
+       'text.usetex': False,
+       'figure.figsize': [4.5, 4.5]
+       }
+    plt.rcParams.update(params)
