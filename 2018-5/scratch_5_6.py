@@ -5,7 +5,7 @@ from scipy.interpolate   import griddata
 from matplotlib          import cm
 
 
-probe = 'C'
+probe = 'B'
 
 # First load the Excel data into DataFrames.
 if probe == 'B':
