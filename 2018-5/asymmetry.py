@@ -16,7 +16,7 @@ ratios_err   = df['Ratio Error'][0:11].values
 falloff     = df['Density Fall Off Length (m)'][0:11].values
 falloff_err = df['Fall Off Error (m)'][0:11].values
 
-# Plot the assymetry trend with the density fall off.
+# Plot the asymmetry trend with the density fall off.
 if True:
     font = {'fontsize' : 24,
             'weight'   : 'bold'}
@@ -31,7 +31,7 @@ if True:
     ax1.set_ylabel('ITF/OTF Max W Content', font)
     ax1.set_xlim(left=0)
     ax1.set_ylim(bottom=0)
-    ax1.tick_params(labelsize=14)
+    ax1.tick_params(labelsize=22)
     fig.tight_layout()
     fig.show()
 

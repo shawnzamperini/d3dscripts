@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pandas            as pd
 from scipy.interpolate   import griddata
 from matplotlib          import cm
+import matplotlib as mpl
 
 df_tot = pd.read_excel('/home/shawn/d3dscripts/Data/Polodial_Scans/BD06_Map_New.xlsx', sheet_name='Sheet1', index_col=0, usecols='A:W')
 df_tot = df_tot.iloc[0:202]
@@ -40,14 +41,18 @@ Z = arr_tot
 if max_val != None:
     Z = np.clip(arr_tot, 0, max_val)  # To prevent errant points ruining the countour plot.
 
-
+norm = mpl.colors.Normalize(vmin=0, vmax=max_val)
 
 # Plot 2D contour map.
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
 fig.gca().patch.set_color(cm.Reds(100))  # Fill in blank spots with low value color.
-cont = ax1.contourf(X/10, Y, Z, cmap='Reds')
-fig.colorbar(cont).ax.set_ylabel('LAMS Counts')
-ax1.set_xlabel('Axial Length (cm)')
-ax1.set_ylabel('Poloidal Length (mm)')
+cont = ax1.contourf(X/10, Y, norm(Z), cmap='Reds')
+cbar = fig.colorbar(cont, ticks=np.linspace(0,1,6))
+cbar.ax.set_ylabel('LAMS Counts', size=24, weight='bold')
+cbar.ax.tick_params(labelsize=20)
+ax1.set_xlabel('Axial Length (cm)', size=24, weight='bold')
+ax1.set_ylabel('Poloidal Length (mm)', size=24, weight='bold')
+ax1.tick_params(labelsize=22)
+fig.tight_layout()
 fig.show()

@@ -42,9 +42,17 @@ x_ts = ts_dict['psins']['avg_omps'] * 100
 y_te = ts_dict['psins']['avg_Tes']
 y_ne = ts_dict['psins']['avg_nes'] * 10e-18
 
+x_ts_err = ts_dict['psins']['avg_omps_err'] * 100
+y_te_err = ts_dict['psins']['avg_Tes_err']
+y_ne_err = ts_dict['psins']['avg_nes_err'] * 10e-18
+
 x_ts = x_ts[np.where(x_ts > 0)[0]][lowlim:uplim]
 y_te = y_te[np.where(x_ts > 0)[0]]
 y_ne = y_ne[np.where(x_ts > 0)[0]]
+
+x_ts_err = x_ts_err[np.where(x_ts > 0)[0]]
+y_te_err = y_te_err[np.where(x_ts > 0)[0]]
+y_ne_err = y_ne_err[np.where(x_ts > 0)[0]]
 
 m_deut  = 2.01 * 931.49 * 10**6 / ((3*10**8)**2.0)
 y_cs    = np.sqrt(2*y_te/m_deut)
@@ -97,5 +105,19 @@ if True:
     ax1.set_xlabel('R-Rsep omp (cm)', font)
     ax1.set_ylabel(r'$\mathrm{\mathbf{Density\ (1e18\ m^{-3}}}$)', font)
     ax1.tick_params(labelsize=14)
+    fig.tight_layout()
+    plt.show()
+
+if True:
+    font = {'fontsize' : 24,
+            'weight'   : 'bold'}
+    plt.style.use('seaborn')
+    fig = plt.figure()
+    ax1 = fig.add_subplot(111)
+    ax1.errorbar(x_ts, y_ne, y_ne_err, 0.5, 'k.', ms=20, capsize=5, capthick=1)
+    ax1.plot(x_fit, y_fit_ne, 'k--', lw=3)
+    ax1.set_xlabel('R-Rsep omp (cm)', font)
+    ax1.set_ylabel(r'$\mathrm{\mathbf{Density\ (1e18\ m^{-3}}}$)', font)
+    ax1.tick_params(labelsize=22)
     fig.tight_layout()
     plt.show()
