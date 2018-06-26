@@ -4,7 +4,7 @@ from scipy.signal import savgol_filter
 import numpy as np
 import matplotlib.pyplot as plt
 
-shot = 167277
+shot = 167279
 tmin = 2500
 tmax = 4000
 
@@ -86,12 +86,13 @@ print("  Core average temperature:     {:.4f}".format(core_avg_temp))
 print("  Upstream/downstream ratio:    {:.4f}".format(core_avg_temp/div_avg_temp))
 
 # Try getting the upstream/downstream ratio for each divertor chord location.
-print("Div  Te     Core Te")
+ratios = np.array([])
+print("Div  Psin Te   Core Psin Te")
 for chord in range(0, 8):
     div_psin = div['psins']['avg_psins'][chord]
     div_raw_time = div['temp']['X']
     div_raw_temp = div['temp']['Y'][chord]
-    div_thresh = 100
+    div_thresh = 300
     div_noelm_time = div_raw_time[np.where(div_raw_temp<div_thresh)]
     div_noelm_temp = div_raw_temp[np.where(div_raw_temp<div_thresh)]
     div_filt_temp = savgol_filter(div_noelm_temp, 51, 3)
@@ -101,12 +102,15 @@ for chord in range(0, 8):
     core_psin   = core_psins[closest_idx]
     core_raw_time = core['temp']['X']
     core_raw_temp = core['temp']['Y'][closest_idx]
-    core_thresh = 110
+    core_thresh = 150
     core_noelm_time = core_raw_time[np.where(core_raw_temp<core_thresh)]
     core_noelm_temp = core_raw_temp[np.where(core_raw_temp<core_thresh)]
     core_filt_temp = savgol_filter(core_noelm_temp, 51, 3)
     core_avg_temp = np.mean(core_filt_temp[np.where(np.logical_and(core_noelm_time>tmin, core_noelm_time<tmax))])
-    print("{:4} {:5.3f} {:4} {:5.3f}".format(chord, div_avg_temp, closest_idx, core_avg_temp))
+    print("{:4} {:5.3f} {:5.3f} {:4} {:5.3f} {:5.3f}".format(chord, div_psin, div_avg_temp, closest_idx, core_psin, core_avg_temp))
+
+    rat = core_avg_temp / div_avg_temp
+    ratios = np.append(ratios, rat)
 
 fig = plt.figure()
 ax1 = fig.add_subplot(211)
@@ -126,5 +130,13 @@ ax2.set_ylabel('Core Te (eV)')
 ax2.set_xlim([0, 6000])
 ax2.set_ylim([0, 500])
 ax2.axhline(y=core_thresh, linestyle='--')
+fig.tight_layout()
+fig.show()
+
+fig = plt.figure()
+ax1 = fig.add_subplot(111)
+ax1.plot(ratios, 'k.')
+ax1.set_xlabel('Div. Chord')
+ax1.set_ylabel('Tu/Td using nearest values')
 fig.tight_layout()
 fig.show()

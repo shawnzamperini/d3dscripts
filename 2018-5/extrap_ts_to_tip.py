@@ -36,7 +36,7 @@ lowlim = None     # Furthest points out to ignore. Must be positive.
 uplim  = None  # Closest points to ignore. Must be negative.
 
 if True:
-    ts_dict = ts.run_script(167320, 'core', tmin=2000, tmax=4000)
+    ts_dict = ts.run_script(167268, 'core', tmin=2000, tmax=4000)
 
 x_ts = ts_dict['psins']['avg_omps'] * 100
 y_te = ts_dict['psins']['avg_Tes']
@@ -90,6 +90,8 @@ def plot_flux():
 print("Density fall off length: {:.3f}".format(1/popt_ne[1]))
 errs = np.sqrt(np.diag(pcov_ne))
 print("Density fall off length error: {:.4f}".format((errs[1]/popt_ne[1]) * (1/popt_ne[1])))
+ne_sep = exp_fit(0, *popt_ne)
+print("Density at separatrix: {:.4f}".format(ne_sep))
 
 def flux_at_tip(r_tip):
     return exp_fit(r_tip, *popt_flux) * 10e25
