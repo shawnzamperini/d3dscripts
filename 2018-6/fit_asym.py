@@ -11,10 +11,11 @@ df = df.iloc[:13]
 
 asymm     = np.array(df['Ratio'].values, dtype=np.float64)[1:]
 asymm_err = np.array(df['Error'].values, dtype=np.float64)[1:]
-lambda_ne = np.array(df['Density Fall Off (m)'].values, dtype=np.float64)[1:]
+lambda_ne = np.array(df['Density Fall Off (cm)'].values, dtype=np.float64)[1:]
 ng        = np.array(df['Greenwald Fraction'].values, dtype=np.float64)[1:]
 ip        = np.array(df['IP (MA)'].values, dtype=np.float64)[1:]
-ne_sep    = np.array(df['ne sep (1e18 m-3)'].values, dtype=np.float64)[1:]
+ne_sep    = np.array(df['ne sep (m-3)'].values, dtype=np.float64)[1:]
+balloon   = np.array(df['Ballooning Parameter'].values, dtype=np.float64)[1:]
 """
 asymm     = np.array(df['Ratio'].values, dtype=np.float64)
 asymm_err = np.array(df['Error'].values, dtype=np.float64)
@@ -51,7 +52,8 @@ ax1.plot(range(0,5), 'k--')
 ax1.set_xlim([0,4])
 ax1.set_ylim([0,4])
 ax1.set_title('ITF/OTF Total Content Ratio', font)
-ax1.text(0.7, 0.1, textstr, transform=ax1.transAxes, fontsize=12, bbox=props)
+plt.tick_params(axis='both', which='major', labelsize=18)
+ax1.text(0.6, 0.1, textstr, transform=ax1.transAxes, fontsize=18, bbox=props)
 fig.tight_layout()
 fig.show()
 
@@ -76,10 +78,10 @@ ax1.text(0.7, 0.1, textstr, transform=ax1.transAxes, fontsize=12, bbox=props)
 fig.tight_layout()
 fig.show()
 
-# Try the scaling with lambda_ne and ne_sep now.
-popt, pcov = curve_fit(fit_func, (ip, ne_sep), asymm)
-fit_vals = fit_func((ip, ne_sep), *popt)
-textstr = r'$\mathrm{fit = c\ *\ IP^{a}\ *\ ne_{sep}^{b}}$' + \
+# Try the scaling with lambda_ne and balloon now.
+popt, pcov = curve_fit(fit_func, (lambda_ne, balloon), asymm)
+fit_vals = fit_func((lambda_ne, balloon), *popt)
+textstr = r'$\mathrm{fit = c\ *\ \lambda_{ne}^{a}\ *\ \alpha^{b}}$' + \
           '\na = {:.2f}'.format(popt[0]) + \
           '\nb = {:.2f}'.format(popt[1]) + \
           '\nc = {:.2f}'.format(popt[2])

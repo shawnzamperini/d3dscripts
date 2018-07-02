@@ -36,7 +36,7 @@ lowlim = None     # Furthest points out to ignore. Must be positive.
 uplim  = None  # Closest points to ignore. Must be negative.
 
 if True:
-    ts_dict = ts.run_script(167268, 'core', tmin=2000, tmax=4000)
+    ts_dict = ts.run_script(167481, 'core', tmin=2000, tmax=4000)
 
 x_ts = ts_dict['psins']['avg_omps'] * 100
 y_te = ts_dict['psins']['avg_Tes']
@@ -93,10 +93,16 @@ print("Density fall off length error: {:.4f}".format((errs[1]/popt_ne[1]) * (1/p
 ne_sep = exp_fit(0, *popt_ne)
 print("Density at separatrix: {:.4f}".format(ne_sep))
 
+print("Temperature fall off length: {:.3f}".format(1/popt_te[1]))
+errs = np.sqrt(np.diag(pcov_te))
+print("Temperature fall off length error: {:.4f}".format((errs[1]/popt_te[1]) * (1/popt_te[1])))
+te_sep = exp_fit(0, *popt_te)
+print("Temperature at separatrix: {:.4f}".format(te_sep))
+
 def flux_at_tip(r_tip):
     return exp_fit(r_tip, *popt_flux) * 10e25
 
-if True:
+if False:
     font = {'fontsize' : 24,
             'weight'   : 'bold'}
     plt.style.use('seaborn')
@@ -120,6 +126,20 @@ if True:
     ax1.plot(x_fit, y_fit_ne, 'k--', lw=3)
     ax1.set_xlabel('R-Rsep omp (cm)', font)
     ax1.set_ylabel(r'$\mathrm{\mathbf{Density\ (1e18\ m^{-3}}}$)', font)
+    ax1.tick_params(labelsize=22)
+    fig.tight_layout()
+    plt.show()
+
+if True:
+    font = {'fontsize' : 24,
+            'weight'   : 'bold'}
+    plt.style.use('seaborn')
+    fig = plt.figure()
+    ax1 = fig.add_subplot(111)
+    ax1.errorbar(x_ts, y_te, y_te_err, 0.5, 'k.', ms=20, capsize=5, capthick=1)
+    ax1.plot(x_fit, y_fit_te, 'k--', lw=3)
+    ax1.set_xlabel('R-Rsep omp (cm)', font)
+    ax1.set_ylabel(r'$\mathrm{\mathbf{T_e (eV)}}$)', font)
     ax1.tick_params(labelsize=22)
     fig.tight_layout()
     plt.show()
