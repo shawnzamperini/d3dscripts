@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize      import curve_fit
 
 
-filename = '/home/shawn/Drive/School/Tennessee/Research/My Slides and Sheets/2018 - 5/max_w_vs_flux.xlsx'
+filename = '/home/shawn/Drive/School/Tennessee/Research/My Slides and Sheets/2018-5/max_w_vs_flux.xlsx'
 df = pd.read_excel(filename, sheet_name='Ratios', usecols='A:L')
 
 ratios      = df['Ratio'][0:11].values
@@ -16,10 +16,15 @@ ratios_err   = df['Ratio Error'][0:11].values
 falloff     = df['Density Fall Off Length (m)'][0:11].values
 falloff_err = df['Fall Off Error (m)'][0:11].values
 
+ratios      = df['Ratio'][1:9].values
+ratios_err   = df['Ratio Error'][1:9].values
+falloff     = df['Density Fall Off Length (m)'][1:9].values
+falloff_err = df['Fall Off Error (m)'][1:9].values
+
 # Plot the asymmetry trend with the density fall off.
 if True:
-    font = {'fontsize' : 24,
-            'weight'   : 'bold'}
+    #font = {'fontsize' : 24, 'weight'   : 'bold'}
+    font = {'fontsize':24}
     plt.style.use('seaborn')
     # Make the font larger and bold.
     #font = {'weight' : 'bold'}
@@ -27,7 +32,7 @@ if True:
     fig = plt.figure()
     ax1 = fig.add_subplot(111)
     ax1.errorbar(falloff, ratios, ratios_err, falloff_err, 'k.', ms=20, markeredgewidth=1, capsize=5)
-    ax1.set_xlabel('Density Falloff (cm)',  font)
+    ax1.set_xlabel(r'$\mathrm{\lambda_{ne}}$ (cm)',  font)
     ax1.set_ylabel('ITF/OTF Max W Content', font)
     ax1.set_xlim(left=0)
     ax1.set_ylim(bottom=0)

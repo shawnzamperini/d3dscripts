@@ -1,3 +1,4 @@
+6
 import pandas as pd
 import numpy  as np
 import matplotlib.pyplot as plt
@@ -35,7 +36,7 @@ ax1.errorbar(xu[:-1], yu[:-1], yu_err[:-1], xu_err[:-1], 'b.', ms=20, capsize=5,
 ax1.plot(x_fitd, y_fitd, 'r--')
 ax1.plot(x_fitu, y_fitu, 'b--')
 ax1.set_xlabel(r'$\mathrm{\bf{R-R_{sep}\ (cm)}}$', font)
-ax1.set_ylabel(r'$\mathrm{\bf{W\ Density\ (10^{18}\ cm^{-2})}}$', font)
+ax1.set_ylabel(r'$\mathrm{\bf{W\ Areal\ Density\ (10^{18}\ cm^{-2})}}$', font)
 ax1.legend(frameon=True, fontsize=24)
 ax1.set_ylim([None,0.6])
 ax1.tick_params(labelsize=22)

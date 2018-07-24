@@ -4,18 +4,24 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-filename = '/home/shawn/Drive/School/Tennessee/Research/My Slides and Sheets/2018 - 5/max_w_vs_flux.xlsx'
+filename = '/home/shawn/Drive/School/Tennessee/Research/My Slides and Sheets/2018-5/max_w_vs_flux.xlsx'
 df = pd.read_excel(filename, sheet_name='Total Content', skiprows=[0])
 
 df = df.iloc[:13]
 
-asymm     = np.array(df['Ratio'].values, dtype=np.float64)[1:]
-asymm_err = np.array(df['Error'].values, dtype=np.float64)[1:]
-lambda_ne = np.array(df['Density Fall Off (cm)'].values, dtype=np.float64)[1:]
-ng        = np.array(df['Greenwald Fraction'].values, dtype=np.float64)[1:]
-ip        = np.array(df['IP (MA)'].values, dtype=np.float64)[1:]
-ne_sep    = np.array(df['ne sep (m-3)'].values, dtype=np.float64)[1:]
-balloon   = np.array(df['Ballooning Parameter'].values, dtype=np.float64)[1:]
+asymm     = np.array(df['Ratio'].values, dtype=np.float64)[4:15]
+asymm_err = np.array(df['Error'].values, dtype=np.float64)[4:15]
+lambda_ne = np.array(df['Density Fall Off (cm)'].values, dtype=np.float64)[4:15]
+ng        = np.array(df['Greenwald Fraction'].values, dtype=np.float64)[4:15]
+ip        = np.array(df['IP (MA)'].values, dtype=np.float64)[4:15]
+ne_sep    = np.array(df['ne sep (m-3)'].values, dtype=np.float64)[4:15]
+balloon   = np.array(df['Ballooning Parameter'].values, dtype=np.float64)[4:15]
+
+# Rescale all between 0 and 1.
+#asymm = np.interp(asymm, (asymm.min(), asymm.max()), (0,1))
+lambda_ne = np.interp(lambda_ne, (lambda_ne.min(), lambda_ne.max()), (0,1))
+ng = np.interp(ng, (ng.min(), ng.max()), (0,1))
+
 """
 asymm     = np.array(df['Ratio'].values, dtype=np.float64)
 asymm_err = np.array(df['Error'].values, dtype=np.float64)
@@ -32,10 +38,10 @@ popt, pcov = curve_fit(fit_func, (lambda_ne, ng), asymm)
 
 fit_vals = fit_func((lambda_ne, ng), *popt)
 
-textstr = r'$\mathrm{fit = a\ *\ \lambda_{ne}^{b}\ *\ f_g^{c}}$' + \
-          '\na = {:.2f}'.format(popt[2]) + \
-          '\nb = {:.2f}'.format(popt[0]) + \
-          '\nc = {:.2f}'.format(popt[1])
+textstr = r'$\mathrm{R_{fit} = A\ *\ \lambda_{ne}^{B}\ *\ f_g^{C}}$' + \
+          '\nA = {:.2f}'.format(popt[2]) + \
+          '\nB = {:.2f}'.format(popt[0]) + \
+          '\nC = {:.2f}'.format(popt[1])
 #textstr = r'$\mathrm{fit = c\ *\ \lambda_{ne}^{a}\ *\ n_g^{b}\na={:.2f}\nb={:.2f}\nc={:.2f}}$'.format(popt[1], popt[2], popt[0])
 props = dict(alpha=0.25, facecolor='k')
 
@@ -46,17 +52,19 @@ plt.style.use('seaborn')
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
 ax1.errorbar(x=fit_vals, y=asymm, yerr=asymm_err, ms=10, fmt='k.', capthick=1, capsize=3)
-ax1.set_xlabel('Fit', font)
-ax1.set_ylabel('Experimental', font)
+ax1.set_xlabel(r'$\mathrm{R_{fit}}$', font)
+ax1.set_ylabel(r'$\mathrm{R_{measured}}$', font)
 ax1.plot(range(0,5), 'k--')
-ax1.set_xlim([0,4])
-ax1.set_ylim([0,4])
+ax1.set_xlim([0,2])
+ax1.set_ylim([0,2])
 ax1.set_title('ITF/OTF Total Content Ratio', font)
 plt.tick_params(axis='both', which='major', labelsize=18)
 ax1.text(0.6, 0.1, textstr, transform=ax1.transAxes, fontsize=18, bbox=props)
 fig.tight_layout()
 fig.show()
 
+
+"""
 # Try the scaling with lambda_ne and Ip now (Ip is simpler).
 popt, pcov = curve_fit(fit_func, (lambda_ne, ip), asymm)
 fit_vals = fit_func((lambda_ne, ip), *popt)
@@ -125,3 +133,4 @@ ax1.set_title('ITF/OTF Total Content Ratio')
 ax1.text(0.7, 0.1, textstr, transform=ax1.transAxes, fontsize=12, bbox=props)
 fig.tight_layout()
 fig.show()
+"""

@@ -83,4 +83,4 @@ class gadata:
             #print "   No such signal: %s" % (signal,)
             return
 
-        print('   GADATA Retrieval Time : ' + str(time.time() - t0))
+        #print('   GADATA Retrieval Time : ' + str(time.time() - t0))
