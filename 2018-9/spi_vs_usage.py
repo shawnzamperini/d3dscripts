@@ -2,6 +2,7 @@ import pandas as pd
 import wikipedia as wp
 import numpy as np
 import matplotlib.pyplot as plt
+import pretty_plots as pp
 
 
 print("Loading SPI table...")
@@ -31,8 +32,14 @@ tpes_df = tpes_df.iloc[:, [3,4,5]]  # Get only the 2013 data.
 
 full_df = tpes_df.join(spi_df)
 
+
+pp.pplot_logx(full_df['kgoe/a'], full_df['2017'], fmt='o',
+              xlabel='Energy Use per Capita (kgoe/a)',
+              ylabel='SPI', ms=8, xrange=None, color=6)
+"""
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
 ax1.plot(full_df['kgoe/a'], full_df['2017'], '.')
 ax1.set_xlim([0,5000])
 fig.show()
+"""

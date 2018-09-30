@@ -4,8 +4,8 @@ import numpy              as np
 
 
 # Location of Excel file with "TOTAL DEPOSITION" table copy/pasted into it.
-filename7 = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/test16_totdep.xlsx'
-filename8 = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/test17_totdep.xlsx'
+filename7 = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/test24_totdep.xlsx'
+filename8 = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/test25_totdep.xlsx'
 
 norm = True
 
@@ -44,8 +44,8 @@ if norm:
 plt.style.use('seaborn')
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
-ax1.plot(x7r, y7r, 'C2.', label='Test 16')
-ax1.plot(x8r, y8r, 'C3.', label='Test 17')
+ax1.plot(x7r, y7r, 'C2.', label='Test 24')
+ax1.plot(x8r, y8r, 'C3.', label='Test 25')
 ax1.set_xlabel('x', fontsize=24)
 ax1.set_ylabel('Deposition (arbitrary units)', fontsize=24)
 ax1.legend(fontsize=24)
@@ -54,8 +54,8 @@ fig.show()
 
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
-ax1.plot(x7p, y7p, 'C2', lw=5, label='Test 16')
-ax1.plot(x8p, y8p, 'C3', lw=5, label='Test 17')
+ax1.plot(x7p, y7p, 'C2', lw=5, label='Test 24')
+ax1.plot(x8p, y8p, 'C3', lw=5, label='Test 25')
 ax1.set_xlabel('Poloidal (m)', fontsize=24)
 ax1.set_ylabel('Deposition (arbitrary units)', fontsize=24)
 ax1.set_xlim([-0.025, 0.025])

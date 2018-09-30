@@ -29,6 +29,7 @@ shot   : lowlim, uplim
 167531 : 3, None
 167534 : None, None
 167536 : None, -4
+167618 :
 
 
 """
@@ -36,7 +37,7 @@ lowlim = None     # Furthest points out to ignore. Must be positive.
 uplim  = None  # Closest points to ignore. Must be negative.
 
 if True:
-    ts_dict = ts.run_script(167481, 'core', tmin=2000, tmax=4000)
+    ts_dict = ts.run_script(167618, 'core', tmin=1500, tmax=3500)
 
 x_ts = ts_dict['psins']['avg_omps'] * 100
 y_te = ts_dict['psins']['avg_Tes']
