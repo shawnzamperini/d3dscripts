@@ -9,7 +9,7 @@ from matplotlib          import cm
 import matplotlib        as mpl
 
 
-probe = 'BD06_New_182'
+probe = 'BD06'
 
 if probe == 'BD06':
     # Load data into DataFrame.

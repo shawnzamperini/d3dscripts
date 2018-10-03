@@ -7,8 +7,9 @@ import pretty_plots as pp
 from scipy.optimize import curve_fit
 
 
-test = '49'
-filename = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-a8_test'+test+'.nc'
+test = '62'
+probe = 'b8'
+filename = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-'+probe+'_test'+test+'.nc'
 net = netCDF4.Dataset(filename)
 print('Test: ' + test)
 
@@ -81,6 +82,16 @@ def itf_otf_content():
     print('ITF/OTF Max W: {:.4f}'.format(maxw_ratio))
     print('ITF/OTF Tot W: {:.4f}'.format(totw_ratio))
 
+def avg_pol_prof():
+    print("Poloidal locations:")
+    for pol in pol_locs:
+        print(pol)
+    print("Average values:")
+    for val in np.mean(dep_arr, axis=1):
+        print(val)
+
 #plot_centerline()
-lambdas()
-itf_otf_content()
+#lambdas()
+#itf_otf_content()
+#plot_3d()
+avg_pol_prof()
