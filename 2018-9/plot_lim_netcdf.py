@@ -7,7 +7,7 @@ import pretty_plots as pp
 from scipy.optimize import curve_fit
 
 
-test = '62'
+test = '69'
 probe = 'b8'
 filename = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-'+probe+'_test'+test+'.nc'
 net = netCDF4.Dataset(filename)
@@ -90,8 +90,14 @@ def avg_pol_prof():
     for val in np.mean(dep_arr, axis=1):
         print(val)
 
+def plot_avg_pol():
+    x = pol_locs
+    y = np.mean(dep_arr, axis=1) / np.max(np.mean(dep_arr, axis=1))
+    fig = pp.pplot(x, y, xlabel='Z Location (m)', ylabel='Normalized Counts', xrange=[-0.003, 0.003])
+
 #plot_centerline()
 #lambdas()
 #itf_otf_content()
 #plot_3d()
 avg_pol_prof()
+plot_avg_pol()
