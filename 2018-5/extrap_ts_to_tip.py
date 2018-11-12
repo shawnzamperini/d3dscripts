@@ -15,17 +15,17 @@ drop region, but not so far out that the data become unreliable.
 
 shot   : lowlim, uplim
 167219 : 1, None
-167277 : None, -6
-167279 : None, -9
+167277 : None, -6 [1750, 4000]
+167279 : None, -9, [2500, 5000]
 167320 : None, None
-167321 : None, None
+167321 : None, None, [2000, 4500]
 167322 : None, -5
-167353 : None, None
+167353 : None, None, [2000, 4000]
 167405 : None, -5
 167408 : None, None
 167463 : None, None
-167481 : None, -5
-167530 : 5, None
+167481 : None, -5, [2000, 5000]
+167530 : 5, None, [2000, 4500]
 167531 : 3, None
 167534 : None, None
 167536 : None, -4
@@ -35,17 +35,18 @@ shot   : lowlim, uplim
 """
 lowlim = None     # Furthest points out to ignore. Must be positive.
 uplim  = None  # Closest points to ignore. Must be negative.
+r_tip  = 6.84  # Tip coordinate as distance from sep at omp.
 
 if True:
-    ts_dict = ts.run_script(167618, 'core', tmin=1500, tmax=3500)
+    ts_dict = ts.run_script(167321, 'core', tmin=2000, tmax=4500)
 
 x_ts = ts_dict['psins']['avg_omps'] * 100
 y_te = ts_dict['psins']['avg_Tes']
-y_ne = ts_dict['psins']['avg_nes'] * 10e-18
+y_ne = ts_dict['psins']['avg_nes'] * 1e-18
 
 x_ts_err = ts_dict['psins']['avg_omps_err'] * 100
 y_te_err = ts_dict['psins']['avg_Tes_err']
-y_ne_err = ts_dict['psins']['avg_nes_err'] * 10e-18
+y_ne_err = ts_dict['psins']['avg_nes_err'] * 1e-18
 
 x_ts = x_ts[np.where(x_ts > 0)[0]][lowlim:uplim]
 y_te = y_te[np.where(x_ts > 0)[0]]
@@ -57,7 +58,7 @@ y_ne_err = y_ne_err[np.where(x_ts > 0)[0]]
 
 m_deut  = 2.01 * 931.49 * 10**6 / ((3*10**8)**2.0)
 y_cs    = np.sqrt(2*y_te/m_deut)
-y_flux  = 0.5 * y_ne * 10e18 * y_cs
+y_flux  = 0.5 * y_ne * 1e18 * y_cs
 y_flux *= 10e-25
 
 def exp_fit(x, a, b):
@@ -103,6 +104,12 @@ print("Temperature at separatrix: {:.4f}".format(te_sep))
 def flux_at_tip(r_tip):
     return exp_fit(r_tip, *popt_flux) * 10e25
 
+# r_tip is distance from sep at omp.
+def dens_at_tip(r_tip):
+    return exp_fit(r_tip, *popt_ne) * 1e18
+
+print("Density at probe tip ({0:.4f}): {1:.3e}".format(r_tip, dens_at_tip(r_tip)))
+
 if False:
     font = {'fontsize' : 24,
             'weight'   : 'bold'}
@@ -123,6 +130,17 @@ if True:
     plt.style.use('seaborn')
     fig = plt.figure()
     ax1 = fig.add_subplot(111)
+
+    # Plot all the data for comparision.
+    x_ts_old = ts_dict['psins']['avg_omps'] * 100
+    y_te_old = ts_dict['psins']['avg_Tes']
+    y_ne_old = ts_dict['psins']['avg_nes'] * 1e-18
+    x_ts_err_old = ts_dict['psins']['avg_omps_err'] * 100
+    y_te_err_old = ts_dict['psins']['avg_Tes_err']
+    y_ne_err_old = ts_dict['psins']['avg_nes_err'] * 1e-18
+    ax1.errorbar(x_ts_old, y_ne_old, y_ne_err_old, 0.5, 'r.', ms=20, capsize=5, capthick=1)
+
+    # Plot the fitted data over it.
     ax1.errorbar(x_ts, y_ne, y_ne_err, 0.5, 'k.', ms=20, capsize=5, capthick=1)
     ax1.plot(x_fit, y_fit_ne, 'k--', lw=3)
     ax1.set_xlabel('R-Rsep omp (cm)', font)
@@ -137,6 +155,16 @@ if True:
     plt.style.use('seaborn')
     fig = plt.figure()
     ax1 = fig.add_subplot(111)
+
+    # Plot all the data for comparision.
+    x_ts_old = ts_dict['psins']['avg_omps'] * 100
+    y_te_old = ts_dict['psins']['avg_Tes']
+    y_ne_old = ts_dict['psins']['avg_nes'] * 1e-18
+    x_ts_err_old = ts_dict['psins']['avg_omps_err'] * 100
+    y_te_err_old = ts_dict['psins']['avg_Tes_err']
+    y_ne_err_old = ts_dict['psins']['avg_nes_err'] * 1e-18
+    ax1.errorbar(x_ts_old, y_te_old, y_te_err_old, 0.5, 'r.', ms=20, capsize=5, capthick=1)
+
     ax1.errorbar(x_ts, y_te, y_te_err, 0.5, 'k.', ms=20, capsize=5, capthick=1)
     ax1.plot(x_fit, y_fit_te, 'k--', lw=3)
     ax1.set_xlabel('R-Rsep omp (cm)', font)

@@ -16,7 +16,7 @@ for i in range(len(tableau20)):
     tableau20[i] = (r / 255., g / 255., b / 255.)
 
 def pplot(x, y, fmt='o', xerr=None, yerr=None, xlabel=None, ylabel=None, xrange=None,
-          yrange=None, label=None, show_fig=True, alpha=1.0,
+          yrange=None, label=None, show_fig=True, alpha=1.0, weight='normal',
           fig=None, ms=8, fontsize=26, color=6, lw=5, logx=False, logy=False):
     """
     A pretty plot for (x,y) data (no error bars). Can be used to create just
@@ -75,8 +75,8 @@ def pplot(x, y, fmt='o', xerr=None, yerr=None, xlabel=None, ylabel=None, xrange=
 
     # Make sure ticks are large enough to read.
     ax1.tick_params(axis='both', which='both', labelsize=18)
-    ax1.set_xlabel(xlabel, fontsize=fontsize)
-    ax1.set_ylabel(ylabel, fontsize=fontsize)
+    ax1.set_xlabel(xlabel, fontsize=fontsize, weight=weight)
+    ax1.set_ylabel(ylabel, fontsize=fontsize, weight=weight)
 
     # Set logarithmic scales if desired.
     if logx:
@@ -97,7 +97,7 @@ def pplot(x, y, fmt='o', xerr=None, yerr=None, xlabel=None, ylabel=None, xrange=
 
     # Turn on the legend if a label was passed
     if label:
-        ax1.legend(fontsize=fontsize)
+        ax1.legend(prop=dict(weight=weight, size=fontsize))
 
     if show_fig:
         fig.tight_layout()

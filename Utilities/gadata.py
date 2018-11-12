@@ -59,7 +59,7 @@ class gadata:
                 if numpy.ndim(self.xdata) == 2: self.xdata = numpy.transpose(self.xdata)
 
             except:
-                #print '   Signal not in MDSplus: %s' % (signal,)
+                print('   Signal not in MDSplus: %s' % (signal,))
                 pass
 
 
