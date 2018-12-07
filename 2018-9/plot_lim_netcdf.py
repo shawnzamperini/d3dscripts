@@ -7,11 +7,12 @@ import pretty_plots as pp
 from scipy.optimize import curve_fit
 
 
-test = '69'
-probe = 'b8'
-filename = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-'+probe+'_test'+test+'.nc'
+test = '79'
+probe = 'a8'
+#filename = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-'+probe+'_test'+test+'.nc'
+filename = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-test-m2.nc'
 net = netCDF4.Dataset(filename)
-print('Test: ' + test)
+#print('Test: ' + test)
 
 # 2D array of deposition data.
 dep_arr = np.array(net.variables['NERODS3'][0] * -1)
@@ -31,10 +32,14 @@ rad_locs = np.array(net.variables['ODOUTS'][:].data)
 dep_arr = dep_arr[:-1, :]
 pol_locs = pol_locs[:-1]
 
+# Get the centerline index (or closest to it).
+cline = np.abs(pol_locs).min()
+
+# Index the deposition array at the centerline for plotting.
 itf_x = rad_locs[np.where(rad_locs > 0.0)[0]]
-itf_y = dep_arr[np.where(pol_locs == 0)[0], np.where(rad_locs > 0.0)[0]]
+itf_y = dep_arr[np.where(pol_locs == cline)[0], np.where(rad_locs > 0.0)[0]]
 otf_x = rad_locs[np.where(rad_locs < 0.0)[0]] * -1
-otf_y = dep_arr[np.where(pol_locs == 0)[0], np.where(rad_locs < 0.0)[0]]
+otf_y = dep_arr[np.where(pol_locs == cline)[0], np.where(rad_locs < 0.0)[0]]
 
 def plot_3d():
     Y, X = np.meshgrid(rad_locs, pol_locs)
@@ -95,9 +100,25 @@ def plot_avg_pol():
     y = np.mean(dep_arr, axis=1) / np.max(np.mean(dep_arr, axis=1))
     fig = pp.pplot(x, y, xlabel='Z Location (m)', ylabel='Normalized Counts', xrange=[-0.003, 0.003])
 
-#plot_centerline()
+def plot_2d_temp(ax):
+
+    # Pull the data for a 2D countour plot.
+    x = net.variables['XOUTS'][:].data
+    y = net.variables['YOUTS'][:].data
+    z = net.variables['CTEMBS'][:].data
+
+    # Trim the data to be between the two absorbing surfaces (Y direction).
+    cl = net.variables['CL'][:].data
+    idx = np.where((y-cl)==(y-cl).min())[0][0]
+    y = y[idx:-idx]
+    z = z[idx:-idx].T  # Transpose so the Y direction is along the bottom of graph.
+
+
+
+
+plot_centerline()
 #lambdas()
-#itf_otf_content()
-#plot_3d()
-avg_pol_prof()
-plot_avg_pol()
+itf_otf_content()
+plot_3d()
+#avg_pol_prof()
+#plot_avg_pol()

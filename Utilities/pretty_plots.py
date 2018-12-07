@@ -10,6 +10,9 @@ tableau20 = [(31, 119, 180), (174, 199, 232), (255, 127, 14), (255, 187, 120),
              (227, 119, 194), (247, 182, 210), (127, 127, 127), (199, 199, 199),
              (188, 189, 34), (219, 219, 141), (23, 190, 207), (158, 218, 229)]
 
+# A nice looking font.
+plt.rcParams['font.family'] = 'serif'
+
 # Scale the RGB values to the [0, 1] range, which is the format matplotlib accepts.
 for i in range(len(tableau20)):
     r, g, b = tableau20[i]
@@ -19,7 +22,7 @@ def pplot(x, y, fmt='o', xerr=None, yerr=None, xlabel=None, ylabel=None, xrange=
           yrange=None, label=None, show_fig=True, alpha=1.0, weight='normal',
           fig=None, ms=8, fontsize=26, color=6, lw=5, logx=False, logy=False):
     """
-    A pretty plot for (x,y) data (no error bars). Can be used to create just
+    A pretty plot for (x,y) data. Can be used to create just
     a single plot, or can return the figure instance if the user wants to
     make some extra changes beyond the default here. This is made to be
     a good starting point to create consistency among plots.
@@ -29,19 +32,19 @@ def pplot(x, y, fmt='o', xerr=None, yerr=None, xlabel=None, ylabel=None, xrange=
     The final figure should be what you want.
     """
 
-    plt.rcParams['font.family'] = 'serif'
+#    plt.rcParams['font.family'] = 'serif'
 
     # These are the "Tableau 20" colors as RGB.
-    tableau20 = [(31, 119, 180), (174, 199, 232), (255, 127, 14), (255, 187, 120),
-                 (44, 160, 44), (152, 223, 138), (214, 39, 40), (255, 152, 150),
-                 (148, 103, 189), (197, 176, 213), (140, 86, 75), (196, 156, 148),
-                 (227, 119, 194), (247, 182, 210), (127, 127, 127), (199, 199, 199),
-                 (188, 189, 34), (219, 219, 141), (23, 190, 207), (158, 218, 229)]
+#    tableau20 = [(31, 119, 180), (174, 199, 232), (255, 127, 14), (255, 187, 120),
+#                 (44, 160, 44), (152, 223, 138), (214, 39, 40), (255, 152, 150),
+#                 (148, 103, 189), (197, 176, 213), (140, 86, 75), (196, 156, 148),
+#                 (227, 119, 194), (247, 182, 210), (127, 127, 127), (199, 199, 199),
+#                 (188, 189, 34), (219, 219, 141), (23, 190, 207), (158, 218, 229)]
 
     # Scale the RGB values to the [0, 1] range, which is the format matplotlib accepts.
-    for i in range(len(tableau20)):
-        r, g, b = tableau20[i]
-        tableau20[i] = (r / 255., g / 255., b / 255.)
+#    for i in range(len(tableau20)):
+#        r, g, b = tableau20[i]
+#        tableau20[i] = (r / 255., g / 255., b / 255.)
 
     # A good sized figure (4:3). Create a new one if not using iteratively.
     if fig is None:
@@ -99,6 +102,58 @@ def pplot(x, y, fmt='o', xerr=None, yerr=None, xlabel=None, ylabel=None, xrange=
     if label:
         ax1.legend(prop=dict(weight=weight, size=fontsize))
 
+    if show_fig:
+        fig.tight_layout()
+        fig.show()
+
+    return fig
+
+
+def ppcontourf(x, y, z, xlabel=None, ylabel=None, fontsize=26, weight='normal',
+                cmap='plasma', cbarlabel='', extend='neither', xrange=None,
+                yrange=None, show_fig=True):
+    """
+    Todo.
+    """
+
+    # A good sized figure.
+    fig = plt.figure(figsize=(10, 7.5))
+    ax1 = fig.add_subplot(111)
+
+    # Remove frame lines.
+    ax1.spines["top"].set_visible(False)
+    #ax1.spines["bottom"].set_visible(False)
+    ax1.spines["right"].set_visible(False)
+    #ax1.spines["left"].set_visible(False)
+    ax1.set_facecolor('white')
+
+    # Axis ticks only on bottom and left.
+    ax1.get_xaxis().tick_bottom()
+    ax1.get_yaxis().tick_left()
+
+    # Make sure ticks are large enough to read.
+    ax1.tick_params(axis='both', which='both', labelsize=18)
+    ax1.set_xlabel(xlabel, fontsize=fontsize, weight=weight)
+    ax1.set_ylabel(ylabel, fontsize=fontsize, weight=weight)
+
+    # Set limits, if entered.
+    if xrange is not None:
+        try:
+            ax1.set_xlim(xrange)
+        except:
+            print("Error: Make sure xrange is in the form [xmin, xmax].")
+    if yrange is not None:
+        try:
+            ax1.set_ylim(yrange)
+        except:
+            print("Error: Make sure yrange is in the form [ymin, ymax].")
+
+    # Create countour plot and colorbar.
+    cont = ax1.contourf(x, y, z, extend=extend)
+    cbar = fig.colorbar(cont)
+    cbar.ax.set_ylabel(cbarlabel, size=fontsize)
+
+    # Show the figure if desired.
     if show_fig:
         fig.tight_layout()
         fig.show()

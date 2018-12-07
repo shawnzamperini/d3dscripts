@@ -27,6 +27,10 @@ cbar.ax.tick_params(labelsize=20)
 ax1.set_xlabel('Axial Length (cm)', size=24, weight='bold')
 ax1.set_ylabel('Z Location (mm)', size=24, weight='bold')
 ax1.tick_params(labelsize=22)
+
+# Throw each measurement location on.
+ax1.plot(X/10, Y, 'k.', ms=3)
+
 fig.tight_layout()
 fig.show()
 

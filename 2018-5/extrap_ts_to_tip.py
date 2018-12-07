@@ -38,7 +38,7 @@ uplim  = None  # Closest points to ignore. Must be negative.
 r_tip  = 6.84  # Tip coordinate as distance from sep at omp.
 
 if True:
-    ts_dict = ts.run_script(167321, 'core', tmin=2000, tmax=4500)
+    ts_dict = ts.run_script(176343, 'core', tmin=3700, tmax=5400)
 
 x_ts = ts_dict['psins']['avg_omps'] * 100
 y_te = ts_dict['psins']['avg_Tes']
