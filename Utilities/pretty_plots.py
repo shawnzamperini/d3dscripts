@@ -149,7 +149,7 @@ def ppcontourf(x, y, z, xlabel=None, ylabel=None, fontsize=26, weight='normal',
             print("Error: Make sure yrange is in the form [ymin, ymax].")
 
     # Create countour plot and colorbar.
-    cont = ax1.contourf(x, y, z, extend=extend)
+    cont = ax1.contourf(x, y, z, extend=extend, cmap=cmap)
     cbar = fig.colorbar(cont)
     cbar.ax.set_ylabel(cbarlabel, size=fontsize)
 

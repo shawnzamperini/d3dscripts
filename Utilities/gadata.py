@@ -5,7 +5,7 @@ import sys
 
 class gadata:
     """GA Data Obj"""
-    def __init__(self,signal,shot,tree=None,connection=None,nomds=False):
+    def __init__(self,signal,shot,tree=None,connection=None,nomds=False, print_out=True):
 
         # Save object values
         self.signal         = signal
@@ -59,7 +59,8 @@ class gadata:
                 if numpy.ndim(self.xdata) == 2: self.xdata = numpy.transpose(self.xdata)
 
             except:
-                print('   Signal not in MDSplus: %s' % (signal,))
+                if print_out:
+                    print('   Signal not in MDSplus: %s' % (signal,))
                 pass
 
 
