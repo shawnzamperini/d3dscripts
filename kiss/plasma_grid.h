@@ -12,14 +12,14 @@ using namespace std;
 class Cube{
   public:
     double rad_mid, pol_mid, par_mid;
-    double te, ne;
+    double te, ne, mach, elec;
 
     Cube();
 };
 
 class PlasmaGrid{
   public:
-    InputFile input_file;
+    InputFile* input_file;
 
     PlasmaGrid(InputFile* input_file_ptr);
     vector<vector<vector<Cube>>> construct_grid();

@@ -13,7 +13,7 @@ y = np.array(df.columns.values, dtype=np.float64)
 X, Y = np.meshgrid(x, y)
 Z = df.values.T
 
-pp.ppcontourf(Y, X, Z, xlabel='Parallel (m)', ylabel='Radial (m)', cbarlabel='ne (m-3)', yrange=[x.max(), x.min()], cmap='magma')
+pp.ppcontourf(Y, X, Z, xlabel='Parallel (m)', ylabel='Radial (m)', cbarlabel='ne (m-3)', yrange=[x.max(), x.min()], cmap='viridis')
 
 #fig = plt.figure()
 #ax = fig.add_subplot(111)

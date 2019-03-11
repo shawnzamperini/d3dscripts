@@ -10,24 +10,36 @@ One can consider the plane that the origin is on to be the face of the windowed
 region.
 
 One-liners
-------------------------------------------------------------------------------
-| Tag   |           Name                                             | Value |
-------------------------------------------------------------------------------
-| *T000 | Probe width (m)                                            | 0.015 |
-| *T001 | Probe tip from R = 0 (m)                                   | 0.02  |
-| *T002 | Time step (s)                                              | 1e-8  |
-| *T003 | Parallel half-width of simulation box (conn. length) (m)   | 10    |
-| *T004 | Radial   full-width of simulation box (m)                  | 0.09  |
-| *T005 | Poloidal half-width of simulation box (m)                  | 0.20  |
-| *T006 | Number of P bins                                           | 3     |
-| *T007 | Number of R bins                                           | 20    |
-| *T008 | Number of Y bins                                           | 201   |
-| *T009 | SOL Option                                                 | 0     |
-| *T010 | R-Rsep omp value of origin (i.e. start of window) (m)      | 0.05  |
-| *T011 | Collector probe has own watershed? (0-no, 1-yes)           | 1     |
-| *T012 | Collector probe Y coordinate (m)                           | 0.0   |
-| *T013 | Number of impurity ions to follow                          | 1e3   |
-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+| Tag   |           Name                                             | Value  |
+-------------------------------------------------------------------------------
+| *T000 | Probe width (m)                                            | 0.015  |
+| *T001 | Probe tip from R = 0 (m)                                   | 0.02   |
+| *T002 | Time step (s)                                              | 1e-8   |
+| *T003 | Parallel half-width of simulation box (conn. length) (m)   | 10     |
+| *T004 | Radial   full-width of simulation box (m)                  | 0.09   |
+| *T005 | Poloidal half-width of simulation box (m)                  | 0.20   |
+| *T006 | Number of P bins                                           | 101    |
+| *T007 | Number of R bins                                           | 100    |
+| *T008 | Number of Y bins                                           | 201    |
+| *T009 | SOL Option                                                 | 0      |
+|       |   0: Isothermal sheath-limited                             |        |
+|       |   1: Some kind of 2-point option eventually                |        |
+| *T010 | R-Rsep omp value of origin (i.e. start of window) (m)      | 0.05   |
+| *T011 | Collector probe has own watershed? (0-no, 1-yes)           | 1      |
+| *T012 | Collector probe Y coordinate (m)                           | 0.0    |
+| *T013 | Number of impurity ions to follow                          | 10     |
+| *T014 | Minimum R for 3D launch volume                             | 0.0    |
+| *T015 | Maximum R for 3D launch volume                             | 0.01   |
+| *T016 | Minimum P for 3D launch volume                             | -0.20  |
+| *T017 | Maximum P for 3D launch volume                             | 0.20   |
+| *T018 | Minimum Y for 3D launch volume                             | 5.0    |
+| *T019 | Maximum Y for 3D launch volume                             | 10.0   |
+| *T020 | Launch option                                              | 0      |
+|       |   0: Launch with randomly directed thermal velocity        |        |
+|       |   1: Launch in -Y direction with uniform value 0-thermal   |        |
+| *T021 | Impurity mass (in amu)                                     | 183.84 |
+-------------------------------------------------------------------------------
 
 Arrays
 ------------------------------------------------------------------------------

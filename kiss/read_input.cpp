@@ -8,9 +8,11 @@ using namespace std;
 
 class InputFile{
   public:
-    int num_pol_bins, num_rad_bins, num_par_bins, sol_option, cp_option;
+    int num_pol_bins, num_rad_bins, num_par_bins, sol_option, cp_option, inj_opt,
+        num_imps;
     double probe_width, probe_tip, time_step, par_halfwidth, rad_fullwidth,
-           pol_halfwidth, start_window, probe_par_loc;
+           pol_halfwidth, start_window, probe_par_loc, launch_rmin, launch_rmax,
+           launch_pmin, launch_pmax, launch_ymin, launch_ymax, imp_amu;
     vector <double> te_rad, te, ne_rad, ne;
 
     InputFile();
@@ -112,6 +114,15 @@ void InputFile::read_input_file(string input_filename){
     start_window  =     read_double(input_file, "*T010");
     cp_option     = int(read_double(input_file, "*T011"));
     probe_par_loc =     read_double(input_file, "*T012");
+    num_imps      = int(read_double(input_file, "*T013"));
+    launch_rmin   =     read_double(input_file, "*T014");
+    launch_rmax   =     read_double(input_file, "*T015");
+    launch_pmin   =     read_double(input_file, "*T016");
+    launch_pmax   =     read_double(input_file, "*T017");
+    launch_ymin   =     read_double(input_file, "*T018");
+    launch_ymax   =     read_double(input_file, "*T019");
+    inj_opt       = int(read_double(input_file, "*T020"));
+    imp_amu       =     read_double(input_file, "*T021");
     read_2d_vectors(input_file, "*A000", te_rad, te);
     read_2d_vectors(input_file, "*A001", ne_rad, ne);
 

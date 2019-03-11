@@ -12,9 +12,11 @@ using namespace std;
 
 class InputFile{
   public:
-    int num_pol_bins, num_rad_bins, num_par_bins, sol_option, cp_option;
+    int num_pol_bins, num_rad_bins, num_par_bins, sol_option, cp_option, inj_opt,
+        num_imps;
     double probe_width, probe_tip, time_step, par_halfwidth, rad_fullwidth,
-           pol_halfwidth, start_window, probe_par_loc;
+           pol_halfwidth, start_window, probe_par_loc, launch_rmin, launch_rmax,
+           launch_pmin, launch_pmax, launch_ymin, launch_ymax, imp_amu;
     vector <double> te_rad, te, ne_rad, ne;
 
     InputFile();

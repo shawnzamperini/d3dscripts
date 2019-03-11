@@ -111,7 +111,7 @@ def pplot(x, y, fmt='o', xerr=None, yerr=None, xlabel=None, ylabel=None, xrange=
 
 def ppcontourf(x, y, z, xlabel=None, ylabel=None, fontsize=26, weight='normal',
                 cmap='plasma', cbarlabel='', extend='neither', xrange=None,
-                yrange=None, show_fig=True):
+                yrange=None, vmin=None, vmax=None, show_fig=True):
     """
     Todo.
     """
@@ -149,7 +149,7 @@ def ppcontourf(x, y, z, xlabel=None, ylabel=None, fontsize=26, weight='normal',
             print("Error: Make sure yrange is in the form [ymin, ymax].")
 
     # Create countour plot and colorbar.
-    cont = ax1.contourf(x, y, z, extend=extend, cmap=cmap)
+    cont = ax1.contourf(x, y, z, extend=extend, cmap=cmap, vmin=vmin, vmax=vmax)
     cbar = fig.colorbar(cont)
     cbar.ax.set_ylabel(cbarlabel, size=fontsize)
 
