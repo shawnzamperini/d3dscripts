@@ -13,6 +13,7 @@ class Cube{
   public:
     double rad_mid, pol_mid, par_mid;
     double te, ne, mach, elec;
+    int rad_bin, pol_bin, par_bin;
 
     Cube();
 };

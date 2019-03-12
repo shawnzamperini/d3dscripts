@@ -30,9 +30,7 @@ int main(int argc, char **argv){
   //cout << "Checkpoint #1" << endl;
   // Pass in a POINTER to the InputFile into the PlasmaGrid (this is the way
   // you're supposed to do it I think).
-  //PlasmaGrid plasma_grid(&input_file);
   PlasmaGrid plasma_grid(&input_file);
-
 
   // Create the grid, assigning each Cube an (R, P, Y) coordinate.
   grid = plasma_grid.construct_grid();
@@ -41,13 +39,16 @@ int main(int argc, char **argv){
   // such as what kind of SOL or if the collector probe creates its own plasma.
   plasma_grid.assign_background(grid);
 
-
   cout << "Impurity injection test start..." << endl;
   Impurity imp;
   for(int i=1; i<=input_file.num_imps; i++){
+    //cout << "i = " << i << endl;
+    // Create an impurity with some initial launch conditions.
     imp = launch_impurity(i, &input_file, grid);
-    //cout << "Starting (R,P,Y): (" << imp.r_pos << ", " << imp.p_pos << ", "
-    //     << imp.y_pos << ")"<< endl;
+
+    // Follow the impurity until it lands on a surface.
+    imp = follow_to_end(imp, &input_file, grid);
+
   }
 
   return 0;

@@ -9,10 +9,12 @@ using namespace std;
 class InputFile{
   public:
     int num_pol_bins, num_rad_bins, num_par_bins, sol_option, cp_option, inj_opt,
-        num_imps;
+        imp_Z, max_time_per, num_imps, debug_track;
+    //unsigned long max_iter, num_imps;
     double probe_width, probe_tip, time_step, par_halfwidth, rad_fullwidth,
            pol_halfwidth, start_window, probe_par_loc, launch_rmin, launch_rmax,
-           launch_pmin, launch_pmax, launch_ymin, launch_ymax, imp_amu;
+           launch_pmin, launch_pmax, launch_ymin, launch_ymax, imp_amu, rad_diff,
+           pol_diff;
     vector <double> te_rad, te, ne_rad, ne;
 
     InputFile();
@@ -123,6 +125,11 @@ void InputFile::read_input_file(string input_filename){
     launch_ymax   =     read_double(input_file, "*T019");
     inj_opt       = int(read_double(input_file, "*T020"));
     imp_amu       =     read_double(input_file, "*T021");
+    rad_diff      =     read_double(input_file, "*T022");
+    pol_diff      =     read_double(input_file, "*T023");
+    max_time_per  = int(read_double(input_file, "*T024"));
+    imp_Z         = int(read_double(input_file, "*T025"));
+    debug_track   = int(read_double(input_file, "*T026"));
     read_2d_vectors(input_file, "*A000", te_rad, te);
     read_2d_vectors(input_file, "*A001", ne_rad, ne);
 

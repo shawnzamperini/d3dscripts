@@ -15,7 +15,7 @@ One-liners
 -------------------------------------------------------------------------------
 | *T000 | Probe width (m)                                            | 0.015  |
 | *T001 | Probe tip from R = 0 (m)                                   | 0.02   |
-| *T002 | Time step (s)                                              | 1e-8   |
+| *T002 | Time step (s)                                              | 1e-5   |
 | *T003 | Parallel half-width of simulation box (conn. length) (m)   | 10     |
 | *T004 | Radial   full-width of simulation box (m)                  | 0.09   |
 | *T005 | Poloidal half-width of simulation box (m)                  | 0.20   |
@@ -35,10 +35,15 @@ One-liners
 | *T017 | Maximum P for 3D launch volume                             | 0.20   |
 | *T018 | Minimum Y for 3D launch volume                             | 5.0    |
 | *T019 | Maximum Y for 3D launch volume                             | 10.0   |
-| *T020 | Launch option                                              | 0      |
+| *T020 | Launch option                                              | 1      |
 |       |   0: Launch with randomly directed thermal velocity        |        |
 |       |   1: Launch in -Y direction with uniform value 0-thermal   |        |
 | *T021 | Impurity mass (in amu)                                     | 183.84 |
+| *T022 | Radial diffusion coefficient (m2/s)                        | 1.0    |
+| *T023 | Poloidal diffusion coefficient (m2/s)                      | 1.0    |
+| *T024 | Max time per impurity (ms)                                 | 10000  |
+| *T025 | Impurity charge state, Z                                   | 5      |
+| *T026 | Debug: Output particle track file (0-no, 1-yes)            | 1      |
 -------------------------------------------------------------------------------
 
 Arrays

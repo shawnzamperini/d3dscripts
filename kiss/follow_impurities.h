@@ -16,8 +16,8 @@ using namespace std;
 
 class Impurity{
   public:
-    int number;
-    double r_pos, p_pos, y_pos;
+    int number, Z;
+    double r_pos, p_pos, y_pos, vel, mass;
 
   Impurity(int number, double rad, double pol, double par);
   Impurity();
@@ -25,5 +25,7 @@ class Impurity{
 
 Impurity launch_impurity(int imp_number, InputFile* input_file_ptr,
                          vector<vector<vector<Cube>>> &grid_ptr);
+Impurity follow_to_end(Impurity &imp, InputFile* input_file_ptr,
+                       vector<vector<vector<Cube>>> &grid_ptr);
 
 #endif

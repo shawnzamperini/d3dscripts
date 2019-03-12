@@ -18,6 +18,7 @@ in the 0 > R > 7cm region, but this shouldn't be prohibited to implement.
 using namespace std;
 
 const double epsilon = 1e-6;
+const double elem_charge = 1.609e-19; // C
 
 // Simple utility function to test if zero, or close enough to it.
 bool greater_than_zero(double number){
@@ -52,6 +53,7 @@ class Cube{
   public:
     double rad_mid, pol_mid, par_mid;
     double te, ne, mach, elec;
+    int rad_bin, pol_bin, par_bin;
 
     Cube();
 };
@@ -74,9 +76,9 @@ class PlasmaGrid{
 PlasmaGrid::PlasmaGrid(InputFile* input_file_ptr){
 
   // Deconstruct the pointer and load in the InputFile.
-  cout << "Checkpoint #2" << endl;
+  //cout << "Checkpoint #2" << endl;
   input_file = input_file_ptr;
-  cout << "Checkpoint #3" << endl;
+  //cout << "Checkpoint #3" << endl;
 
   //delete input_file_ptr;
 }
@@ -114,6 +116,7 @@ vector<vector<vector<Cube>>> PlasmaGrid::construct_grid(){
     for(int k=0; k<input_file->num_par_bins; k++){
       for(int i=0; i<input_file->num_rad_bins; i++){
         grid[i][j][k].rad_mid = double(i) / double(input_file->num_rad_bins - 1) * input_file->rad_fullwidth;
+        grid[i][j][k].rad_bin = i;
       }
     }
   }
@@ -123,6 +126,7 @@ vector<vector<vector<Cube>>> PlasmaGrid::construct_grid(){
     for(int k=0; k<input_file->num_par_bins; k++){
       for(int j=0; j<input_file->num_pol_bins; j++){
         grid[i][j][k].pol_mid = input_file->pol_halfwidth * (2 * double(j) / (double(input_file->num_pol_bins) - 1) - 1);
+        grid[i][j][k].pol_bin = j;
       }
     }
   }
@@ -132,6 +136,7 @@ vector<vector<vector<Cube>>> PlasmaGrid::construct_grid(){
     for(int j=0; j<input_file->num_pol_bins; j++){
       for(int k=0; k<input_file->num_par_bins; k++){
         grid[i][j][k].par_mid = input_file->par_halfwidth * (2 * double(k) / (double(input_file->num_par_bins) - 1) - 1);
+        grid[i][j][k].par_bin = k;
       }
     }
   }
@@ -159,9 +164,9 @@ void PlasmaGrid::assign_background(vector<vector<vector<Cube>>> &grid){
   // Te, ne have the same R data. To separate the two just copy and paste and
   // swap te with ne.
   int mid_par_bin = input_file->num_par_bins / 2;  // Intentionally do integer division here.
-  cout << "mid_par_bin = " << mid_par_bin << endl;
+  //cout << "mid_par_bin = " << mid_par_bin << endl;
 
-  cout << "Closest te_rad index to zero is " << (index_closest_to_zero-input_file->te_rad.begin()) << endl;
+  //cout << "Closest te_rad index to zero is " << (index_closest_to_zero-input_file->te_rad.begin()) << endl;
   cout << "Assigning upstream values... ";
   vector <double>::iterator closest_te_rad;
   for(int k=0; k<input_file->num_par_bins; k++){
@@ -189,7 +194,7 @@ void PlasmaGrid::assign_background(vector<vector<vector<Cube>>> &grid){
     // A sheath-limited, 1D isothermal fluid model, constant source. Very basic.
     case 0:
       cout << "SOL Option 0." << endl << "Assigning flux tube values... " << endl;
-      // Equations defining this model:
+      // Equations defining this model (Ch. 10.2 in Stangeby):
       // M = L/y +/- 1/2 * sqrt((2L/y + 2)(2L/y - 2))
       // Choose - if y is positive, + if y is negative.
       //
@@ -227,6 +232,12 @@ void PlasmaGrid::assign_background(vector<vector<vector<Cube>>> &grid){
 
             // Apply a constant temperature (isothermal) along each flux tube.
             grid[i][j][k].te = t0;
+
+            // Calculate the electric field (no e since we need to mult. by e to
+            // go from eV to J for SI units).
+            grid[i][j][k].elec = t0 / conn_length * grid[i][j][k].mach *
+                                 (1 + pow(grid[i][j][k].mach, 2)) /
+                                 (1 - pow(grid[i][j][k].mach, 2));
           }
         }
       }
@@ -257,12 +268,12 @@ void PlasmaGrid::assign_background(vector<vector<vector<Cube>>> &grid){
 
         //cp_yzero_right = (input_file.par_halfwidth - input_file.probe_par_loc) / 2.0;
         //cp_yzero_left = (-input_file.par_halfwidth - input_file.probe_par_loc) / 2.0;
-        cout << "probe_par_loc        = " << input_file->probe_par_loc << endl;
-        cout << "conn_length          = " << conn_length << endl;
-        cout << "conn_length_right    = " << conn_length_right << endl;
-        cout << "conn_length_left     = " << conn_length_left << endl;
-        cout << "cp_yzero_right = " << cp_yzero_right << endl;
-        cout << "cp_yzero_left  = " << cp_yzero_left  << endl;
+        //cout << "probe_par_loc        = " << input_file->probe_par_loc << endl;
+        //cout << "conn_length          = " << conn_length << endl;
+        //cout << "conn_length_right    = " << conn_length_right << endl;
+        //cout << "conn_length_left     = " << conn_length_left << endl;
+        //cout << "cp_yzero_right = " << cp_yzero_right << endl;
+        //cout << "cp_yzero_left  = " << cp_yzero_left  << endl;
 
         // Before we begin we need to define new mid_par_bin so that we can set
         // the appropriate n0's for the left/right. I.e. what parallel bin number
@@ -291,9 +302,9 @@ void PlasmaGrid::assign_background(vector<vector<vector<Cube>>> &grid){
           old_tmp_probe = tmp_dist;
         }
 
-        cout << "mid_par_bin_right = " << mid_par_bin_right << endl;
-        cout << "mid_par_bin_left  = " << mid_par_bin_left  << endl;
-        cout << "probe_bin         = " << probe_bin         << endl;
+        //cout << "mid_par_bin_right = " << mid_par_bin_right << endl;
+        //cout << "mid_par_bin_left  = " << mid_par_bin_left  << endl;
+        //cout << "probe_bin         = " << probe_bin         << endl;
 
         for(int i=0; i<input_file->num_rad_bins; i++){
 
@@ -314,11 +325,11 @@ void PlasmaGrid::assign_background(vector<vector<vector<Cube>>> &grid){
                   y = grid[i][0][k].par_mid;
                   if(y < input_file->probe_par_loc){
                     //cp_y = conn_length_left * ((y + conn_length) / (conn_length_left + conn_length) - 1.0);
-                    cp_y = conn_length_left * ((2 * (y + conn_length)) / (input_file->probe_par_loc + conn_length) - 1);
+                    cp_y = conn_length_left * ((2.0 * (y + conn_length)) / (input_file->probe_par_loc + conn_length) - 1.0);
                   }
                   else if (y > input_file->probe_par_loc){
                     //cp_y = -conn_length_right * ((y - conn_length) / (conn_length_right - conn_length) - 1.0);
-                    cp_y = conn_length_right * ((2 * (y - input_file->probe_par_loc)) / (conn_length - input_file->probe_par_loc) - 1);
+                    cp_y = conn_length_right * ((2.0 * (y - input_file->probe_par_loc)) / (conn_length - input_file->probe_par_loc) - 1.0);
                   }
                   //cout << "cp_y = " << cp_y << endl;
 
@@ -365,15 +376,22 @@ void PlasmaGrid::assign_background(vector<vector<vector<Cube>>> &grid){
                                         * (2*conn_length_left / cp_y- 2));
                   }
 
-                  // Now find the density, n(M), using the right n0 value.
+                  // Now find the density, n(M), using the correct n0 value. Also
+                  // calc E since you want to use the correct conn length as well.
                   if(y > input_file->probe_par_loc){
                     //cout << "Right density" << endl;
                     //cout << "Old = " << grid[i][j][k].ne << ". New = ";
                     grid[i][j][k].ne = n0_right / (1 + pow(grid[i][j][k].mach, 2.0));
                     //cout << grid[i][j][k].ne << endl;
+                    grid[i][j][k].elec = t0 / conn_length_right * grid[i][j][k].mach *
+                                         (1 + pow(grid[i][j][k].mach, 2)) /
+                                         (1 - pow(grid[i][j][k].mach, 2));
                   }
                   else if(y < input_file->probe_par_loc){
                     grid[i][j][k].ne = n0_left / (1 + pow(grid[i][j][k].mach, 2.0));
+                    grid[i][j][k].elec = t0 / conn_length_left * grid[i][j][k].mach *
+                                         (1 + pow(grid[i][j][k].mach, 2)) /
+                                         (1 - pow(grid[i][j][k].mach, 2));
                   }
                   // Apply a constant temperature (isothermal) along each flux tube.
                   grid[i][j][k].te = t0;
@@ -384,6 +402,8 @@ void PlasmaGrid::assign_background(vector<vector<vector<Cube>>> &grid){
                   // closest to each probe face.
                   grid[i][j][probe_bin].ne = 0.5 * (grid[i][j][probe_bin-1].ne
                                                     + grid[i][j][probe_bin+1].ne);
+                  grid[i][j][probe_bin].elec = 0.5 * (grid[i][j][probe_bin-1].elec
+                                                    + grid[i][j][probe_bin+1].elec);
                 }
               }
             }
