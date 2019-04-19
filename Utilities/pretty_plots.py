@@ -109,7 +109,7 @@ def pplot(x, y, fmt='o', xerr=None, yerr=None, xlabel=None, ylabel=None, xrange=
     return fig
 
 
-def ppcontourf(x, y, z, xlabel=None, ylabel=None, fontsize=26, weight='normal',
+def pcontourf(x, y, z, xlabel=None, ylabel=None, fontsize=26, weight='normal',
                 cmap='plasma', cbarlabel='', extend='neither', xrange=None,
                 yrange=None, vmin=None, vmax=None, show_fig=True):
     """
@@ -160,6 +160,53 @@ def ppcontourf(x, y, z, xlabel=None, ylabel=None, fontsize=26, weight='normal',
 
     return fig
 
+def pbar(y, y2=None, xlabel=None, ylabel=None, fontsize=26, color=6, color2=8, label=None,
+         label2=None, weight='normal', bar_names=None, bar_names2=None, tick_rot=0, show_fig=True):
+
+    # A good sized figure.
+    fig = plt.figure(figsize=(10, 7.5))
+    ax1 = fig.add_subplot(111)
+
+    # Remove frame lines.
+    ax1.spines["top"].set_visible(False)
+    #ax1.spines["bottom"].set_visible(False)
+    ax1.spines["right"].set_visible(False)
+    #ax1.spines["left"].set_visible(False)
+    ax1.set_facecolor('white')
+
+    # Axis ticks only on bottom and left.
+    ax1.get_xaxis().tick_bottom()
+    ax1.get_yaxis().tick_left()
+
+    # Make sure ticks are large enough to read.
+    ax1.tick_params(axis='both', which='both', labelsize=18)
+    ax1.set_xlabel(xlabel, fontsize=fontsize, weight=weight)
+    ax1.set_ylabel(ylabel, fontsize=fontsize, weight=weight)
+
+    # Create the bar graph.
+    y_pos = np.arange(len(y))
+    ax1.bar(y_pos, y, align='center', color=tableau20[color], label=label)
+
+    # Add other bars if options added.
+    if y2 is not None:
+        y2_pos = np.arange(len(y2)) + len(y)
+        bar_names = np.append(bar_names, bar_names2)
+        ax1.bar(y2_pos, y2, align='center', color=tableau20[color2], label=label2)
+
+    if bar_names is not None:
+        ax1.set_xticks(np.arange(len(bar_names)))
+        ax1.set_xticklabels(bar_names, rotation=tick_rot)
+
+    # Turn on the legend if a label was passed
+    if label:
+        ax1.legend(prop=dict(weight=weight, size=fontsize))
+
+    # Show the figure if desired.
+    if show_fig:
+        fig.tight_layout()
+        fig.show()
+
+    return fig
 
 def show_colors():
 

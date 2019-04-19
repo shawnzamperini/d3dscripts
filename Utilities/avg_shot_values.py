@@ -34,3 +34,19 @@ def bt(shot):
 def rvsout(shot):
     ga_obj = run(shot, 'RVSOUT', 'm')
     return ga_obj
+
+def R0(shot):
+    ga_obj = run(shot, 'R0', 'm')
+    return ga_obj
+
+def a(shot):
+    ga_obj = run(shot, 'AMINOR', 'm')
+    return ga_obj
+
+def kappa(shot):
+    ga_obj = run(shot, 'KAPPA', '')
+    return ga_obj
+
+def density(shot):
+    ga_obj = run(shot, 'DENSITY', 'e13 m-3', mult=1e-13)
+    return ga_obj

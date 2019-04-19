@@ -15,8 +15,8 @@ wareal_med = wareal[:19] + 0.1 * wareal[:19] * np.random.randn(len(wareal[:19]))
 wareal_hig = wareal + 0.1 * wareal * np.random.randn(len(wareal))
 
 #pp.show_colors()
-fig = pp.pplot(rminrsep, wareal_hig, fmt='-', label='High Tri.', color=18)
-fig = pp.pplot(rminrsep[:19], wareal_med, fmt='-', label='Med Tri.', fig=fig,
+fig = pp.pplot(rminrsep, wareal_hig, fmt='-', label='Low', color=18)
+fig = pp.pplot(rminrsep[:19], wareal_med, fmt='-', label='Medium', fig=fig,
                color=8)
-fig = pp.pplot(rminrsep[:15], wareal_low, fmt='-', label='Low Tri.', color=6,
+fig = pp.pplot(rminrsep[:15], wareal_low, fmt='-', label='High', color=6,
                fig=fig, xlabel='R-Rsep (cm)', ylabel='W Areal Density (1e15 cm-2)')

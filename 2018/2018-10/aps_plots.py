@@ -133,9 +133,12 @@ def ts_fit_plot():
          0.18326529,   0.17122991,   0.15998492,   0.14947841]
 
     fig = pp.pplot(x=x_fit, y=y_fit_ne, fmt='--')
+    #fig = pp.pplot(x=x_ts, y=y_ne, xerr=x_ts_err, yerr=y_ne_err, ms=11,
+    #               xlabel=r'$\mathrm{\bf{R-R_{sep}\ OMP\ (cm)}}$', ylabel=r'$\mathrm{\bf{n_e\ 10^{18} m^{-3}}}$',
+    #               weight='bold', xrange=[0,5], fig=fig)
     fig = pp.pplot(x=x_ts, y=y_ne, xerr=x_ts_err, yerr=y_ne_err, ms=11,
-                   xlabel=r'$\mathrm{\bf{R-R_{sep}\ OMP\ (cm)}}$', ylabel=r'$\mathrm{\bf{n_e\ 10^{18} m^{-3}}}$',
-                   weight='bold', xrange=[0,5], fig=fig)
+                   xlabel='R-Rsep OMP (cm)', ylabel='ne 10^18 m^-3',
+                   xrange=[0,5], fig=fig)
 
 def bar_graph_plot():
     names = ['A2', 'A17', 'A18', 'A19', 'A28', 'A33', 'A34', 'A35']
@@ -238,8 +241,8 @@ def lmode_probe_plot():
 
 
 #itf_otf_plot()
-twod_avg_plots()
-#ts_fit_plot()
+#twod_avg_plots()
+ts_fit_plot()
 #bar_graph_plot()
 #fit_to_a2_plot()
 #lmode_probe_plot()

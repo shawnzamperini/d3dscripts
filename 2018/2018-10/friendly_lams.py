@@ -6,9 +6,9 @@ from openpyxl import load_workbook
 # Radial Poloidal z total EF180 EF182 EF183 EF184 EF185
 
 filename = '/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/' + \
-           'Polodial_Scans/CD09_Map.xlsx'
+           'Polodial_Scans/New Map Script Results/CD10_Map_Analysis.xlsx'
 
-df = pd.read_excel(filename, usecols=[0,1,2], sheet_name='Sheet1')
+df = pd.read_excel(filename, usecols=[0,1,2], sheet_name='MapData')
 
 # Make the index the Radial location, grouped under poloidal locations.
 df = df.pivot('Radial [mm]', 'Poloidal [mm]', 'total')
