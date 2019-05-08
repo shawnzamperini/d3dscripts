@@ -3,8 +3,8 @@ import numpy as np
 import pretty_plots as pp
 from scipy.optimize import curve_fit
 
-lim53_path = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z0-053.nc'
-lim69_path = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z0-069.nc'
+lim53_path = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z1-015c1.nc'
+lim69_path = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z1-015c2.nc'
 
 lim53 = netCDF4.Dataset(lim53_path)
 lim69 = netCDF4.Dataset(lim69_path)
@@ -77,6 +77,7 @@ def centerline(lim1, lim2, lim2_mult):
     print("  ITF: a={:5.2f}  b={:5.2f}  1/b={:5.2f} cm".format(popt_itf[0], popt_itf[1], 1/popt_itf[1] * 100))
     print("  OTF: a={:5.2f}  b={:5.2f}  1/b={:5.2f} cm".format(popt_otf[0], popt_otf[1], 1/popt_otf[1] * 100))
     print("Max ITF/OTF Ratio: {:.2f}".format(itf_tot.max() / otf_tot.max()))
+    print("Total ITF/OTF Ratio: {:.2f}".format(itf_tot.sum() / otf_tot.sum()))
 
 def deposition_contour(lim1, lim2, side, lim2_mult=1.0, rad_cutoff=0.05):
 
@@ -138,7 +139,7 @@ def deposition_contour(lim1, lim2, side, lim2_mult=1.0, rad_cutoff=0.05):
     else:
         X = X_otf1; Y = Y_otf1; Z = Z_otf1 + Z_itf2 * lim2_mult
 
-    fig = pp.ppcontourf(X, Y, Z, cbarlabel=side, yrange=[-0.015, 0.015])
+    fig = pp.pcontourf(X, Y, Z, cbarlabel=side, yrange=[-0.015, 0.015])
 
 
 

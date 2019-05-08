@@ -50,3 +50,7 @@ def kappa(shot):
 def density(shot):
     ga_obj = run(shot, 'DENSITY', 'e13 m-3', mult=1e-13)
     return ga_obj
+
+def pinj(shot):
+    ga_obj = run(shot, 'PINJ', 'kW')
+    return ga_obj

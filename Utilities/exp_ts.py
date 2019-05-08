@@ -10,12 +10,13 @@ import MDSplus as mds
 # Enable interactive mode so user can input with graphs still up.
 plt.ion()
 
-def ts_fitting(shot, tmin, tmax, tmany):
+def ts_fitting(shot, tmin, tmax, tmany, tree):
 
     # Load the TS data.
-    ts = ThomsonClass(shot, 'core')
+    #ts = ThomsonClass(shot, 'core')
+    ts = ThomsonClass(shot, 'divertor')
     ts.load_ts()
-    ts.map_to_efit(np.linspace(tmin, tmax, tmany))
+    ts.map_to_efit(np.linspace(tmin, tmax, tmany), tree=tree, trunc_div=True)
 
     # Pull out the arrays.
     r  = ts.avg_omp['RminRsep_omp'] * 100
@@ -111,9 +112,9 @@ def flat_top(shot):
     # Return requested time range for use in TS function (min, max).
     return int(minmax[0]), int(minmax[1])
 
-def run(shot, tmany=10):
+def run(shot, tmany=10, tree='EFIT04'):
 
     min, max = flat_top(shot)
-    r, te, ne = ts_fitting(shot, min, max, tmany)
+    r, te, ne = ts_fitting(shot, min, max, tmany, tree=tree)
 
     return {'r':r, 'te':te, 'ne':ne}
