@@ -22,6 +22,11 @@ a15_itf_w = np.array([0.0014,0.0000,0.0000,0.0000,0.0014,0.0000,0.0000,0.0000,
 a15_otf_w = np.array([0.0000,0.0041,0.0014,0.0000,0.0000,0.0041,0.0027,0.0041,
 0.0000,0.0041,0.0041,0.0014,0.0123,0.0123,0.0068,0.0000,0.0000,0.0205,0.0164,0.0136])
 
+itfotf_total_a8  = a8_itf_w.sum()  / a8_otf_w.sum()
+itfotf_total_a15 = a15_itf_w.sum() / a15_otf_w.sum()
+
+print("A8  ITF/OTF Total: {}".format(itfotf_total_a8))
+print("A15 ITF/OTF Total: {}".format(itfotf_total_a15))
 
 fig = pp.pplot(a8_itf_r[:-1], a8_itf_w[:-1], color=8, label='R-ITF', fmt='-')
 fig = pp.pplot(a8_otf_r[:-1], a8_otf_w[:-1], color=8, label='R-OTF', fmt='--', fig=fig)
@@ -30,7 +35,7 @@ fig = pp.pplot(a15_otf_r, a15_otf_w, color=6, label='F-OTF', fmt='--', fig=fig,
                xlabel='R-Rsep OMP (cm)', ylabel='W Areal Density (1e15 cm-2)', xrange=[6,18])
 
 
-filename = '/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/My Slides and Sheets/2019/03/aprobe_totals.xlsx'
+filename = '/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/Slides, Sheets and Documents/2019/03/aprobe_totals.xlsx'
 df = pd.read_excel(filename, sheet_name='Num. Lambdas Along', header=1)
 print("Double check you are using the right columns for A8 and A15 future Shawn.")
 

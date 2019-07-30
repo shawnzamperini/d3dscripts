@@ -54,3 +54,7 @@ def density(shot):
 def pinj(shot):
     ga_obj = run(shot, 'PINJ', 'kW')
     return ga_obj
+
+def prad(shot):
+    ga_obj = run(shot, 'PRAD_TOT', 'W')
+    return ga_obj
