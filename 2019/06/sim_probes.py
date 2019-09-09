@@ -60,6 +60,7 @@ def plot_with_rbs(lams_path, rbs_path, u_or_d, cal_slope, cal_intercept, middle=
     if avg:
         r = total_df[middle].index.values
         w = total_df.median(axis=1).values
+
     else:
         # Get the centerline data near where RBS was taken.
         r = total_df[middle].index.values
@@ -147,12 +148,12 @@ def run(probe):
 
     elif probe == 'a_for':
 
-        middle = 2.0
+        middle = 2.5
 
-        a15itf = plot_with_rbs(a15itf_path, a15rbs_path, 'U', 5.015E-07, 0, r_shift=0, middle=middle, avg=False)
-        a15otf = plot_with_rbs(a15otf_path, a15rbs_path, 'D', 5.015E-07, 0, r_shift=0, middle=middle, avg=False)
+        a15itf = plot_with_rbs(a15itf_path, a15rbs_path, 'U', 5.015E-07, 0, r_shift=0, middle=middle, avg=True)
+        a15otf = plot_with_rbs(a15otf_path, a15rbs_path, 'D', 5.015E-07, 0, r_shift=0, middle=middle, avg=True)
 
-        ignore = 70
+        ignore = 80
 
-        fig = pp.pplot(a15itf['LAMS Romp'][ignore:], a15itf['LAMS W'][ignore:], fmt='-',  color=6, lw=7, label='ITF')
+        fig = pp.pplot(a15itf['LAMS Romp'][ignore:], a15itf['LAMS W'][ignore:], fmt='-',  color=6, lw=8, label='ITF')
         fig = pp.pplot(a15otf['LAMS Romp'][ignore+35:], a15otf['LAMS W'][ignore+35:], fmt='-', color=6, lw=3, label='OTF', fig=fig, xlabel='R-Rsep OMP (cm)', ylabel='W Areal Density (1e15 cm-2)')

@@ -1,7 +1,5 @@
-import numpy   as np
 import MDSplus as mds
-from scipy.interpolate import Rbf, interp1d
-
+import numpy as np
 
 def load_gfile_mds(shot, time, tree="EFIT04", exact=False,
                    connection=None, tunnel=True, verbal=True):
@@ -114,58 +112,12 @@ def load_gfile_mds(shot, time, tree="EFIT04", exact=False,
 
     return g
 
+def create_ogr(shot, time, tree='EFIT01'):
 
-def rz_to_rminrsep_omp(r, z, shot, times, conn=None, choose_interp_region=False, tree='EFIT01'):
-    """
-
-    """
-
-    # Make sure times is numpy array.
-    times = np.array(times)
-
-    # If conn is None just default to a localhost connection.
-    if conn == None:
-        connection = mds.Connection("localhost")
-
-    omp_arr_all = np.zeros((len(times), len(r)))
-    count = 0
-
-    for time in times:
-
-        # Load the gfile.
-        gfile = load_gfile_mds(shot, time, tree=tree, connection=conn)
-
-        # R's and Z's of the separatrix, in m.
-        outboard_lcfs_rs = gfile['lcfs'][:, 0][13:71]
-        outboard_lcfs_zs = gfile['lcfs'][:, 1][13:71]
-
-        # R's and Z's of the grid.
-        Rs, Zs = np.meshgrid(gfile['R'], gfile['Z'])
-        Z_axis = gfile['ZmAxis']
-        R_axis = gfile['RmAxis']
-
-        # Limit ourselves to values on the outboard side of things. Makes fits
-        # cooperate.
-        Rs_trunc = Rs > R_axis
-
-        # Interpolation functions of psin(R, Z) and R(psin, Z). Rs_trunc
-        # helps with not interpolating the entire plasma, and just that
-        # to the right of the magnetic axis, which is normally good enough.
-        f_psin = Rbf(Rs[Rs_trunc], Zs[Rs_trunc], gfile['psiRZn'][Rs_trunc])
-        f_Romp = Rbf(gfile['psiRZn'][Rs_trunc], Zs[Rs_trunc], Rs[Rs_trunc], epsilon=0.00001)
-        f_Rs = interp1d(outboard_lcfs_zs, outboard_lcfs_rs, assume_sorted=False)
-
-        # Get the psin values of each input r, z.
-        psin = f_psin(r, z)
-
-        # Use the psins to find the value at the omp (Z=Z_axis).
-        r_omp = f_Romp(psin, np.full(len(psin), Z_axis))
-
-        # Get R of separatrix at omp and calculate R-Rsep OMP.
-        rsep_omp = f_Rs(Z_axis)
-        rminrsep_omp = r_omp - rsep_omp
-
-        omp_arr_all[count] = rminrsep_omp
-        count += 1
-
-    return omp_arr_all.mean(axis=0)
+    # Load the gfile.
+    gfile = load_gfile_mds(shot, time, tree)
+    rs = gfile['wall'][:, 0] * 1000
+    zs = gfile['wall'][:, 1] * 1000
+    filename = 'd3d_wall_geometry_june2016.ogr'
+    np.savetxt(filename, list(zip(rs, zs)))
+    print("Saved to file: {}".format(filename))

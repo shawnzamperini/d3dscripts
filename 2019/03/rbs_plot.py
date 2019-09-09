@@ -10,6 +10,6 @@ itf_y = df['W Areal Density D (1e15 W/cm2)'].values[:-3]
 otf_x = df['R-Rsep omp U (cm)'].values[:-3]
 otf_y = df['W Areal Density U (1e15 W/cm2)'].values[:-3]
 
-fig = pp.pplot(itf_x, itf_y, fmt='-', label='ITF')
-fig = pp.pplot(otf_x, otf_y, fmt='-', label='OTF', fig=fig, color=8,
+fig = pp.pplot(itf_x, itf_y, fmt='-', label='ITF', lw=8, color=8)
+fig = pp.pplot(otf_x, otf_y, fmt='-', label='OTF', fig=fig, color=8, lw=3,
                xlabel='R-Rsep omp (cm)', ylabel='W Areal Density (1e15 W/cm2)')

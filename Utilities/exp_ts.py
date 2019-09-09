@@ -13,10 +13,10 @@ plt.ion()
 def ts_fitting(shot, tmin, tmax, tmany, tree):
 
     # Load the TS data.
-    #ts = ThomsonClass(shot, 'core')
-    ts = ThomsonClass(shot, 'divertor')
+    ts = ThomsonClass(shot, 'core')
+    #ts = ThomsonClass(shot, 'divertor')
     ts.load_ts()
-    ts.map_to_efit(np.linspace(tmin, tmax, tmany), tree=tree, trunc_div=True)
+    ts.map_to_efit(np.linspace(tmin, tmax, tmany), tree=tree, trunc_div=False)
 
     # Pull out the arrays.
     r  = ts.avg_omp['RminRsep_omp'] * 100
@@ -83,7 +83,7 @@ def ts_fitting(shot, tmin, tmax, tmany, tree):
         # Plot the fit.
         ax_te.plot(r_fit, te_fit, 'k--', lw=5)
         ax_ne.plot(r_fit, ne_fit, 'k--', lw=5)
-        #fig.show()
+        fig.show()
 
         print('Te: {:.2f} * exp(-r / {:.2f})'.format(popt_te[0], 1/popt_te[1]))
         print('ne: {:.2f} * exp(-r / {:.2f})'.format(popt_ne[0], 1/popt_ne[1]))

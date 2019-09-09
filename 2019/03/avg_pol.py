@@ -1,7 +1,7 @@
 import pandas as pd
 
 filename = '/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/' + \
-           'Polodial_Scans/New Map Script Results/CD08_Map_Analysis.xlsx'
+           'Polodial_Scans/New Map Script Results/BD03_Map_Analysis.xlsx'
 
 # Read from Excel.
 df = pd.read_excel(filename, sheet_name='MapData')

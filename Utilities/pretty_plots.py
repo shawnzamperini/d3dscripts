@@ -3,12 +3,13 @@ import matplotlib as mpl
 import numpy as np
 
 
-# These are the "Tableau 20" colors as RGB.
+# These are the "Tableau 20" colors as RGB. The last one is just black. I added it.
 tableau20 = [(31, 119, 180), (174, 199, 232), (255, 127, 14), (255, 187, 120),
              (44, 160, 44), (152, 223, 138), (214, 39, 40), (255, 152, 150),
              (148, 103, 189), (197, 176, 213), (140, 86, 75), (196, 156, 148),
              (227, 119, 194), (247, 182, 210), (127, 127, 127), (199, 199, 199),
-             (188, 189, 34), (219, 219, 141), (23, 190, 207), (158, 218, 229)]
+             (188, 189, 34), (219, 219, 141), (23, 190, 207), (158, 218, 229),
+             (0, 0, 0)]
 
 # A nice looking font.
 plt.rcParams['font.family'] = 'serif'
@@ -20,7 +21,7 @@ for i in range(len(tableau20)):
 
 def pplot(x, y, fmt='o', xerr=None, yerr=None, xlabel=None, ylabel=None, xrange=None,
           yrange=None, label=None, show_fig=True, alpha=1.0, weight='normal',
-          fig=None, ms=8, fontsize=26, color=6, lw=5, logx=False, logy=False):
+          fig=None, ms=8, fontsize=26, color=6, lw=5, logx=False, logy=False, linestyle=None):
     """
     A pretty plot for (x,y) data. Can be used to create just
     a single plot, or can return the figure instance if the user wants to
@@ -92,7 +93,7 @@ def pplot(x, y, fmt='o', xerr=None, yerr=None, xlabel=None, ylabel=None, xrange=
     ax1.errorbar(x, y, fmt=fmt, xerr=xerr, yerr=yerr, label=label, ms=ms,
                  color=tableau20[color], markeredgecolor='k',
                  markeredgewidth='1', lw=lw, capsize=5, ecolor='k',
-                 elinewidth=lw/5, capthick=lw/5, alpha=alpha)
+                 elinewidth=lw/5, capthick=lw/5, alpha=alpha, linestyle=linestyle)
     """
     ax1.plot(x, y, fmt, label=label, ms=ms, color=tableau20[color],
              markeredgecolor='k', markeredgewidth='1', lw=lw)

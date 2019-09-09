@@ -47,7 +47,7 @@ def plot_contourf(df, title, clip_value=None):
     else:
         Z = np.clip(Z, 0, 1e13)
 
-    fig = pp.ppcontourf(X, Y, Z, xlabel='Radial (mm)', ylabel='Poloidal (mm)',
+    fig = pp.pcontourf(X, Y, Z, xlabel='Radial (mm)', ylabel='Poloidal (mm)',
                         cbarlabel=title, extend='max')
 
 # Inital plots.

@@ -58,3 +58,7 @@ def pinj(shot):
 def prad(shot):
     ga_obj = run(shot, 'PRAD_TOT', 'W')
     return ga_obj
+
+def prad_core(shot):
+    ga_obj = run(shot, 'PRAD_CORE', 'W')
+    return ga_obj
