@@ -81,8 +81,8 @@ def ts_fitting(shot, tmin, tmax, tmany, tree):
         ne_fit = exp_fit(r_fit, *popt_ne)
 
         # Plot the fit.
-        ax_te.plot(r_fit, te_fit, 'k--', lw=5)
-        ax_ne.plot(r_fit, ne_fit, 'k--', lw=5)
+        ax_te.semilogy(r_fit, te_fit, 'k--', lw=5)
+        ax_ne.semilogy(r_fit, ne_fit, 'k--', lw=5)
         fig.show()
 
         print('Te: {:.2f} * exp(-r / {:.2f})'.format(popt_te[0], 1/popt_te[1]))

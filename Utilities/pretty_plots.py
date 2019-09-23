@@ -12,7 +12,8 @@ tableau20 = [(31, 119, 180), (174, 199, 232), (255, 127, 14), (255, 187, 120),
              (0, 0, 0)]
 
 # A nice looking font.
-plt.rcParams['font.family'] = 'serif'
+#plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.family'] = 'DejaVu Sans'
 
 # Scale the RGB values to the [0, 1] range, which is the format matplotlib accepts.
 for i in range(len(tableau20)):
@@ -21,7 +22,8 @@ for i in range(len(tableau20)):
 
 def pplot(x, y, fmt='o', xerr=None, yerr=None, xlabel=None, ylabel=None, xrange=None,
           yrange=None, label=None, show_fig=True, alpha=1.0, weight='normal',
-          fig=None, ms=8, fontsize=26, color=6, lw=5, logx=False, logy=False, linestyle=None):
+          fig=None, ms=8, fontsize=26, color=6, lw=5, logx=False, logy=False, linestyle=None,
+          linthreshy=None):
     """
     A pretty plot for (x,y) data. Can be used to create just
     a single plot, or can return the figure instance if the user wants to
@@ -83,11 +85,22 @@ def pplot(x, y, fmt='o', xerr=None, yerr=None, xlabel=None, ylabel=None, xrange=
     ax1.set_ylabel(ylabel, fontsize=fontsize, weight=weight)
 
     # Set logarithmic scales if desired.
-    if logx:
-        plt.xscale('log')
-    if logy:
-        plt.yscale('log')
-        #ax1.semilogx(x, y, fmt, label=label, ms=ms, color=tableau20[color], markeredgecolor='k', markeredgewidth='1', lw=lw)
+    try:
+        if logx:
+            try:
+                plt.xscale('symlog')
+            except:
+                print("Error: Reverting from symlog to log.")
+                plt.xscale('log')
+        if logy:
+            try:
+                plt.yscale('symlog', linthreshy=linthreshy)
+            except:
+                print("Error: Reverting from symlog to log.")
+                plt.yscale('log')
+            #ax1.semilogx(x, y, fmt, label=label, ms=ms, color=tableau20[color], markeredgecolor='k', markeredgewidth='1', lw=lw)
+    except:
+        pass
 
     # Plot the data. Errorbar is more general in this case, so we use it.
     ax1.errorbar(x, y, fmt=fmt, xerr=xerr, yerr=yerr, label=label, ms=ms,

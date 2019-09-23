@@ -2,6 +2,7 @@ import pretty_plots as pp
 from gadata import gadata
 import matplotlib.pyplot as plt
 
+plt.rcParams['font.family'] = 'DejaVu Sans'
 
 def get_data(tag):
     """
@@ -30,19 +31,19 @@ fig = plt.figure(figsize=(10,8))
 ax1 = fig.add_subplot(421)
 plot_data(ax1, dens, 'Density (m-3)')
 
-ax2 = fig.add_subplot(422, sharex=ax1)
+ax2 = fig.add_subplot(425, sharex=ax1)
 plot_data(ax2, rvsout, 'Strike Point (m)')
 
 ax3 = fig.add_subplot(423, sharex=ax1)
 plot_data(ax3, pinj, 'Pinj (MW)', ymult=0.001)
 
-ax4 = fig.add_subplot(424, sharex=ax1)
+ax4 = fig.add_subplot(427, sharex=ax1)
 plot_data(ax4, ip, 'IP (MA)', ymult=1e-6)
 
-ax5 = fig.add_subplot(425, sharex=ax1)
+ax5 = fig.add_subplot(422, sharex=ax1)
 plot_data(ax5, neped, 'Pedestal ne (m-3)')
 
-ax6 = fig.add_subplot(427, sharex=ax1)
+ax6 = fig.add_subplot(424, sharex=ax1)
 plot_data(ax6, teped, 'Pedestal Te (eV)')
 ax6.set_xlabel('Time (ms)')
 

@@ -4,6 +4,7 @@ import pretty_plots as pp
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 
+plt.rcParams['font.family'] = 'DejaVu Sans'
 
 # Paths to the Excel files for each side.
 a08itf_path = "/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/Polodial_Scans/New Map Script Results/AD08_Map_Analysis.xlsx"
@@ -159,7 +160,7 @@ y[188] = y[187]
 # Save for later function.
 otfx_unf = x; otfy_unf = y
 
-fig = pp.pplot(x, y, fmt='-', color=18, lw=3, fig=fig, xlabel='R-Rsep OMP (cm)', ylabel='W Areal Density (1e15 cm-2)', label='OTF', xrange=[9, 15])
+fig = pp.pplot(x, y, fmt='-', color=18, lw=3, fig=fig, xlabel='R-Rsep OMP (cm)', ylabel='W Areal Density (1e15 cm-2)', label='OTF', xrange=[9, 15], weight='bold')
 plt.yticks(np.arange(0.0, 0.05, 0.01))
 
 # Add error bands if we did the average option.
@@ -202,14 +203,40 @@ err_unf = np.sqrt(np.power(f_itferr_unf(com_x_unf) / f_itf_unf(com_x_unf), 2) + 
 err_fav = np.sqrt(np.power(f_itferr_fav(com_x_fav) / f_itf_fav(com_x_fav), 2) + np.power(f_otferr_fav(com_x_fav) / f_otf_fav(com_x_fav), 2))
 
 # Plot them together.
-fig = pp.pplot(com_x_unf, itf_otf_unf, fmt='-', color=8, label='Unfavorable')
+fig = pp.pplot(com_x_unf, itf_otf_unf, fmt='-', color=8, label='Up')
 
 # Add error bands.
 plt.fill_between(com_x_unf, itf_otf_unf - err_unf, itf_otf_unf + err_unf, color=pp.tableau20[8], alpha=0.5)
 
 fig = pp.pplot(com_x_fav, itf_otf_fav, fmt='-', xlabel='R-Rsep OMP(cm)',
-               ylabel='ITF/OTF', color=6, fig=fig, xrange=[9, 14], yrange=[0, 3],
-               label='Favorable')
+               ylabel='ITF/OTF', color=6, fig=fig, xrange=[9, 13], yrange=[0, 3],
+               label='Down', weight='bold')
 
 # Add error bands.
 plt.fill_between(com_x_fav, itf_otf_fav - err_fav, itf_otf_fav + err_fav, color=pp.tableau20[6], alpha=0.5)
+
+# Just made ticks whole numbers
+fig.axes[0].set_xticks(np.arange(9, 14))
+fig.axes[0].set_yticks(np.arange(0, 4))
+
+
+# Plot again, but just divide the x values by their lambda_ne.
+#lamb_ne_up = 5.22
+lamb_ne_up = 7.81
+#lamb_ne_dn = 3.08
+lamb_ne_dn = 6.02
+fig = pp.pplot(com_x_unf / lamb_ne_up, itf_otf_unf, fmt='-', color=8, label='Up')
+
+# Add error bands.
+plt.fill_between(com_x_unf / lamb_ne_up, itf_otf_unf - err_unf, itf_otf_unf + err_unf, color=pp.tableau20[8], alpha=0.5)
+
+fig = pp.pplot(com_x_fav / lamb_ne_dn, itf_otf_fav, fmt='-', xlabel=r'R-Rsep OMP(cm) / $\mathrm{\lambda_{ne}}$',
+               ylabel='ITF/OTF', color=6, fig=fig, yrange=[0,3],
+               label='Down', weight='bold')
+
+# Add error bands.
+plt.fill_between(com_x_fav / lamb_ne_dn, itf_otf_fav - err_fav, itf_otf_fav + err_fav, color=pp.tableau20[6], alpha=0.5)
+
+# Just made ticks whole numbers
+#fig.axes[0].set_xticks(np.arange(9, 14))
+#fig.axes[0].set_yticks(np.arange(0, 4))

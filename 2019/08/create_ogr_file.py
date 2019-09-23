@@ -112,12 +112,11 @@ def load_gfile_mds(shot, time, tree="EFIT04", exact=False,
 
     return g
 
-def create_ogr(shot, time, tree='EFIT01'):
+def create_ogr(shot, time, tree='EFIT01', filename='d3d_wall_geometry_june2016.ogr'):
 
     # Load the gfile.
     gfile = load_gfile_mds(shot, time, tree)
     rs = gfile['wall'][:, 0] * 1000
     zs = gfile['wall'][:, 1] * 1000
-    filename = 'd3d_wall_geometry_june2016.ogr'
     np.savetxt(filename, list(zip(rs, zs)))
     print("Saved to file: {}".format(filename))
