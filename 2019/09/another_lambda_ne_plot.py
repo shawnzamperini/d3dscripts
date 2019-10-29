@@ -13,6 +13,10 @@ lamb_away_for_err = lamb_away_for * 0.1
 
 # The ITF/OTF data
 itfotf_rev = np.array([3.77, 5.25, 2.22, 2.50, 2.86])
+
+# A minor fix. The data for A8 (2.86), could reasonably be 2.23 by excluding the
+# ITF points that extend past where the OTF stops.
+itfotf_rev = np.array([3.77, 5.25, 2.22, 2.50, 2.23])
 itfotf_rev_err = itfotf_rev * 0.05  # About right, on the high side for the other reverse probes.
 
 itfotf_for = np.array([0.35, 0.45, 0.41, 0.63, 0.29, 0.87, 0.82, 0.53, 0.66,
@@ -21,7 +25,7 @@ itfotf_for_err = np.array([0.04, 0.05, 0.05, 0.09, 0.05, 0.07, 0.05, 0.05,
                            0.15, 0.11, 0.12, 0.12])
 
 
-ms = 13
+ms = 10
 fig = pp.pplot(lamb_away_rev, itfotf_rev, xerr=lamb_away_rev_err, yerr=itfotf_rev_err, label='Up', color=8, ms=ms)
 fig = pp.pplot(lamb_away_for, itfotf_for, xerr=lamb_away_for_err, yerr=itfotf_for_err, label='Down',
                xlabel=r'$\mathrm{R_{tip} / \lambda_{ne}}$', ylabel='ITF/OTF Total W', fig=fig, logy=False, ms=ms)

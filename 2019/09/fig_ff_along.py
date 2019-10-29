@@ -12,7 +12,7 @@ nc64 = '/mnt/c/Users/Shawn/Documents/d3d_work/DIVIMP Runs/Z0-167196-064.nc'
 
 # Constants
 charge = 10
-vz_mult = 0.99
+vz_mult = 0.999
 ring = 20
 
 op3  = oedge_plots.OedgePlots(nc3)
@@ -63,22 +63,19 @@ fig.show()
 net_idx = np.append(np.arange(0, 88), np.arange(123, 256))
 
 def do_plot(ffx, ffy, figx, figy):
-    fnet = ffy[:-4]+figy[:-4]
-    fig = pp.pplot(ffx[:-4],  ffy[:-4], fmt='-', label='FF', color=20, linestyle='dotted')
-    fig = pp.pplot(ffx[:-4],  figy[:-4], fmt='-', label='FiG', color=20, fig=fig, linestyle='dashed')
-    fig = pp.pplot(figx[:-4][net_idx], fnet[net_idx], fmt='-', label='Fnet', fig=fig, xlabel='s (m)',
-                   ylabel='Force (N)', logy=True, linthreshy=1e-20, color=20, weight='bold')
-
-    # Want a matching font for the slides.
-    plt.rcParams['font.family'] = 'DejaVu Sans'
-
+    fnet = ffy + figy
+    fig = pp.pplot(ffx,  ffy,  fmt='-', label='FF', color=4, alpha=0.7)
+    fig = pp.pplot(ffx,  figy, fmt='-', label='FiG', color=6, fig=fig, alpha=0.7)
+    fig = pp.pplot(figx, fnet, fmt='-', label='Fnet', fig=fig, xlabel='s (m)',
+                   ylabel='Force (N)', logy=False, linthreshy=1e-20, color=20, weight='bold',
+                   yrange=[-0.4e-17, 0.4e-17])
 
     # Want grid lines.
-    yticks = np.array([1e-16, 1e-17, 1e-18, 1e-19, 1e-20])
-    fig.axes[0].set_yticks(np.append(yticks, -yticks), minor=True)
-    fig.axes[0].grid(True, which='minor')
+    #yticks = np.array([1e-16, 1e-17, 1e-18, 1e-19, 1e-20])
+    #fig.axes[0].set_yticks(np.append(yticks, -yticks), minor=True)
+    #fig.axes[0].grid(True, which='minor')
     fig.axes[0].grid(True, which='major')
-
+    fig.tight_layout()
     fig.show()
 
 do_plot(ffx3, ffy3, figx3, figy3)

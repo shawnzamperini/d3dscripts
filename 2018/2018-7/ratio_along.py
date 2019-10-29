@@ -26,6 +26,7 @@ for p in plist:
         r_ompU = r_ompU[:-1]
         wU = wU[:-1]
 
+    """
     # Filter out low signal points.
     thresh = 0.002
     tmp_wD = np.copy(wD)
@@ -34,11 +35,12 @@ for p in plist:
     wU = tmp_wU[tmp_wU > thresh]
     r_ompD = r_ompD[tmp_wD > thresh]
     r_ompU = r_ompU[tmp_wU > thresh]
+    """
 
-    # Replace zeros with a really small number to prevent errors.
-    #small_num = 0.00000000001
-    #wD[np.where(wD==0)] = small_num
-    #wU[np.where(wU==0)] = small_num
+    # Replace zeros with the RBS threshold
+    small_num = 0.001363767
+    wD[np.where(wD==0)] = small_num
+    wU[np.where(wU==0)] = small_num
 
     # Create an interpolation function between the max of the min of the two,
     # and the min of the max of the two.
@@ -71,4 +73,4 @@ for p in plist:
     #except:
     #    print("Error on probe " + p)
 
-ratio_df.to_excel('ratios_along_v2.xlsx')
+ratio_df.to_excel('ratios_along_v3.xlsx')

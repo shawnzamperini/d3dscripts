@@ -19,11 +19,11 @@ lamb_ne_up = 7.81
 plt.rcParams['font.family'] = 'DejaVu Sans'
 
 # Paths to the Excel files for each side.
-a08itf_path = "/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/Polodial_Scans/New Map Script Results/AU28_Map_Analysis.xlsx"
-a08otf_path = "/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/Polodial_Scans/New Map Script Results/AD28_Map_Analysis.xlsx"
+a08itf_path = "/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/Polodial_Scans/New Map Script Results/AU34_Map_Analysis.xlsx"
+a08otf_path = "/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/Polodial_Scans/New Map Script Results/AD34_Map_Analysis.xlsx"
 
 # Load the RBS files.
-a08rbs_path = "/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/Collector Probe Excel Sheets/A28.xlsx"
+a08rbs_path = "/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/Collector Probe Excel Sheets/A34.xlsx"
 
 def plot_with_rbs(lams_path, rbs_path, u_or_d, cal_slope, cal_intercept, middle=2.0, r_shift=0, color=6, avg=False):
     """
@@ -94,8 +94,8 @@ def plot_with_rbs(lams_path, rbs_path, u_or_d, cal_slope, cal_intercept, middle=
 
 
 # Run above function to get the data.
-a08itf = plot_with_rbs(a08itf_path, a08rbs_path, 'D', 0.5E-06,   0, color=8, middle=middle, avg=avg)
-a08otf = plot_with_rbs(a08otf_path, a08rbs_path, 'U', 0.5E-06,   0, color=8, middle=middle, avg=avg)
+a08itf = plot_with_rbs(a08itf_path, a08rbs_path, 'U', 0.5E-06,   0, color=8, middle=middle, avg=avg)
+a08otf = plot_with_rbs(a08otf_path, a08rbs_path, 'D', 0.5E-06,   0, color=8, middle=middle, avg=avg)
 
 # Unfavorable plot.
 x = a08itf['LAMS Romp'][ignore:]; y = a08itf['LAMS W'][ignore:]
@@ -134,7 +134,7 @@ x = a08otf['LAMS Romp'][ignore:]; y = a08otf['LAMS W'][ignore:]
 # Save for later function.
 otfx_unf = x; otfy_unf = y
 
-fig = pp.pplot(x, y, fmt='-', color=18, lw=3, fig=fig, xlabel='R-Rsep OMP (cm)', ylabel='W Areal Density (1e15 cm-2)', label='OTF', xrange=[9, 15], weight='bold')
+fig = pp.pplot(x, y, fmt='-', color=18, lw=3, fig=fig, xlabel='R-Rsep OMP (cm)', ylabel='W Areal Density (1e15 cm-2)', label='OTF', weight='bold')
 plt.yticks(np.arange(0.0, 0.05, 0.01))
 
 # Add error bands if we did the average option.
