@@ -23,7 +23,7 @@ for i in range(len(tableau20)):
 def pplot(x, y, fmt='o', xerr=None, yerr=None, xlabel=None, ylabel=None, xrange=None,
           yrange=None, label=None, show_fig=True, alpha=1.0, weight='normal',
           fig=None, ms=8, fontsize=26, color=6, lw=5, logx=False, logy=False, linestyle=None,
-          linthreshy=None):
+          linthreshy=None, markeredgewidth=1):
     """
     A pretty plot for (x,y) data. Can be used to create just
     a single plot, or can return the figure instance if the user wants to
@@ -105,7 +105,7 @@ def pplot(x, y, fmt='o', xerr=None, yerr=None, xlabel=None, ylabel=None, xrange=
     # Plot the data. Errorbar is more general in this case, so we use it.
     ax1.errorbar(x, y, fmt=fmt, xerr=xerr, yerr=yerr, label=label, ms=ms,
                  color=tableau20[color], markeredgecolor='k',
-                 markeredgewidth='1', lw=lw, capsize=5, ecolor='k',
+                 markeredgewidth=markeredgewidth, lw=lw, capsize=5, ecolor='k',
                  elinewidth=lw/5, capthick=lw/5, alpha=alpha, linestyle=linestyle)
     """
     ax1.plot(x, y, fmt, label=label, ms=ms, color=tableau20[color],
