@@ -53,21 +53,27 @@ fig.tight_layout()
 xl_path3 = '/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/Collector Probe Excel Sheets/A2.xlsx'
 df3 = pd.read_excel(xl_path3)
 
-a2_x = df3['R-Rsep omp D (cm)'].values[10:]
+# Add on a shift to line the data up.
+shift = 1.5
+a2_x = df3['R-Rsep omp D (cm)'].values[10:] + shift
 a2_y = df3['W Areal Density D (1e15 W/cm2)'].values[10:]
 a2_x_err = df3['R-Rsep omp Error D (cm)'].values[10:]
 a2_y_err = df3['W Areal Density Error D (1e15 W/cm2)'].values[10:]
 
 fig = pp.pplot(a2_x, a2_y, xerr=a2_x_err, yerr=a2_y_err, color=20, xrange=[4, 14], logy=True)
 
-a2_main_exp_a = 2.0034
+#a2_main_exp_a = 2.0034
+#a2_main_exp_b = -0.201
+#a2_wind_exp_a = 5.4521E6
+#a2_wind_exp_b = -1.719
+a2_main_exp_a = 2.708
 a2_main_exp_b = -0.201
-a2_wind_exp_a = 5.4521E6
+a2_wind_exp_a = 7.184E7
 a2_wind_exp_b = -1.719
 
-a2_main_exp_x = np.linspace(7, 9.5, 100)
+a2_main_exp_x = np.linspace(7, 9.5, 100) + shift
 a2_main_exp_y = a2_main_exp_a * np.exp(a2_main_exp_b * a2_main_exp_x)
-a2_wind_exp_x = np.linspace(10, 12, 100)
+a2_wind_exp_x = np.linspace(10, 12, 100) + shift
 a2_wind_exp_y = a2_wind_exp_a * np.exp(a2_wind_exp_b * a2_wind_exp_x)
 
 fig = pp.pplot(a2_main_exp_x, a2_main_exp_y, color=20, fmt='--', lw=3, fig=fig)
