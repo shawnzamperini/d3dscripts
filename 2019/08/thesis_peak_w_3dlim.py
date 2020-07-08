@@ -10,9 +10,9 @@ peaking_3d = np.array([1.36, 1.07, 0.99, 0.94, 0.72])
 total_3d   = np.array([1.91, 1.08, 1.01, 0.94, 0.5])
 error = 0.05
 
-fig = pp.pplot(peaking_f, total_f, xerr = error * peaking_f, yerr = total_f * error, color=6, label='Favorable')
-fig = pp.pplot(peaking_r, total_r, xerr = error * peaking_r, yerr = total_r * error, color=8, fig=fig, label='Unfavorable')
-fig = pp.pplot(peaking_3d, total_3d, fmt='*', color=18, ms=20, fig=fig, xlabel='OTF/ITF Peaking', ylabel='ITF/OTF Total', label='3DLIM')
+fig = pp.pplot(peaking_f, total_f, xerr = error * peaking_f, yerr = total_f * error, color=6, label='Favorable', ms=12)
+fig = pp.pplot(peaking_r, total_r, xerr = error * peaking_r, yerr = total_r * error, color=8, fig=fig, label='Unfavorable', ms=12)
+fig = pp.pplot(peaking_3d, total_3d, fmt='*', color=18, ms=22, fig=fig, xlabel='OTF/ITF Peaking', ylabel='ITF/OTF Total', label='3DLIM')
 
 fig.axes[0].axhline(1.0, linestyle='--', color='k', lw=2, alpha=0.75)
 fig.axes[0].axvline(1.0, linestyle='--', color='k', lw=2, alpha=0.75)

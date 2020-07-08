@@ -1,6 +1,7 @@
 import numpy  as np
 import pandas as pd
 import pretty_plots as pp
+import matplotlib.pyplot as plt
 
 
 # Paths to the Excel files for each side.
@@ -39,9 +40,14 @@ def plot_with_rbs(lams_path, rbs_path, u_or_d, cal_slope, cal_intercept, middle=
     rbs_df  = pd.read_excel(rbs_path)
 
     # Get relevant RBS data.
-    dist = rbs_df['Distance from Tip ' + u_or_d + ' (cm)'].values
-    omp  = rbs_df['R-Rsep omp ' + u_or_d + ' (cm)'].values
+    dist = np.array(rbs_df['Distance from Tip ' + u_or_d + ' (cm)'].values, dtype=np.float64)
+    omp  = np.array(rbs_df['R-Rsep omp ' + u_or_d + ' (cm)'].values, dtype=np.float64)
     w_rbs    = rbs_df['W Areal Density ' + u_or_d + ' (1e15 W/cm2)'].values
+
+    # Remove blanks.
+    dist = dist[~np.isnan(dist)]
+    omp = omp[~np.isnan(omp)]
+    w_rbs = w_rbs[~np.isnan(w_rbs)]
 
     # Do a fit to get R-Rsep OMP for the LAMS data.
     p = np.polyfit(dist, omp, 1)
@@ -59,7 +65,9 @@ def plot_with_rbs(lams_path, rbs_path, u_or_d, cal_slope, cal_intercept, middle=
 
     if avg:
         r = total_df[middle].index.values
-        w = total_df.median(axis=1).values
+        #w = total_df.median(axis=1).values
+        w = total_df.mean(axis=1).values
+        w_err = total_df.mean(axis=1).values
 
     else:
         # Get the centerline data near where RBS was taken.
@@ -75,6 +83,12 @@ def plot_with_rbs(lams_path, rbs_path, u_or_d, cal_slope, cal_intercept, middle=
     # Plot it.
     fig = pp.pplot(r, w, fmt='-', label='LAMS', color=color)
     fig = pp.pplot(omp, w_rbs, fmt='.', ms=15, fig=fig, xlabel='R-Rsep OMP (cm)', ylabel='W Areal Density (1e15 cm-2)', label='RBS', color=color)
+
+    fig, ax = plt.subplots()
+    if avg:
+        ax.errorbar(r, w, yerr=w_err)
+    else:
+        ax.plot(r, w, '-', label='LAMS', color=pp.tableau20[color])
 
     return {'LAMS Romp':r, 'LAMS W':w}
 

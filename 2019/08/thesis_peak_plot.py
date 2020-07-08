@@ -7,4 +7,4 @@ cu4_avg = np.array([1, 0.445955458, 0.392902679, 0.373447132, 0.359417752,
                     0.351179181, 0.354183656, 0.342983564, 0.348991165,
                     0.362514404, 0.394384727, 0.796392127])
 
-pp.pplot(cu4_pol, cu4_avg, fmt='-', color=8, xlabel='Poloidal (mm)', ylabel='LAMS Counts (Normalized)')
+pp.pplot(cu4_pol, cu4_avg, fmt='-', color=8, xlabel='Poloidal (mm)', ylabel='LAMS Counts (Normalized)', yrange=[0, 1.0])

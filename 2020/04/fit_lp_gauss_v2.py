@@ -8,7 +8,7 @@ from scipy.optimize import curve_fit
 
 
 filename = '/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/Slides, Sheets and Documents/2020/04/lp_input_167247.xlsx'
-df = pd.read_excel(filename, sheet_name='167277 LP')
+df = pd.read_excel(filename, sheet_name='167247 LP')
 
 fx = 5
 psin = df['Psin'].values
@@ -29,8 +29,8 @@ ne = ne[~nans]
 
 # The ne fit's fine, so don't worry about it. For Te, lets just fit the peak
 # to the convoluted Gaussian, but fit the parts outside to exponentials.
-#te_left = psin < 1.0; te_right = psin > 1.04
-te_left = psin < 0.985; te_right = psin > 1.04
+te_left = psin < 1.0; te_right = psin > 1.04
+#te_left = psin < 0.985; te_right = psin > 1.04
 te_left_exp  = te[te_left]
 te_right_exp = te[te_right]
 #peak = np.logical_and(psin >= 1.0, psin <= 1.04)

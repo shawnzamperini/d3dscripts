@@ -20,8 +20,8 @@ bin_lp_x_err = bin_lp_x_err[~np.isnan(bin_lp_x_err)][2:]
 bin_lp_y_err = bin_lp_y_err[~np.isnan(bin_lp_y_err)][2:]
 
 
-fig = pp.pplot(all_lp_x, all_lp_y, alpha=0.1, ms=5, logy=True, color=20)
-fig = pp.pplot(bin_lp_x, bin_lp_y, logy=True, yrange=[0.1, 10], xrange=[4, 14], fig=fig, color=20, xerr=bin_lp_x_err, yerr=bin_lp_y_err)
+fig = pp.pplot(all_lp_x, all_lp_y, alpha=0.1, ms=5, logy=True, color=20, zorder=10)
+fig = pp.pplot(bin_lp_x, bin_lp_y, logy=True, yrange=[0.1, 10], xrange=[4, 14], fig=fig, color=20, xerr=bin_lp_x_err, yerr=bin_lp_y_err, zorder=11)
 
 #main_exp_a = 25.185
 #main_exp_b = -0.252
@@ -39,8 +39,8 @@ wind_exp_x = np.linspace(10.3, 14, 100)
 main_exp_y = main_exp_a * np.exp(main_exp_b * main_exp_x)
 wind_exp_y = wind_exp_a * np.exp(wind_exp_b * wind_exp_x)
 
-fig = pp.pplot(main_exp_x, main_exp_y, fmt='--', fig=fig, color=20, lw=3)
-fig = pp.pplot(wind_exp_x, wind_exp_y, fmt='--', fig=fig, color=20, lw=3, xlabel='R-Rsep OMP (cm)', ylabel='ne (1e18 m-3)')
+fig = pp.pplot(main_exp_x, main_exp_y, fmt='--', fig=fig, color=20, lw=3, zorder=3)
+fig = pp.pplot(wind_exp_x, wind_exp_y, fmt='--', fig=fig, color=20, lw=3, xlabel='R-Rsep OMP (cm)', ylabel='ne (1e18 m-3)', zorder=4)
 
 #xl_path2 = '/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/Slides, Sheets and Documents/2019/07/LPData.xlsx'
 xl_path2 = '/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/Collector Probe Excel Sheets/Connection Lengths/167196/167196.xlsx'
@@ -48,6 +48,9 @@ xl_path2 = '/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/Collector 
 df2 = pd.read_excel(xl_path2, sheet_name='MAFOT ITF', skiprows=2)
 conn_x = df2['R-Rsep OMP (cm)'].values
 conn_y = df2['Connection Length (km)'].values * 1000
+df3 = pd.read_excel(xl_path2, sheet_name='MAFOT OTF', skiprows=2)
+conn_x_otf = df3['R-Rsep OMP (cm)'].values
+conn_y_otf = df3['Connection Length (km)'].values * 1000
 
 #conn_x = df2['A.2'].values
 #conn_y = df2['A.6'].values
@@ -56,9 +59,12 @@ conn_y = df2['Connection Length (km)'].values * 1000
 ax2 = fig.axes[0].twinx()
 #ax2.plot(conn_x, conn_y, lw=4, color=pp.tableau20[18])
 ax2.semilogy(conn_x, conn_y, lw=4, color=pp.tableau20[18])
+ax2.semilogy(conn_x_otf, conn_y_otf, lw=4, color=pp.tableau20[12])
 ax2.set_ylim([0.1, 500])
 ax2.tick_params(axis='both', which='both', labelsize=18, color=pp.tableau20[18], labelcolor=pp.tableau20[18])
 ax2.set_ylabel('Connection Length (m)', color=pp.tableau20[18], fontsize=26)
+fig.axes[0].plot(main_exp_x, main_exp_y, '--', color=pp.tableau20[20], lw=3, zorder=10)
+fig.axes[0].plot(wind_exp_x, wind_exp_y, '--', color=pp.tableau20[20], lw=3, zorder=10)
 fig.tight_layout()
 
 

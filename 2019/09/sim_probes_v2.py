@@ -30,6 +30,14 @@ def plot_with_rbs(lams_path, rbs_path, u_or_d, cal_slope, cal_intercept, middle=
     dist = rbs_df['Distance from Tip ' + u_or_d + ' (cm)'].values
     omp  = rbs_df['R-Rsep omp ' + u_or_d + ' (cm)'].values
     w_rbs    = rbs_df['W Areal Density ' + u_or_d + ' (1e15 W/cm2)'].values
+    w_rbs_err = rbs_df['W Areal Density Error ' + u_or_d + ' (1e15 W/cm2)'].values
+
+    # Remove nans.
+    not_nans = ~np.isnan(dist)
+    dist = dist[~np.isnan(dist)]
+    omp = omp[~np.isnan(omp)]
+    w_rbs = w_rbs[~np.isnan(w_rbs)]
+    w_rbs_err = w_rbs_err[not_nans]
 
     # Do a fit to get R-Rsep OMP for the LAMS data.
     p = np.polyfit(dist, omp, 1)
@@ -67,7 +75,7 @@ def plot_with_rbs(lams_path, rbs_path, u_or_d, cal_slope, cal_intercept, middle=
     #fig = pp.pplot(omp, w_rbs, fmt='.', ms=15, fig=fig, xlabel='R-Rsep OMP (cm)', ylabel='W Areal Density (1e15 cm-2)', label='RBS', color=color)
 
     if avg:
-        return {'LAMS Romp':r, 'LAMS W':w, 'LAMS W Error':w_err}
+        return {'LAMS Romp':r, 'LAMS W':w, 'LAMS W Error':w_err, 'RBS Romp':omp, 'RBS W':w_rbs, 'RBS W Error':w_rbs_err}
     else:
         return {'LAMS Romp':r, 'LAMS W':w}
 
