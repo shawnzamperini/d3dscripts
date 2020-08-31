@@ -2,15 +2,25 @@ import lim_plots
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from scipy.interpolate import interp1d
 
 
 # Some constants.
 cal = 0.5E-06  # LAMS calibration to go from counts to areal density.
-tip_itf_ignore = 1  # Ignore the first this many points on 3DLIM.
-tip_otf_ignore = 1
+tip_itf_ignore = 3  # Ignore the first this many points on 3DLIM.
+tip_otf_ignore = 3
+tip_itf_lams_ignore = 0  # Ignore the first this many point on LAMS.
+tip_otf_lams_ignore = 0
+#log_plot = False
+log_plot = True
+itfotf_plot = True
 
 # Path to the 3DLIM data.
-ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-045h.nc'
+#ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-045h.nc'
+#ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-045e.nc'
+#ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-a8-001v.nc'
+ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-a8-001w.nc'
+#ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-a8-002a.nc'
 
 # My colors.
 tableau20 = [(31, 119, 180), (174, 199, 232), (255, 127, 14), (255, 187, 120),
@@ -83,6 +93,10 @@ lim_itf_y = lim_itf_y[tip_itf_ignore:]
 lim_otf_x = lim_otf_x[tip_otf_ignore:]
 lim_otf_y = lim_otf_y[tip_otf_ignore:]
 
+# This is just messing around to remove a spurious data point that messes with
+# the norm in a8-001v. Shouldn't be an issue with enough statistics.
+lim_itf_y[14] = (lim_itf_y[13] + lim_itf_y[15]) / 2
+
 # Normalize all the data.
 max_rbs = max(rbs_itf_y.max(), rbs_otf_y.max())
 rbs_itf_y = rbs_itf_y / max_rbs
@@ -102,12 +116,18 @@ ax1.plot(rbs_itf_x,  rbs_itf_y, '*', label='RBS', color=tableau20[12], mec='k', 
 ax2.plot(lams_otf_x, lams_otf_y, label='LAMS', color=tableau20[12], lw=3)
 ax2.plot(lim_otf_x,  lim_otf_y, label='3DLIM', color=tableau20[18], lw=3)
 ax2.plot(rbs_otf_x,  rbs_otf_y, '*', label='RBS', color=tableau20[12], mec='k', ms=12)
+if log_plot:
+    ax1.set_yscale("log")
+    ax2.set_yscale("log")
+    ax1.set_ylim([0.001, 3])
+    ax2.set_ylim([0.001, 3])
+else:
+    ax1.set_ylim([0, 1.1])
+    ax2.set_ylim([0, 1.1])
 ax1.set_xlabel('Distance along probe (cm)', fontsize=16)
 ax2.set_xlabel('Distance along probe (cm)', fontsize=16)
 ax1.set_ylabel('Deposition (normalized)', fontsize=16)
 ax1.set_xlim([0, 8])
-ax1.set_ylim([0, 1.1])
-ax2.set_ylim([0, 1.1])
 ax2.legend(fontsize=16)
 ax1.annotate('ITF', (0.5, 0.9), xycoords='axes fraction', fontsize=24)
 ax2.annotate('OTF', (0.5, 0.9), xycoords='axes fraction', fontsize=24)
@@ -115,3 +135,24 @@ ax1.tick_params(labelsize=12)
 ax2.tick_params(labelsize=12)
 fig.tight_layout()
 fig.show()
+
+# Plot the ITF/OTF ratio along for LAMS and 3DLIM.
+if itfotf_plot:
+
+    # Need to interpolate onto common x values to calculate ratios.
+    lams_com_x = np.linspace(max(lams_itf_x.min(), lams_otf_x.min()), min(lams_itf_x.max(), lams_otf_x.max()), 300)
+    lim_com_x  = np.linspace(max(lim_itf_x.min(),  lim_otf_x.min()),  min(lim_itf_x.max(),  lim_otf_x.max()),  300)
+    f_lams_itf = interp1d(lams_itf_x, lams_itf_y)
+    f_lams_otf = interp1d(lams_otf_x, lams_otf_y)
+    f_lim_itf  = interp1d(lim_itf_x,  lim_itf_y)
+    f_lim_otf  = interp1d(lim_otf_x,  lim_otf_y)
+    lams_itfotf = f_lams_itf(lams_com_x) / f_lams_otf(lams_com_x)
+    lim_itfotf  = f_lim_itf(lim_com_x)   / f_lim_otf(lim_com_x)
+
+    fig, ax = plt.subplots()
+    ax.plot(lams_com_x, lams_itfotf, color=tableau20[12])
+    ax.plot(lim_com_x,  lim_itfotf,  color=tableau20[18])
+    ax.set_ylabel("ITF/OTF")
+    ax.set_xlabel("Distance along probe (cm)")
+    fig.tight_layout()
+    fig.show()

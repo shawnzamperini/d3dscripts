@@ -50,7 +50,7 @@ def get_centerline(ncpath, drop_tip):
     dep_arr = np.array(nc.variables['NERODS3'][0] * -1)
 
     # Add on contributions from repeat runs.
-    for i in range(1, 20):
+    for i in range(1, 30):
         try:
             #print('Loading {}...'.format(i))
             ncpath_add = ncpath.split('.nc')[0] + str(i) + '.nc'
@@ -173,6 +173,6 @@ ax1.legend(fontsize=fontsize)
 ax2.legend(fontsize=fontsize)
 ax1.set_xlabel('R-Rsep OMP (cm)', fontsize=fontsize)
 ax2.set_xlabel('R-Rsep OMP (cm)', fontsize=fontsize)
-ax1.set_ylabel('Deposition (normalized)', fontsize=fontsize)
+ax1.set_ylabel('W Deposition (normalized)', fontsize=fontsize)
 fig.tight_layout()
 fig.show()

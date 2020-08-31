@@ -25,8 +25,9 @@ simp = lim.LimPlots(simple_path)
 comp = lim.LimPlots(complex_path)
 
 # Get the average poloidal data.
-simp_pol = simp.avg_pol_profiles()
-comp_pol = comp.avg_pol_profiles()
+rad_cutoff = 0.05
+simp_pol = simp.avg_pol_profiles(rad_cutoff)
+comp_pol = comp.avg_pol_profiles(rad_cutoff)
 
 # Pull out some of the data into shorter variable names.
 pol_locs = simp_pol['pol_locs'] * 100
@@ -44,7 +45,7 @@ ax.spines['bottom'].set_color('none')
 ax.spines['left'].set_color('none')
 ax.spines['right'].set_color('none')
 ax.tick_params(labelcolor='w', top=False, bottom=False, left=False, right=False)
-ax.set_ylabel('Deposition (normalized)\n', fontsize=16)
+ax.set_ylabel('W Deposition (normalized)\n', fontsize=16)
 
 ax1 = fig.add_subplot(211)
 ax2 = fig.add_subplot(212)

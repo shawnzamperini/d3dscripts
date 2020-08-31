@@ -61,8 +61,8 @@ plot_contourf(floor_tot,  'Floor Total')
 while True:
     try:
         clip_val = float(input('Clip value: '))
-        plot_contourf(total,     'Total W',     clip_value=clip_val)
-        plot_contourf(shelf_tot, 'Shelf Total', clip_value=clip_val)
-        plot_contourf(floor_tot, 'Floor Total', clip_value=clip_val)
+        plot_contourf(total,     'Total W (AU)',     clip_value=clip_val)
+        plot_contourf(shelf_tot, 'Shelf Total (AU)', clip_value=clip_val)
+        plot_contourf(floor_tot, 'Floor Total (AU)', clip_value=clip_val)
     except:
         break

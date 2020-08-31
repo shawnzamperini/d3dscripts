@@ -8,7 +8,8 @@ from scipy.optimize import curve_fit
 rsep = 2.20   # R of separatrix at Z = -0.188.
 
 # Path to a file with the background data. This has 011c data.
-path = '/mnt/c/Users/Shawn/Documents/d3d_work/DIVIMP Runs/d3d-167247-inj-021c.nc'
+#path = '/mnt/c/Users/Shawn/Documents/d3d_work/DIVIMP Runs/d3d-167247-inj-021c.nc'
+path = '/mnt/c/Users/Shawn/Documents/d3d_work/DIVIMP Runs/d3d-167247-inj-018c.nc'
 op = oedge_plots.OedgePlots(path)
 
 # Get the radial Te, ne data at the probe location.

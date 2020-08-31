@@ -289,8 +289,8 @@ def plot_with_fit(error_bands=True, ncpath=None, nc=None, log=True, region1_end=
 
         # Plot exponential fits on top.
         if fit:
-            ax1.plot(rsepx1*fitx_itf+rsepx2, fity_itf, linestyle='--', color=red, lw=lw)
-            ax2.plot(rsepx1*fitx_otf+rsepx2, fity_otf, linestyle='--', color=purple, lw=lw)
+            ax1.plot(rsepx1*fitx_itf+rsepx2, fity_itf, linestyle='--', color="k", lw=lw)
+            ax2.plot(rsepx1*fitx_otf+rsepx2, fity_otf, linestyle='--', color="k", lw=lw)
 
             # Text labels for the fits.
             if region1_end != None:

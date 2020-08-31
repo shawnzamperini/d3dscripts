@@ -20,14 +20,14 @@ for i in range(len(tableau20)):
     tableau20[i] = (r / 255., g / 255., b / 255.)
 
 # LAMS file to compare against.
-cu04_file = '/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/' + \
-            'Polodial_Scans/New Map Script Results/CU04_Map_Analysis.xlsx'
-cd04_file = '/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/' + \
-            'Polodial_Scans/New Map Script Results/CD04_Map_Analysis.xlsx'
 #cu04_file = '/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/' + \
-#            'Polodial_Scans/New Map Script Results/CD07_Map_Analysis.xlsx'
+#            'Polodial_Scans/New Map Script Results/CU04_Map_Analysis.xlsx'
 #cd04_file = '/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/' + \
-#            'Polodial_Scans/New Map Script Results/CU07_Map_Analysis.xlsx'
+#            'Polodial_Scans/New Map Script Results/CD04_Map_Analysis.xlsx'
+cu04_file = '/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/' + \
+            'Polodial_Scans/New Map Script Results/CD07_Map_Analysis.xlsx'
+cd04_file = '/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/' + \
+            'Polodial_Scans/New Map Script Results/CU07_Map_Analysis.xlsx'
 
 # The ncfiles of our Dpol scan.
 ncpath0_20 = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-049e.nc'  # Dpol = 0.2
@@ -40,16 +40,17 @@ ncpath0_005 = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-049j
 # Get average poloidal profile from LAMS for first 5 cm.
 cu04 = pd.read_excel(cu04_file).pivot_table(columns='z Location [mm]', index='Axial Location [mm]')
 cd04 = pd.read_excel(cd04_file).pivot_table(columns='z Location [mm]', index='Axial Location [mm]')
-zloc_otf = cu04.iloc[cu04.index<=50].mean()['Total W'].index
-zloc_itf = cd04.iloc[cd04.index<=50].mean()['Total W'].index
-otf_totw = cu04.iloc[cu04.index<=50].mean()['Total W'].values
-itf_totw = cd04.iloc[cd04.index<=50].mean()['Total W'].values
-otf_totw_err = cu04.iloc[cu04.index<=50].std()['Total W'].values
-itf_totw_err = cd04.iloc[cd04.index<=50].std()['Total W'].values
+rad_cutoff = 50
+zloc_otf = cu04.iloc[cu04.index<=rad_cutoff].mean()['Total W'].index
+zloc_itf = cd04.iloc[cd04.index<=rad_cutoff].mean()['Total W'].index
+otf_totw = cu04.iloc[cu04.index<=rad_cutoff].mean()['Total W'].values
+itf_totw = cd04.iloc[cd04.index<=rad_cutoff].mean()['Total W'].values
+otf_totw_err = cu04.iloc[cu04.index<=rad_cutoff].std()['Total W'].values
+itf_totw_err = cd04.iloc[cd04.index<=rad_cutoff].std()['Total W'].values
 
 # Get the average poloidal profile from LAMS data where at each "slice" of a
 # bathub curve it is normalized to the max. Then each "slice" is averaged.
-bathtubs = len(cu04.iloc[cu04.index<=50].index)
+bathtubs = len(cu04.iloc[cu04.index<=rad_cutoff].index)
 all_tubs_otf = np.zeros((bathtubs, len(cu04.iloc[0]['Total W'].index)))
 all_tubs_itf = np.zeros((bathtubs, len(cd04.iloc[0]['Total W'].index)))
 for i in range(0, bathtubs):
@@ -73,6 +74,7 @@ def get_avg_pol(ncpath):
     of them.
     """
     rad_cutoff = 0.05
+    #rad_cutoff = 0.10
 
     # Load in the deposition array.
     nc = netCDF4.Dataset(ncpath)
@@ -190,22 +192,23 @@ x0_50_itf, y0_50_itf   = overlap(d0_50, 'itf')
 x2_00_itf, y2_00_itf   = overlap(d2_00, 'itf')
 
 # Plot it.
-"""
 fig, ax = plt.subplots()
-ax.fill_between(zloc, avg_tub_otf-std_tub_otf, avg_tub_otf+std_tub_otf, alpha=0.3, color=tableau20[18])
-ax.plot(zloc, avg_tub_otf, marker='.', linestyle='-', label='LAMS', color=tableau20[18])
+ax.fill_between(zloc_otf, avg_tub_otf-std_tub_otf, avg_tub_otf+std_tub_otf, alpha=0.3, color=tableau20[18])
+ax.plot(zloc_otf, avg_tub_otf, marker='.', linestyle='-', label='LAMS', color=tableau20[18])
 ax.plot(x0_02, y0_02, color=tableau20[12], alpha=1.0, label='3DLIM')
 ax.plot(x0_05, y0_05, color=tableau20[12], alpha=0.85)
 ax.plot(x0_20, y0_20, color=tableau20[12], alpha=0.70)
 ax.plot(x0_50, y0_50, color=tableau20[12], alpha=0.55)
 ax.plot(x2_00, y2_00, color=tableau20[12], alpha=0.4)
 ax.set_xlabel('Poloidal (mm)', fontsize=16)
-ax.set_ylabel('Deposition (normalized)', fontsize=16)
+ax.set_ylabel('W Deposition (normalized)', fontsize=16)
 ax.set_xlim([-0.5, 3])
 ax.spines['top'].set_color('none')
 ax.spines['right'].set_color('none')
 ax.tick_params(labelsize=12)
 ax.legend(fontsize=12, loc='lower left')
+
+
 """
 fig, (ax1, ax2) = plt.subplots(1, 2)
 ax1.plot(zloc_itf, avg_tub_itf, marker='.', linestyle='-', label='LAMS', color=tableau20[18])
@@ -230,6 +233,7 @@ ax2.spines['top'].set_color('none')
 ax2.spines['right'].set_color('none')
 ax2.tick_params(labelsize=12)
 ax2.legend(fontsize=12, loc='lower left')
+"""
 
 fig.tight_layout()
 fig.show()
