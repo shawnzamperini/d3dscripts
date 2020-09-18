@@ -5,6 +5,7 @@ from scipy.optimize import curve_fit
 from tkinter import filedialog
 import matplotlib.pyplot as plt
 import sys
+from matplotlib.lines import Line2D
 
 
 # Colors and values for plotting.
@@ -44,6 +45,12 @@ a2_otf_y = a2_otf_y / max_a2_y
 nc0_1 = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-052b.nc'
 nc1   = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-052c.nc'
 nc5   = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-052d.nc'
+nc10  = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-052a.nc'  # Should be the best fit.
+nc50  = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-052e.nc'
+
+nc0_1 = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-060a.nc'
+nc1   = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-060b.nc'
+nc5   = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-060c.nc'
 nc10  = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-052a.nc'  # Should be the best fit.
 nc50  = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-052e.nc'
 
@@ -298,8 +305,8 @@ def plot_with_fit(error_bands=True, ncpath=None, nc=None, log=True, region1_end=
             else:
                 itf_str = r"$\lambda_W$ = {:.2f} cm".format(1/popt_itf[1])
             otf_str = r"$\lambda_W$ = {:.2f} cm".format(1/popt_otf[1])
-            ax1.text(0.6, 0.7, itf_str, fontdict={'color':red,    'fontsize':fontsize}, transform=ax1.transAxes)
-            ax2.text(0.6, 0.7, otf_str, fontdict={'color':purple, 'fontsize':fontsize}, transform=ax2.transAxes)
+            #ax1.text(0.6, 0.7, itf_str, fontdict={'color':red,    'fontsize':fontsize}, transform=ax1.transAxes)
+            #ax2.text(0.6, 0.7, otf_str, fontdict={'color':purple, 'fontsize':fontsize}, transform=ax2.transAxes)
 
         ax1.plot(rsepx1*itf_x+rsepx2, itf_y, linestyle='-', color=red, label='ITF', lw=lw)
         ax2.plot(rsepx1*otf_x+rsepx2, otf_y, linestyle='-', color=purple, label='OTF', lw=lw)
@@ -326,8 +333,15 @@ def plot_with_fit(error_bands=True, ncpath=None, nc=None, log=True, region1_end=
             ax1.set_xlabel("Distance along probe (cm)", fontsize=fontsize)
             ax2.set_xlabel("Distance along probe (cm)", fontsize=fontsize)
         ax1.set_ylabel("Deposition (normalized)", fontsize=fontsize)
-        ax1.legend(loc='upper right', fontsize=fontsize)
-        ax2.legend(loc='upper right', fontsize=fontsize)
+
+        # Custom legend.
+        custom_lines1 = [Line2D([0], [0], color=red, lw=lw), Line2D([0], [0], color=red, ms=ms, marker='.', lw=0, mec='k')]
+        custom_lines2 = [Line2D([0], [0], color=purple, lw=lw), Line2D([0], [0], color=purple, ms=ms, marker='.', lw=0, mec='k')]
+        ax1.legend(custom_lines1, ['3DLIM', 'RBS'], fontsize=fontsize)
+        ax2.legend(custom_lines2, ['3DLIM', 'RBS'], fontsize=fontsize)
+
+        #ax1.legend(loc='upper right', fontsize=fontsize)
+        #ax2.legend(loc='upper right', fontsize=fontsize)
         fig.tight_layout()
         fig.show()
 
