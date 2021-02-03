@@ -8,6 +8,8 @@ from scipy.optimize import curve_fit
 
 # Some constants.
 ring = 30
+smin = 15
+smax = 45
 
 # First load in the OedgePlots object with all the data.
 root = tk.Tk(); root.withdraw()
@@ -19,7 +21,6 @@ print(netcdf_path)
 # Grab just the x, y data of the along ring plot of s vs. imp. density.
 x, y = op.along_ring(ring, 'DDLIMS', charge='all', plot_it=False)
 y = y / 1e14
-
 
 # Plot it up, asking the user use to zoom in on the impurity peak. Then pull
 # those plot limits to grab just the subset of data the will be fit to a peak.
@@ -55,10 +56,16 @@ ax.plot(popt[1], peak_val, 'r.', ms=10)
 fig.tight_layout()
 fig.show()
 
+# Estimate average impurity content between X-points.
+idx = np.where(np.logical_and(x>=smin, x<=smax))[0]
+avg_imp = y[idx].mean()
+
 print()
 print('Actual Values:')
-print('Peak Value: {:.2e}'.format(actual_maxy*1e14))
+print('Peak Value: {:.2e}'.format(actual_maxy))
+#print('Peak Value: {:.2e}'.format(actual_maxy*1e14))
 print('Peak S:     {:.2f}'.format(actual_maxx[0]))
+print('Average:    {:.2e}'.format(avg_imp))
 print()
 print('Gaussian Values:')
 print('Peak Value: {:.2e}'.format(peak_val*1e14))

@@ -32,6 +32,8 @@ def ts_fitting(shot, tmin, tmax, tmany, tree):
     ax_ne = fig.add_subplot(122)
     ax_te.errorbar(r, te, te_err, r_err, fmt='k.', ms=8)
     ax_ne.errorbar(r, ne, ne_err, r_err, fmt='k.', ms=8)
+    ax_te.set_yscale("log")
+    ax_ne.set_yscale("log")
     ax_te.set_xlabel('R-Rsep OMP(cm)')
     ax_ne.set_xlabel('R-Rsep OMP(cm)')
     ax_te.set_ylabel('Te (eV)')
@@ -59,6 +61,7 @@ def ts_fitting(shot, tmin, tmax, tmany, tree):
         # Ask if any extra chords should be excluded.
         print('\nChords for fitting: ', end=''); print(*np.arange(0, len(r))[:include])
         exclude = input('Chords to exclude (separated by commas, press enter if none): ').split(',')
+        exclude = np.array(exclude, dtype=np.int)
 
         if exclude != ['']:
             r_tofit  = np.delete(r[:include],  exclude)
@@ -83,6 +86,7 @@ def ts_fitting(shot, tmin, tmax, tmany, tree):
         # Plot the fit.
         ax_te.semilogy(r_fit, te_fit, 'k--', lw=5)
         ax_ne.semilogy(r_fit, ne_fit, 'k--', lw=5)
+        fig.tight_layout()
         fig.show()
 
         print('Te: {:.2f} * exp(-r / {:.2f})'.format(popt_te[0], 1/popt_te[1]))

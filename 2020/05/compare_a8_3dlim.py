@@ -5,6 +5,7 @@ import pandas as pd
 from scipy.interpolate import interp1d
 from scipy.optimize import curve_fit
 from scipy.signal import savgol_filter
+import statsmodels.api as sm
 
 
 # Some constants.
@@ -16,11 +17,18 @@ tip_itf_lams_ignore = 18  # Ignore the first this many point on LAMS.
 tip_otf_lams_ignore = 18
 log_plot       = True
 itfotf_plot    = True
-plot_opt       = 2
+plot_opt       = 3
 lim_band       = False
 lim_band_width = 5
-lam_band       = False
+lam_band       = True
 smooth         = True
+smooth_lams    = True
+smooth_type    = "savgol"
+#smooth_type    = "lowess"
+frac           = 1/6      # For lowess smoothing.
+window         = 21       # For savgol filtering.
+window_lams    = 41
+to_omp         = True
 
 # Path to the 3DLIM data.
 #ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-045h.nc'
@@ -28,8 +36,8 @@ smooth         = True
 #ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-a8-001v.nc'
 #ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-a8-001w.nc'
 #ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-a8-002b.nc'
-ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-a8-004u.nc'
-#ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-a8-005a.nc'
+#ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-a8-004y.nc'
+ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-a8-004z.nc'
 
 # My colors.
 tableau20 = [(31, 119, 180), (174, 199, 232), (255, 127, 14), (255, 187, 120),
@@ -72,6 +80,15 @@ rbs_otf_x     = rbs['Distance from Tip U (cm)'].values
 rbs_otf_y     = rbs['W Areal Density U (1e15 W/cm2)'].values
 rbs_otf_y_err = rbs['W Areal Density Error U (1e15 W/cm2)'].values
 
+# Drop some bad data.
+rbs_itf_y[5:7] = 0.0
+rbs_itf_x = rbs_itf_x[:-1]
+rbs_itf_y = rbs_itf_y[:-1]
+rbs_itf_y_err = rbs_itf_y_err[:-1]
+rbs_otf_x = rbs_otf_x[:-1]
+rbs_otf_y = rbs_otf_y[:-1]
+rbs_otf_y_err = rbs_otf_y_err[:-1]
+
 # Then the LAMS values of the centerline data.
 #lams_itf_x     = ad8_lams.index.values / 10  # mm to cm
 #lams_itf_y     = ad8_lams.mean(axis=1).values
@@ -88,12 +105,6 @@ lams_otf_x = au8_lams["Total W"][2.5].index.values / 10  # mm to cm
 lams_otf_y = au8_lams["Total W"][2.5].values
 lams_otf_y_err = au8_lams["Total W error"][2.5].values
 
-# LAMS data of the data + err and - err so we can apply all the normalization
-# and data cleanup to it as well.
-lams_itf_y_errp = lams_itf_y + lams_itf_y_err
-lams_itf_y_errm = lams_itf_y - lams_itf_y_err
-lams_otf_y_errp = lams_otf_y + lams_otf_y_err
-lams_otf_y_errm = lams_otf_y - lams_otf_y_err
 
 # Apply calibrations. Won't matter in the end if the calibrations are the same,
 # since it all gets normalized, but it will if they're different.
@@ -101,6 +112,13 @@ lams_itf_y     *= itf_cal
 lams_itf_y_err *= itf_cal
 lams_otf_y     *= otf_cal
 lams_otf_y_err *= otf_cal
+
+# LAMS data of the data + err and - err so we can apply all the normalization
+# and data cleanup to it as well.
+lams_itf_y_errp = lams_itf_y + lams_itf_y_err
+lams_itf_y_errm = lams_itf_y - lams_itf_y_err
+lams_otf_y_errp = lams_otf_y + lams_otf_y_err
+lams_otf_y_errm = lams_otf_y - lams_otf_y_err
 
 # And then the 3DLIM data.
 lim_dict = lp.centerline(show_plot=False)
@@ -203,9 +221,24 @@ lim_otf_y = lim_otf_y / max_lim
 
 # Smooth out the data.
 if smooth:
-    window = 21
-    lim_otf_y = savgol_filter(lim_otf_y, window, 3)
-    lim_itf_y = savgol_filter(lim_itf_y, window, 3)
+    if smooth_type == "savgol":
+        lim_otf_y = savgol_filter(lim_otf_y, window, 3)
+        lim_itf_y = savgol_filter(lim_itf_y, window, 3)
+    elif smooth_type == "lowess":
+        lowess = sm.nonparametric.lowess
+        lim_otf_y = lowess(lim_otf_y, lim_otf_x, return_sorted=False, frac=frac)
+        lim_itf_y = lowess(lim_itf_y, lim_itf_x, return_sorted=False, frac=frac)
+    else:
+        print("Error: Incorrect smooth_type.")
+
+    lams_otf_y = savgol_filter(lams_otf_y, window_lams, 3)
+    lams_itf_y = savgol_filter(lams_itf_y, window_lams, 3)
+
+# Just some percent errors.
+lams_itf_y_errp = lams_itf_y + lams_itf_y * 0.2
+lams_itf_y_errm = lams_itf_y - lams_itf_y * 0.2
+lams_otf_y_errp = lams_otf_y + lams_otf_y * 0.2
+lams_otf_y_errm = lams_otf_y - lams_otf_y * 0.2
 
 # ITF/OTF plot: Need to interpolate onto common x values to calculate ratios.
 num_points = len(lams_itf_x)
@@ -217,6 +250,28 @@ f_lim_itf  = interp1d(lim_itf_x,  lim_itf_y)
 f_lim_otf  = interp1d(lim_otf_x,  lim_otf_y)
 lams_itfotf = f_lams_itf(lams_com_x) / f_lams_otf(lams_com_x)
 lim_itfotf  = f_lim_itf(lim_com_x)   / f_lim_otf(lim_com_x)
+
+# Convert to R-Rsep OMP coordinates.
+if to_omp:
+    m = 1.0907
+    y1 = 6.9035
+    lams_com_x = m * lams_com_x + y1
+    lim_com_x  = m * lim_com_x  + y1
+    lams_itf_x = m * lams_itf_x + y1
+    lams_otf_x = m * lams_otf_x + y1
+    lim_itf_x  = m * lim_itf_x  + y1
+    lim_otf_x  = m * lim_otf_x  + y1
+    rbs_itf_x  = m * rbs_itf_x  + y1
+    rbs_otf_x  = m * rbs_otf_x  + y1
+    xlabel = "R-Rsep OMP (cm)"
+    xbounds = [6.5, 15.5]
+    xlabels = np.arange(7, 17, 2)
+
+else:
+    xlabel = "Distance along probe (cm)"
+    xbounds = [0, 8]
+    xlabels = np.arange(0, 10, 2)
+
 
 # Calculate arrays for 3DLIM band plot.
 if lim_band:
@@ -320,12 +375,12 @@ elif plot_opt == 2:
 
     # Plot the LAMS data.
     if lam_band:
-        ax2.fill_between(lams_itf_x, lams_itf_y_errp, lams_itf_y_errm, alpha=band_alpha)
-        ax3.fill_between(lams_otf_x, lams_otf_y_errp, lams_otf_y_errm, alpha=band_alpha)
-    else:
-        ax1.plot(lams_com_x, lams_itfotf, color=lam_color, lw=lw)
-        ax2.plot(lams_itf_x, lams_itf_y, color=lam_color, lw=lw)
-        ax3.plot(lams_otf_x, lams_otf_y, color=lam_color, lw=lw, label="LAMS")
+        ax2.fill_between(lams_itf_x, lams_itf_y_errp, lams_itf_y_errm, alpha=band_alpha, color=lam_color)
+        ax3.fill_between(lams_otf_x, lams_otf_y_errp, lams_otf_y_errm, alpha=band_alpha, color=lam_color)
+    #else:
+    ax1.plot(lams_com_x, lams_itfotf, color=lam_color, lw=lw)
+    ax2.plot(lams_itf_x, lams_itf_y, color=lam_color, lw=lw)
+    ax3.plot(lams_otf_x, lams_otf_y, color=lam_color, lw=lw, label="LAMS")
 
     # Plot the 3DLIM data.
     if lim_band:
@@ -361,6 +416,99 @@ elif plot_opt == 2:
     ax1.set_ylabel("ITF/OTF\n", fontsize=fontsize)
     ax2.set_ylabel("Deposition (normalized)", fontsize=fontsize)
     ax1.tick_params(which='both', labelsize=labelsize)
+    ax2.tick_params(which='both', labelsize=labelsize)
+    ax3.tick_params(which='both', labelsize=labelsize)
+
+    # Annotations.
+    ax2.text(0.15, 0.15, 'ITF', transform=ax2.transAxes, fontsize=18)
+    ax3.text(0.15, 0.15, 'OTF', transform=ax3.transAxes, fontsize=18)
+    ax3.legend(fontsize=fontsize)
+
+    fig.tight_layout()
+    fig.show()
+
+elif plot_opt == 3:
+
+    # Color scheme.
+    plt.style.use("tableau-colorblind10")
+
+    # Plot constants.
+    fontsize  = 14
+    labelsize = 11
+    band_alpha = 0.6
+    lam_color = "C5"
+    rbs_color = "C5"
+    lim_color = "C4"
+    lam_color = "orange"
+    rbs_color = "orange"
+    #lim_color = "tab:purple"
+    lim_color = "orange"
+    ms = 12
+    lw = 4
+    fontname = 'Arial'
+
+    # Grid it.
+    fig = plt.figure(figsize=(10, 4))
+    ax2 = fig.add_subplot(1, 2, 1)
+    ax3 = fig.add_subplot(1, 2, 2)
+
+    # Remove top and right spines.
+    ax2.spines['right'].set_visible(False)
+    ax2.spines['top'].set_visible(False)
+    ax3.spines['right'].set_visible(False)
+    ax3.spines['top'].set_visible(False)
+
+    # Set log scale.
+    if log_plot:
+        ax2.set_yscale("log")
+        ax3.set_yscale("log")
+        ax2.set_ylim([0.005*max_rbs, 3*max_rbs])
+        ax3.set_ylim([0.005*max_rbs, 3*max_rbs])
+
+    # Plot the LAMS data.
+    if lam_band:
+        #ax2.fill_between(lams_itf_x, lams_itf_y_errp, lams_itf_y_errm, alpha=band_alpha, color=lam_color)
+        #ax3.fill_between(lams_otf_x, lams_otf_y_errp, lams_otf_y_errm, alpha=band_alpha, color=lam_color)
+        ax2.fill_between(lams_itf_x, (lams_itf_y+lams_itf_y*0.2)*max_rbs, (lams_itf_y-lams_itf_y*0.2)*max_rbs, alpha=band_alpha, color=lam_color)
+        ax3.fill_between(lams_otf_x, (lams_otf_y+lams_otf_y*0.2)*max_rbs, (lams_otf_y-lams_otf_y*0.2)*max_rbs, alpha=band_alpha, color=lam_color, label="LAMS")
+    else:
+        ax2.plot(lams_itf_x, lams_itf_y*max_rbs, color=lam_color, lw=lw)
+        ax3.plot(lams_otf_x, lams_otf_y*max_rbs, color=lam_color, lw=lw, label="LAMS")
+
+    # Plot the 3DLIM data.
+    if lim_band:
+        x = lim_itf_x_band; y = lim_itf_y_band_avg; err = lim_itf_y_band_std
+        ax2.fill_between(x, y-err, y+err, alpha=band_alpha)
+        x = lim_otf_x_band; y = lim_otf_y_band_avg; err = lim_otf_y_band_std
+        ax3.fill_between(x, y-err, y+err, alpha=band_alpha)
+    else:
+        ax2.plot(lim_itf_x, lim_itf_y*max_rbs, color='k', lw=lw+2)
+        ax2.plot(lim_itf_x, lim_itf_y*max_rbs, color=lim_color, lw=lw)
+        ax3.plot(lim_otf_x, lim_otf_y*max_rbs, color='k', lw=lw+2)
+        ax3.plot(lim_otf_x, lim_otf_y*max_rbs, color=lim_color, lw=lw, label="3DLIM")
+
+    # Plot the RBS data.
+    ax2.plot(rbs_itf_x, rbs_itf_y*max_rbs, '*', color=rbs_color, ms=ms, mec='k')
+    ax3.plot(rbs_otf_x, rbs_otf_y*max_rbs, '*', color=rbs_color, ms=ms, mec='k', label="RBS")
+
+    # Set limits.
+    #ax2.set_xlim([0, 8])
+    #ax3.set_xlim([0, 8])
+    ax2.set_xlim(xbounds)
+    ax3.set_xlim(xbounds)
+
+    # Don't need tick labels on the OTF one.
+    ax3.tick_params(labelleft=False)
+
+    # Set explicit tick labels.
+    #ax2.set_xticks(np.arange(0, 10, 2))
+    #ax3.set_xticks(np.arange(0, 10, 2))
+    ax2.set_xticks(xlabels)
+    ax3.set_xticks(xlabels)
+
+
+    # Labels and font adjustments.
+    ax2.set_ylabel(r"Deposition (1e15 W/$\mathrm{cm^2}$)", fontsize=fontsize)
     ax2.tick_params(which='both', labelsize=labelsize)
     ax3.tick_params(which='both', labelsize=labelsize)
 

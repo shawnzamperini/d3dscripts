@@ -29,8 +29,8 @@ fig = pp.pplot(nebar_fav, itfotf_fav, yerr=yerrs_fav, color=6, logy=True, ms=13,
                xrange=[1e13, 9e13])
 
 # Just different labels.
-fig = pp.pplot(nebar_unf, itfotf_unf, xerr=neerr_unf, yerr=yerrs_unf, color=8, logy=True, fmt='s', ms=13, label='Up')
-fig = pp.pplot(nebar_fav, itfotf_fav, xerr=neerr_fav, yerr=yerrs_fav, color=6, logy=True, ms=13, label='Down',
+fig = pp.pplot(nebar_unf, itfotf_unf, xerr=neerr_unf, yerr=yerrs_unf, color=8, logy=True, fmt='s', ms=13, label='Bx' + r'$\nabla$' + 'B' +r'$\uparrow$')
+fig = pp.pplot(nebar_fav, itfotf_fav, xerr=neerr_fav, yerr=yerrs_fav, color=6, logy=True, ms=13, label='Bx' + r'$\nabla$' + 'B' +r'$\downarrow$',
                fig=fig, xlabel='Plasma Density (cm-3)', ylabel='ITF/OTF Total W', yrange=[0.1, 10],
                xrange=[1e13, 9e13])
 

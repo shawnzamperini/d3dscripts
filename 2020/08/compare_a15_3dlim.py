@@ -3,6 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.interpolate import interp1d
+from scipy.optimize import curve_fit
+from scipy.signal import savgol_filter
+import statsmodels.api as sm
 
 
 # Some constants.
@@ -15,10 +18,18 @@ tip_otf_lams_ignore = 0
 log_plot = True
 show_unused = True
 itfotf_plot = True
-plot_opt = 2
+plot_opt = 3
 lim_band = False
 lim_band_width = 5
 lam_band = False
+smooth         = True
+smooth_lams    = True
+smooth_type    = "savgol"
+#smooth_type    = "lowess"
+frac           = 1/6      # For lowess smoothing.
+window         = 21       # For savgol filtering.
+window_lams    = 41
+to_omp         = True
 
 # Path to the 3DLIM data.
 ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-a15-001g.nc'
@@ -208,11 +219,36 @@ lams_otf_y_unused = lams_otf_y_unused / max_lams
 lim_itf_y_unused = lim_itf_y_unused / max_lim
 lim_otf_y_unused = lim_otf_y_unused / max_lim
 
-# ITF/OTF plot: Need to interpolate onto common x values to calculate ratios.
+# Can append the lim data back onto our array now.
+#lim_otf_x = np.append(lim_otf_x_unused, lim_otf_x)
+#lim_otf_y = np.append(lim_otf_y_unused, lim_otf_y)
+#lim_itf_x = np.append(lim_itf_x_unused, lim_itf_x)
+#lim_itf_y = np.append(lim_itf_y_unused, lim_itf_y)
 lim_itf_x_all = np.append(lim_itf_x_unused, lim_itf_x)
 lim_otf_x_all = np.append(lim_otf_x_unused, lim_otf_x)
 lim_itf_y_all = np.append(lim_itf_y_unused, lim_itf_y)
 lim_otf_y_all = np.append(lim_otf_y_unused, lim_otf_y)
+
+# Smooth out the data.
+if smooth:
+    if smooth_type == "savgol":
+        lim_otf_y_all = savgol_filter(lim_otf_y_all, window, 3)
+        lim_itf_y_all = savgol_filter(lim_itf_y_all, window, 3)
+    elif smooth_type == "lowess":
+        lowess = sm.nonparametric.lowess
+        lim_otf_y_all = lowess(lim_otf_y_all, lim_otf_x_all, return_sorted=False, frac=frac)
+        lim_itf_y_all = lowess(lim_itf_y_all, lim_itf_x_all, return_sorted=False, frac=frac)
+    else:
+        print("Error: Incorrect smooth_type.")
+
+    lams_otf_y = savgol_filter(lams_otf_y, window_lams, 3)
+    lams_itf_y = savgol_filter(lams_itf_y, window_lams, 3)
+
+# ITF/OTF plot: Need to interpolate onto common x values to calculate ratios.
+#lim_itf_x_all = np.append(lim_itf_x_unused, lim_itf_x)
+#lim_otf_x_all = np.append(lim_otf_x_unused, lim_otf_x)
+#lim_itf_y_all = np.append(lim_itf_y_unused, lim_itf_y)
+#lim_otf_y_all = np.append(lim_otf_y_unused, lim_otf_y)
 num_points = len(lams_itf_x)
 #num_points = 300
 lams_com_x = np.linspace(max(lams_itf_x.min(), lams_otf_x.min()), min(lams_itf_x.max(), lams_otf_x.max()), num_points)
@@ -246,6 +282,29 @@ if lim_band:
 
     # ITF/OTF.
     num_keep = lim_band_width*int(len(lim_com_x) / lim_band_width)
+
+# Convert to R-Rsep OMP coordinates.
+if to_omp:
+    m = 1.0907
+    y1 = 6.9035
+    lams_com_x = m * lams_com_x + y1
+    lim_com_x  = m * lim_com_x  + y1
+    lams_itf_x = m * lams_itf_x + y1
+    lams_otf_x = m * lams_otf_x + y1
+    lim_itf_x  = m * lim_itf_x  + y1
+    lim_otf_x  = m * lim_otf_x  + y1
+    rbs_itf_x  = m * rbs_itf_x  + y1
+    rbs_otf_x  = m * rbs_otf_x  + y1
+    lim_itf_x_all = m * lim_itf_x_all + y1
+    lim_otf_x_all = m * lim_otf_x_all + y1
+    xlabel = "R-Rsep OMP (cm)"
+    xbounds = [6.5, 15.5]
+    xlabels = np.arange(7, 17, 2)
+
+else:
+    xlabel = "Distance along probe (cm)"
+    xbounds = [0, 8]
+    xlabels = np.arange(0, 10, 2)
 
 # Plot it.
 if plot_opt == 1:
@@ -378,6 +437,100 @@ elif plot_opt == 2:
     ax2.text(0.15, 0.15, 'ITF', transform=ax2.transAxes, fontsize=18)
     ax3.text(0.15, 0.15, 'OTF', transform=ax3.transAxes, fontsize=18)
     ax3.legend(fontsize=fontsize)
+
+    fig.tight_layout()
+    fig.show()
+
+elif plot_opt == 3:
+
+    # Color scheme.
+    plt.style.use("tableau-colorblind10")
+
+    # Plot constants.
+    fontsize  = 14
+    labelsize = 11
+    band_alpha = 0.6
+    lam_color = "C5"
+    rbs_color = "C5"
+    lim_color = "C4"
+    lam_color = "lightskyblue"
+    rbs_color = "lightskyblue"
+    #lim_color = "tab:purple"
+    lim_color = "lightskyblue"
+    ms = 12
+    lw = 4
+    fontname = 'Arial'
+
+    # Grid it.
+    fig = plt.figure(figsize=(10, 4))
+    ax2 = fig.add_subplot(1, 2, 1)
+    ax3 = fig.add_subplot(1, 2, 2)
+
+    # Remove top and right spines.
+    ax2.spines['right'].set_visible(False)
+    ax2.spines['top'].set_visible(False)
+    ax3.spines['right'].set_visible(False)
+    ax3.spines['top'].set_visible(False)
+
+    # Set log scale.
+    if log_plot:
+        ax2.set_yscale("log")
+        ax3.set_yscale("log")
+        ax2.set_ylim([0.005*max_rbs, 3*max_rbs])
+        ax3.set_ylim([0.005*max_rbs, 3*max_rbs])
+
+    # Plot the LAMS data.
+    if lam_band:
+        #ax2.fill_between(lams_itf_x, lams_itf_y_errp, lams_itf_y_errm, alpha=band_alpha, color=lam_color)
+        #ax3.fill_between(lams_otf_x, lams_otf_y_errp, lams_otf_y_errm, alpha=band_alpha, color=lam_color)
+        ax2.fill_between(lams_itf_x, (lams_itf_y+lams_itf_y*0.2)*max_rbs, (lams_itf_y-lams_itf_y*0.2)*max_rbs, alpha=band_alpha, color=lam_color)
+        ax3.fill_between(lams_otf_x, (lams_otf_y+lams_otf_y*0.2)*max_rbs, (lams_otf_y-lams_otf_y*0.2)*max_rbs, alpha=band_alpha, color=lam_color, label="LAMS")
+    else:
+        ax2.plot(lams_itf_x, lams_itf_y*max_rbs, color=lam_color, lw=lw)
+        ax3.plot(lams_otf_x, lams_otf_y*max_rbs, color=lam_color, lw=lw, label="LAMS")
+
+    # Plot the 3DLIM data.
+    if lim_band:
+        x = lim_itf_x_band; y = lim_itf_y_band_avg; err = lim_itf_y_band_std
+        ax2.fill_between(x, y-err, y+err, alpha=band_alpha)
+        x = lim_otf_x_band; y = lim_otf_y_band_avg; err = lim_otf_y_band_std
+        ax3.fill_between(x, y-err, y+err, alpha=band_alpha)
+    else:
+        ax2.plot(lim_itf_x_all, lim_itf_y_all*max_rbs, color='k', lw=lw+2)
+        ax2.plot(lim_itf_x_all, lim_itf_y_all*max_rbs, color=lim_color, lw=lw)
+        ax3.plot(lim_otf_x_all, lim_otf_y_all*max_rbs, color='k', lw=lw+2)
+        ax3.plot(lim_otf_x_all, lim_otf_y_all*max_rbs, color=lim_color, lw=lw, label="3DLIM")
+
+    # Plot the RBS data.
+    ax2.plot(rbs_itf_x, rbs_itf_y*max_rbs, '*', color=rbs_color, ms=ms, mec='k')
+    ax3.plot(rbs_otf_x, rbs_otf_y*max_rbs, '*', color=rbs_color, ms=ms, mec='k', label="RBS")
+
+    # Set limits.
+    #ax2.set_xlim([0, 8])
+    #ax3.set_xlim([0, 8])
+    ax2.set_xlim(xbounds)
+    ax3.set_xlim(xbounds)
+
+    # Don't need tick labels on the OTF one.
+    ax3.tick_params(labelleft=False)
+
+    # Set explicit tick labels.
+    #ax2.set_xticks(np.arange(0, 10, 2))
+    #ax3.set_xticks(np.arange(0, 10, 2))
+    ax2.set_xticks(xlabels)
+    ax3.set_xticks(xlabels)
+
+    # Labels and font adjustments.
+    ax2.set_xlabel("Distance along probe (cm)", fontsize=fontsize)
+    ax3.set_xlabel("Distance along probe (cm)", fontsize=fontsize)
+    ax2.set_ylabel(r"Deposition (1e15 W/$\mathrm{cm^2}$)", fontsize=fontsize)
+    ax2.tick_params(which='both', labelsize=labelsize)
+    ax3.tick_params(which='both', labelsize=labelsize)
+
+    # Annotations.
+    ax2.text(0.15, 0.15, 'ITF', transform=ax2.transAxes, fontsize=18)
+    ax3.text(0.15, 0.15, 'OTF', transform=ax3.transAxes, fontsize=18)
+    #ax3.legend(fontsize=fontsize)
 
     fig.tight_layout()
     fig.show()

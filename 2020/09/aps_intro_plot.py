@@ -32,7 +32,8 @@ rings[core] = 0.5
 rings[far_sol] = 1
 
 # Custom colormap.
-cmap = ListedColormap([(44/255, 160/255, 44/255, alpha), (0, 0, 0, 0), (214/255, 39/255, 40/255, alpha)])
+#cmap = ListedColormap([(44/255, 160/255, 44/255, alpha), (0, 0, 0, 0), (214/255, 39/255, 40/255, alpha)])
+cmap = ListedColormap([(44/255, 160/255, 44/255, alpha), (0, 0, 0, 0), (112/255, 48/255, 160/255, alpha)])
 #cmap = cm.get_cmap('coolwarm', 3)
 
 # Plot.

@@ -62,3 +62,11 @@ def prad(shot):
 def prad_core(shot):
     ga_obj = run(shot, 'PRAD_CORE', 'W')
     return ga_obj
+
+def triang(shot):
+    ga_obj = run(shot, "TRITOP", "none")
+    return ga_obj
+
+def q95(shot):
+    ga_obj = run(shot, "Q95", "none")
+    return ga_obj
