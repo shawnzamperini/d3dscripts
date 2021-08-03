@@ -37,7 +37,8 @@ to_omp         = True
 #ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-a8-001w.nc'
 #ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-a8-002b.nc'
 #ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-a8-004y.nc'
-ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-a8-004z.nc'
+#ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-a8-004z.nc'
+ncpath = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/archive/colprobe-a8-004z.nc'
 
 # My colors.
 tableau20 = [(31, 119, 180), (174, 199, 232), (255, 127, 14), (255, 187, 120),

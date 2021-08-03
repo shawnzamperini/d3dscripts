@@ -108,11 +108,13 @@ lim_otf_x = lim_otf_x[::-1]
 lim_otf_y = lim_otf_y[::-1]
 
 # Drop some RBS points we don't want.
-rbs_otf_drop = [0, 3, 4, 8, 15, 16]
+#rbs_otf_drop = [0, 3, 4, 8, 15, 16]
+rbs_otf_drop = [0, 3, 4, 8, 15]
 rbs_otf_x = np.delete(rbs_otf_x, rbs_otf_drop)
 rbs_otf_y = np.delete(rbs_otf_y, rbs_otf_drop)
 rbs_otf_y_err = np.delete(rbs_otf_y_err, rbs_otf_drop)
-rbs_itf_drop = [1,2,3,5,6,7,8,10,12,16,17,18]
+#rbs_itf_drop = [1,2,3,5,6,7,8,10,12,16,17,18]
+rbs_itf_drop = [1,2,3,5,6,7,8,10,12,16,17]
 rbs_itf_x = np.delete(rbs_itf_x, rbs_itf_drop)
 rbs_itf_y = np.delete(rbs_itf_y, rbs_itf_drop)
 rbs_itf_y_err = np.delete(rbs_itf_y_err, rbs_itf_drop)
@@ -130,8 +132,10 @@ lams_otf_y[scraped] = y_int
 
 # For A15, need to restrict the data to everything after 1.5 cm due to scraping :(
 start = 1.5
-rbs_itf_keep = np.where(rbs_itf_x>=start)[0]
-rbs_otf_keep = np.where(rbs_otf_x>=start)[0]
+#rbs_itf_keep = np.where(rbs_itf_x>=start)[0]
+#rbs_otf_keep = np.where(rbs_otf_x>=start)[0]
+rbs_itf_keep = np.where(rbs_itf_x>=0)[0]
+rbs_otf_keep = np.where(rbs_otf_x>=0)[0]
 lams_itf_keep = np.where(lams_itf_x>=start)[0]
 lams_otf_keep = np.where(lams_otf_x>=start)[0]
 lim_itf_keep = np.where(lim_itf_x>=start)[0]

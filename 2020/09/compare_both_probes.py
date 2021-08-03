@@ -10,7 +10,7 @@ from matplotlib.legend_handler import HandlerLine2D, HandlerTuple
 band = True
 band_alpha = 0.6
 log = False
-to_omp = True
+to_omp = False
 
 # Load in A8 data.
 import compare_a8_3dlim

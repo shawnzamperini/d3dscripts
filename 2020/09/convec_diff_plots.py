@@ -11,9 +11,9 @@ drop_tip = 5
 smooth = True
 
 # Load a diffusive and convective case.
-diff_path = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-060d.nc'
+diff_path = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/archive/colprobe-z2-060d.nc'
 #conv_path = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-061e.nc'
-conv_path = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/colprobe-z2-061h.nc'
+conv_path = '/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/archive/colprobe-z2-061h.nc'
 
 # Data for A2 since it's common to compare results against it.
 a2_itf_x = np.array([8.5, 8, 7.5, 7, 6.5, 6, 5.5, 5, 4.5, 4, 3.5, 3,

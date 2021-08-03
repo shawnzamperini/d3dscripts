@@ -17,6 +17,7 @@ s2, w2 = op2.along_ring(70, "DDLIMS", charge="all", plot_it=False)
 
 # Restrict it to just the region below the upper baffle.
 mask = s1 > 25
+#mask = s1 > 0
 s1 = s1[mask]
 s2 = s2[mask]
 w1 = w1[mask][::-1]

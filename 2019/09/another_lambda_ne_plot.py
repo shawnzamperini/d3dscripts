@@ -24,8 +24,8 @@ itfotf_for = np.array([0.35, 0.45, 0.41, 0.63, 0.29, 0.87, 0.82, 0.53, 0.66,
 itfotf_for_err = np.array([0.04, 0.05, 0.05, 0.09, 0.05, 0.07, 0.05, 0.05,
                            0.15, 0.11, 0.12, 0.12])
 
-
+xlabel = "# of " + r'$\mathrm{\lambda_{ne}}$' + "'s from separatrix"
 ms = 10
-fig = pp.pplot(lamb_away_rev, itfotf_rev, xerr=lamb_away_rev_err, yerr=itfotf_rev_err, label='Up', color=8, ms=ms)
-fig = pp.pplot(lamb_away_for, itfotf_for, xerr=lamb_away_for_err, yerr=itfotf_for_err, label='Down',
-               xlabel=r'$\mathrm{R_{tip} / \lambda_{ne}}$', ylabel='ITF/OTF Total W', fig=fig, logy=False, ms=ms)
+fig = pp.pplot(lamb_away_rev, itfotf_rev, xerr=lamb_away_rev_err, yerr=itfotf_rev_err, label='Unfavorable', color=8, ms=ms)
+fig = pp.pplot(lamb_away_for, itfotf_for, xerr=lamb_away_for_err, yerr=itfotf_for_err, label='Favorable',
+               xlabel=xlabel, ylabel='ITF/OTF Total W', fig=fig, logy=False, ms=ms)

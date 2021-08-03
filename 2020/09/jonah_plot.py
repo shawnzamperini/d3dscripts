@@ -11,11 +11,12 @@ from matplotlib.lines import Line2D
 # 969002:
 
 # Only things you need to change are here. This script has only been tested on 178351.
-shot        = 969002
+shot        = 187105
 time        = 2900
-tree        = "EFITRT1"  # EFIT01 or EFITRT1
+tree        = "EFIT01"  # EFIT01 or EFITRT1
 cm_flux     = np.arange(1, 8) # Which cm flux surface to plot.
-extra_mimes = 2  # How many extra cm to insert MiMES from the tube where it intercepts the tip of DiMES.
+#extra_mimes = 2  # How many extra cm to insert MiMES from the tube where it intercepts the tip of DiMES.
+extra_mimes = 1.1
 
 # Some constants. DiMES probe tip.
 r_probe =  1.4895
@@ -37,8 +38,10 @@ psin = gfile["psiRZn"]
 R, Z = np.meshgrid(gfile["R"], gfile["Z"])
 Z_axis = gfile['ZmAxis']
 R_axis = gfile['RmAxis']
-Zes = np.copy(gfile['lcfs'][:, 1][13:-17])
-Res = np.copy(gfile['lcfs'][:, 0][13:-17])
+#Zes = np.copy(gfile['lcfs'][:, 1][13:-17])
+#Res = np.copy(gfile['lcfs'][:, 0][13:-17])
+Zes = np.copy(gfile['lcfs'][:, 1][13:-10])
+Res = np.copy(gfile['lcfs'][:, 0][13:-10])
 
 # Find the nearest psin to the probe coordinates.
 r_idx = np.where(np.abs(gfile["R"]-r_probe)==np.abs(gfile["R"]-r_probe).min())[0][0]
