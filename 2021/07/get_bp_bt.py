@@ -20,8 +20,9 @@ from importlib import reload
 # If adding EFIT names as we go, we'll need to reload each time.
 reload(chankin_const)
 
-rcp_name = "MP187104_1"
-rcp_df = pd.read_excel("/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/rcp_data/rcp_master.xlsx", sheet_name=rcp_name)
+rcp_name = "XP184533_2"
+#rcp_df = pd.read_excel("/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/rcp_data/rcp_master.xlsx", sheet_name=rcp_name)
+rcp_df = pd.read_excel("/Users/zamperini/Google Drive/My Drive/Research/Data/rcp_data/rcp_master.xlsx", sheet_name=rcp_name)
 
 def load_pickle(path):
     with open(path, "rb") as f:
@@ -29,7 +30,8 @@ def load_pickle(path):
     return var
 
 # Load in the respective EFIT data.
-root = "/mnt/c/Users/Shawn/Documents/d3d_work/gfile_data_for_rcp/"
+#root = "/mnt/c/Users/Shawn/Documents/d3d_work/gfile_data_for_rcp/"
+root = "/Users/zamperini/Documents/d3d_work/gfile_data_for_rcp/"
 r_efit  = load_pickle(root + chankin_const.efit_file[rcp_name] + "_r")
 z_efit  = load_pickle(root + chankin_const.efit_file[rcp_name] + "_z")
 bp_efit = load_pickle(root + chankin_const.efit_file[rcp_name] + "_bp")
@@ -47,8 +49,12 @@ elif rcp_name[:2] == "XP":
 else:
     print("Error: Did not identify probe name {}".format(rcp_name))
 
-bp = f_bp(r, z)[0]
-bt = f_bt(r, z)[0]
+if rcp_name[:2] == "MP":
+    bp = f_bp(r, z)[0]
+    bt = f_bt(r, z)[0]
+elif rcp_name[:2] == "XP":
+    bp = f_bp(r, z)[:, 0]
+    bt = f_bt(r, z)[:, 0]
 b  = np.sqrt(bp**2 + bt**2)
 
 print("Bp")
