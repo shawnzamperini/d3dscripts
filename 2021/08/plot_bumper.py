@@ -5,7 +5,8 @@ import netCDF4
 
 # Load netcdf file.
 #ncpath = "/Users/zamperini/Documents/lim_runs/bumper-001.nc"
-ncpath = "/Users/zamperini/Documents/lim_runs/colprobe-a8.nc"
+#ncpath = "/Users/zamperini/Documents/lim_runs/colprobe-a8.nc"
+ncpath = "/mnt/c/Users/Shawn/Documents/d3d_work/3DLIM Runs/archive/colprobe-a8.nc"
 nc = netCDF4.Dataset(ncpath)
 
 #def plot_rad_par_cont(plot_data, rmin=-0.01, rmax=0.00):
