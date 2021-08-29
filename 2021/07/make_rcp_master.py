@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import os
 
 
@@ -15,7 +16,7 @@ mp_names = ["Point", "Time (ms)", "R (cm)", "Rho", "Isat (A)", "ne (1e18 m-3)",
   "Vf3 (V)"]
 xp_names = ["Point", "Time (ms)", "Z (cm)", "Rho", "Isat (A)", "ne (1e18 m-3)",
   "Te (eV)", "q_par (MW/m2)", "Mach", "Vflow (m/s)", "Vf"]
-for filename in filenames:
+for filename in np.sort(filenames):
     if filename[:2] == "MP":
         rcp_names.append(filename[:-4])
         rcp_dfs.append(pd.read_csv(root + filename, sep="\t", names=mp_names, header=0))
