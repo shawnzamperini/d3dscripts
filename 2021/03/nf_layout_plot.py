@@ -114,11 +114,11 @@ ax.annotate("Langmuir\nProbes", lp_locs[-3], xytext=(2.2, -1.4),
   arrowprops=dict(facecolor="black", arrowstyle="-"), fontsize=fontsize, ha="center")
 
 # Label the upper baffle.
-ax.text(1.67, 1.10, "Upper Baffle", fontsize=fontsize, rotation=-5)
+ax.text(1.67, 1.10, "Upper Baffle\n(UDL)", fontsize=fontsize, rotation=-5)
 
 # Bold the upper divertor region and label it.
 ax.plot(wall_df["rnew"][4:50], wall_df["znew"][4:50], lw=3, color="k")
-ax.annotate("Upper\nDivertor", (1.25, 1.266), xytext=(1.0, 1.3),
+ax.annotate("Upper\nDivertor\n(UDL)", (1.25, 1.266), xytext=(1.0, 1.3),
   arrowprops=dict(facecolor="black", arrowstyle="-"), fontsize=fontsize, ha="center")
 
 # Add ITF OTF labels.
@@ -129,6 +129,6 @@ ax.annotate("OTF", (2.327, -0.208), xytext=(2.419, -0.30),
 
 # Label the outer wall.
 ax.plot(wall_df["rnew"][53:59], wall_df["znew"][53:59], lw=3, color="k")
-ax.text(2.22, 0.57, "Outer Wall", fontsize=fontsize, rotation=-70)
+ax.text(2.22, 0.57, "Outer Wall\n(OWL)", fontsize=fontsize, rotation=-70)
 
 fig.tight_layout()

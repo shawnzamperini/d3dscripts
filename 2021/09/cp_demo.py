@@ -3,12 +3,8 @@ import matplotlib.pyplot as plt
 import netCDF4
 
 
-# Load in netcdf file.
-ncpath  = "/Users/zamperini/Documents/lim_runs/varying-wall-016.nc"
-ncpath_no  = "/Users/zamperini/Documents/lim_runs/no-varying-wall-015.nc"
+ncpath  = "/Users/zamperini/Documents/lim_runs/colprobe-a8-actual-001.nc"
 nc = netCDF4.Dataset(ncpath)
-nc_no = netCDF4.Dataset(ncpath_no)
-
 
 def get_shit(nc, vary=True):
 
@@ -69,67 +65,42 @@ def get_shit(nc, vary=True):
     ddlim3 = ddlim3[:, y_keep_start:y_keep_end, x_keep_start:x_keep_end]
     vp3d = vp3d[y_keep_start:y_keep_end, x_keep_start:x_keep_end]
 
-
     # Mask the zeros for a better plot.
     #te3d = np.ma.masked_where(te3d == 0, te3d)
     ddlim3 = np.ma.masked_where(ddlim3 == 0, ddlim3)
 
+    # Not to be efficient, so just lazy copy/paste.
+    dep_arr = np.array(nc.variables['NERODS3'][0] * -1)
+    cp_ps     = np.array(nc.variables['PS'][:].data)
+    cp_pwids  = np.array(nc.variables['PWIDS'][:].data)
+    cp_pol_locs = ps - pwids/2.0
+    cp_rad_locs = np.array(nc.variables['ODOUTS'][:].data)
+    cline = np.abs(pol_locs).min()
+
+    # Index the deposition array at the centerline for plotting.
+    itf_x = cp_rad_locs[np.where(cp_rad_locs > 0.0)[0]]
+    itf_y = dep_arr[np.where(cp_pol_locs == cline)[0], np.where(cp_rad_locs > 0.0)[0]]
+    otf_x = cp_rad_locs[np.where(cp_rad_locs < 0.0)[0]] * -1
+    otf_y = dep_arr[np.where(cp_pol_locs == cline)[0], np.where(cp_rad_locs < 0.0)[0]]
+
     return {"par_locs":par_locs, "rad_locs":rad_locs, "pol_loc":pol_locs,
-      "ddlim3":ddlim3, "vp3d":vp3d}
+      "ddlim3":ddlim3, "vp3d":vp3d, "itf_x":itf_x, "itf_y":itf_y, "otf_x":otf_x,
+      "otf_y":otf_y, "dep_arr":dep_arr}
 
-vary = get_shit(nc, True)
-no_vary = get_shit(nc_no, False)
+cp = get_shit(nc)
 
-dl3_sum_vary = vary["ddlim3"].sum(axis=0).T
-dl3_sum_no = no_vary["ddlim3"].sum(axis=0).T
-vp3d_mid_vary = vary["vp3d"][:,:,25].T
-vp3d_mid_no = no_vary["vp3d"].T
+dl3_sum = cp["ddlim3"].sum(axis=0).T
+dep = cp["dep_arr"]
 
-# Three poloidal plots.
-ip1 = 7
-ip2 = 15
-ip3 = 35
-
-#Z1 = te3d[:,:,ip1].T
-#Z2 = te3d[:,:,ip2].T
-#Z3 = te3d[:,:,ip3].T
-
-# Sum over a poloidal range for better stats.
-Z1 = dl3_sum_vary; vmin1=0; vmax1=0.005; cmap="magma"
-Z2 = dl3_sum_no; tit1 = "Varying bound"; tit2 = "Normal bound"; tit3 = "Vary / Normal"
-Z3 = dl3_sum_vary/dl3_sum_no; vmin2 = -2; vmax2=2
-
-#Z1 = vp3d_mid_vary; vmin1=-10000; vmax1=10000; cmap="coolwarm"
-#Z2 = vp3d_mid_no; tit1 = "Varying bound"; tit2 = "Normal bound"; tit3 = "Vary / Normal"
-#Z3 = vp3d_mid_vary/vp3d_mid_no; vmin2 = -5; vmax2=5
-
-#Z1 = vary["ddlim3"][5,:,:].T; vmin1=0; vmax1=0.00015; cmap="magma"
-#Z2 = vary["ddlim3"][23,:,:].T; tit1 = "Ramp #1"; tit2 = "Ramp #2"; tit3 = "Normal"
-#Z3 = no_vary["ddlim3"][23,:,:].T; vmin2 = -0; vmax2=0.00015
-
-# Some plots.
 fig, axs = plt.subplots(1, 3, figsize=(8, 5), sharex=True, sharey=True)
-axs[0].set_xlim([-5, 5])
+axs[0].set_xlim([-6, 6])
 axs[0].set_facecolor("grey")
 axs[1].set_facecolor("grey")
 axs[2].set_facecolor("grey")
 
-#cmap = "magma"
-c1 = axs[0].pcolormesh(vary["par_locs"], vary["rad_locs"], Z1, shading="auto", vmin=vmin1, vmax=vmax1, cmap=cmap)
-c2 = axs[1].pcolormesh(no_vary["par_locs"], no_vary["rad_locs"], Z2, shading="auto", vmin=vmin1, vmax=vmax1, cmap=cmap)
-c3 = axs[2].pcolormesh(vary["par_locs"], vary["rad_locs"], Z3, shading="auto", cmap=cmap, vmin=vmin2, vmax=vmax2)
-#axs[2].pcolormesh(par_locs, rad_locs, Z3, shading="auto", cmap="magma")
+c1 = axs[0].pcolormesh(cp["par_locs"], cp["rad_locs"], dl3_sum, shading="auto", vmin=0, vmax=0.5, cmap="magma")
 
 fig.colorbar(c1, ax=axs[0])
-fig.colorbar(c2, ax=axs[1])
-fig.colorbar(c3, ax=axs[2])
-
-#axs[0].set_title("P = {:.2f}".format(pol_locs[ip1]))
-#axs[1].set_title("P = {:.2f}".format(pol_locs[ip2]))
-#axs[2].set_title("P = {:.2f}".format(pol_locs[ip3]))
-axs[0].set_title(tit1)
-axs[1].set_title(tit2)
-axs[2].set_title(tit3)
 
 fig.tight_layout()
 fig.show()

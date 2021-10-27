@@ -20,11 +20,12 @@ plt.rcParams["font.family"] = "Century Gothic"
 plt.rc('axes', unicode_minus=False)
 
 # TS data for later.
-ts_path = "/mnt/c/Users/Shawn/Documents/d3d_work/DIVIMP Runs/167247/setup-files/ts167247_final_v2.xlsx"
+#ts_path = "/mnt/c/Users/Shawn/Documents/d3d_work/DIVIMP Runs/167247/setup-files/ts167247_final_v2.xlsx"
+ts_path = "/Users/zamperini/Documents/d3d_work/184527/omfit_184527_ts_v3.xlsx"
 ts_df = pd.read_excel(ts_path)
 
+"""
 root = "/mnt/c/Users/Shawn/Documents/d3d_work/DIVIMP Runs/{}/setup-files/{}_".format(shot, shot)
-
 def load_pickle(path):
     with open(path, "rb") as f:
         var = pickle.load(f)
@@ -40,6 +41,22 @@ zdim  = load_pickle(root+"zdim")
 rleft = load_pickle(root+"rleft")
 zmid  = load_pickle(root+"zmid")
 sibry = load_pickle(root+"sibry")
+"""
+
+gfile_path = "/Users/zamperini/Documents/d3d_work/167247_3500.pickle"
+with open(gfile_path, "rb") as f:
+    gfile = pickle.load(f)
+
+psirz = gfile["PSIRZ_NORM"]
+rbbbs = gfile["RBBBS"]
+zbbbs = gfile["ZBBBS"]
+rlim  = gfile["RLIM"]
+zlim  = gfile["ZLIM"]
+rdim  = gfile["RDIM"]
+zdim  = gfile["ZDIM"]
+rleft = gfile["RLEFT"]
+zmid  = gfile["ZMID"]
+sibry = gfile["SIBRY"]
 
 # Fix outer wall jankyness.
 rlim_old = rlim.copy()
@@ -49,8 +66,8 @@ r_fix = rlim[66]
 z_fix = m * (rlim[66] - rlim[55]) + zlim[55]
 #rlim[56:66] = np.full(len(rlim[56:66]), rlim[66])
 #zlim[56:66] = np.full(len(zlim[56:66]), z_fix)
-rlim = np.delete(rlim, np.arange(57, 66, dtype=np.int))
-zlim = np.delete(zlim, np.arange(57, 66, dtype=np.int))
+rlim = np.delete(rlim, np.arange(57, 66, dtype=int))
+zlim = np.delete(zlim, np.arange(57, 66, dtype=int))
 rlim = np.insert(rlim, 57, r_fix)
 zlim = np.insert(zlim, 57, z_fix)
 
@@ -61,12 +78,16 @@ bbpath = mplpath.Path(list(zip(rlim, zlim)))
 bbpath_mask = ~bbpath.contains_points(np.array(list(zip(R.flatten(), Z.flatten()))))
 psirz_masked = np.ma.masked_array(psirz.flatten(), mask=bbpath_mask).reshape(psirz.shape)
 
-psin = -psirz_masked / sibry
+#psin = -psirz_masked / sibry
+psin = psirz_masked
 #nearsol_end = 1.2
 #farsol_end  = 8
-nearsol = np.ma.masked_array(psin, mask=~np.logical_and(psin>-1, psin<nearsol_end+1))
-farsol  = np.ma.masked_array(psin, mask=~np.logical_and(psin>=nearsol_end, psin<farsol_end+0.2))
-wallsol = np.ma.masked_array(psin, mask=~np.logical_and(psin>=farsol_end, R>=1.6))
+#nearsol = np.ma.masked_array(psin, mask=~np.logical_and(psin>-1, psin<nearsol_end+1))
+#farsol  = np.ma.masked_array(psin, mask=~np.logical_and(psin>=nearsol_end, psin<farsol_end+0.2))
+#wallsol = np.ma.masked_array(psin, mask=~np.logical_and(psin>=farsol_end, R>=1.6))
+nearsol = np.ma.masked_array(psin, mask=~np.logical_and(psin>1, psin<=1.04))
+farsol  = np.ma.masked_array(psin, mask=~np.logical_and(psin>=1.03, psin<1.18))
+wallsol = np.ma.masked_array(psin, mask=~np.logical_and(psin>=1.17, R>=1.6))
 
 # Extra lines for the legs.
 xp = zbbbs.argmin()
@@ -110,7 +131,7 @@ ax.add_patch(rect)
 
 # Coordinates for Thomson scattering. Get them from the TS file.
 ts_core = ts_df[ts_df["System"] == "core"]
-ts_zs = ts_core["Z (m)"].unique()
+ts_zs = ts_core["Z (m)"].unique() + 0.0707
 ts_rs = np.full(len(ts_zs), ts_core["R (m)"].unique()[0])
 ax.scatter(ts_rs, ts_zs, s=3, color=colors[0])
 ax.annotate("Thomson\nScattering", (ts_rs[0], ts_zs[35]), xytext=(1.8, -0.4),
@@ -160,11 +181,11 @@ ax.annotate("Shelf Ring", (shelf_xy[0] + shelf_width / 2, shelf_xy[1]), xytext=(
   fontsize=fontsize)
 
 # Label the upper baffle.
-ax.text(1.64, 1.10, "Upper Baffle", fontsize=fontsize, rotation=-5)
+ax.text(1.64, 1.10, "Upper\nBaffle (UBL)", fontsize=fontsize, rotation=-5)
 
 # Bold the upper divertor region and label it.
 ax.plot(rlim[4:49], zlim[4:49], lw=3, color="k")
-ax.annotate("Upper\nDivertor", (1.25, 1.266), xytext=(1.0, 1.3),
+ax.annotate("Upper\nDivertor\n(UDL)", (1.25, 1.266), xytext=(1.0, 1.3),
   arrowprops=dict(facecolor="black", arrowstyle="-"), fontsize=fontsize, ha="center")
 
 # Add ITF OTF labels.
@@ -175,7 +196,8 @@ ax.annotate("OTF", (2.327, -0.215), xytext=(2.419, -0.30),
 
 # Label the outer wall.
 ax.plot(rlim[54:62], zlim[54:62], lw=3, color="k")
-ax.text(2.19, 0.57, "Outer Wall", fontsize=fontsize, rotation=-70)
+#ax.text(2.19, 0.57, "Outer Wall", fontsize=fontsize, rotation=-70, ha="center")
+ax.text(2.32, 0.57, "Outer Wall\n(OWL)", fontsize=fontsize, rotation=-70, ha="center")
 ax.text(0.9, -0.4, "Inner Wall", fontsize=fontsize, rotation=90)
 
 # Annotate the SOL regions.

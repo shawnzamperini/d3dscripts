@@ -20,10 +20,15 @@ gfile["Bt"] = aux_root["Bt"]
 gfile["RBBBS"] = g_root["RBBBS"]
 gfile["ZBBBS"] = g_root["ZBBBS"]
 
+# Need to calculate psin.
+gfile["Psin"] = (aux_root["PSIRZ"] - g_root["SIMAG"]) / \
+  (g_root["SIBRY"] - g_root["SIMAG"])
+
 # Deploy as pickle funniest shit I ever saw.
 fname = "/home/zamperinis/gfiles/" + shot + "_" + str(int(time))
 with open(fname, "wb") as f:
     pickle.dump(gfile, f)
+print("Saved as {}".format(fname))
 """
 
 import pickle

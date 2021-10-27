@@ -5,14 +5,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import savgol_filter
 from scipy.interpolate import interp1d
+import MDSplus
 
 
 tags = ["BT0", "DENSV2", "PINJ", "PRAD_CORE", "FS04", "IP", "RVSOUT"]
 signals247 = {}
 signals277 = {}
+conn = MDSplus.Connection("atlas.gat.com")
 for tag in tags:
-    ga247 = gadata(tag, 167247)
-    ga277 = gadata(tag, 167277)
+    ga247 = gadata(tag, 167247, connection=conn)
+    ga277 = gadata(tag, 167277, connection=conn)
     signals247[tag] = [ga247.xdata, ga247.zdata]
     signals277[tag] = [ga277.xdata, ga277.zdata]
 
@@ -81,21 +83,31 @@ ax3.set_yticks([0, 3, 6])
 #ax3.tick_params(axis="x", which="both", labelbottom=False)
 ax3.text(0.025, 0.8, "b)", fontsize=fontsize, transform=ax3.transAxes)
 
-ax4.plot(signals277["RVSOUT"][0], signals277["RVSOUT"][1], color=colors[2], lw=lw)
-ax4.plot(signals247["RVSOUT"][0], signals247["RVSOUT"][1], color=colors[3], lw=lw)
-ax4.spines["top"].set_visible(False)
-ax4.spines["right"].set_visible(False)
-ax4.set_ylabel("Strike\nPoint (m)", fontsize=fontsize)
-ax4.set_xlim([0, 6000])
-ax4.set_ylim(1.25, 1.45)
 tile_x = [-1, 8000]
 tile_l = np.full(len(tile_x), 1.32)
 tile_r = np.full(len(tile_x), 1.37)
-ax4.fill_between(tile_x, tile_l, tile_r, alpha=0.3, color=colors[1], edgecolor="none")
+tile_center = (1.32 + 1.37) / 2.0
+#ax4.plot(signals277["RVSOUT"][0], signals277["RVSOUT"][1], color=colors[2], lw=lw)
+#ax4.plot(signals247["RVSOUT"][0], signals247["RVSOUT"][1], color=colors[3], lw=lw)
+ax4.plot(signals277["RVSOUT"][0], signals277["RVSOUT"][1]-tile_center, color=colors[2], lw=lw)
+ax4.plot(signals247["RVSOUT"][0], signals247["RVSOUT"][1]-tile_center, color=colors[3], lw=lw)
+ax4.spines["top"].set_visible(False)
+ax4.spines["right"].set_visible(False)
+#ax4.set_ylabel("Strike\nPoint (m)", fontsize=fontsize)
+ax4.set_ylabel("SP Distance\nfrom ring (m)", fontsize=fontsize)
+ax4.set_xlim([0, 6000])
+#ax4.set_ylim(1.25, 1.45)
+ax4.set_ylim(1.25-tile_center, 1.45-tile_center)
+#ax4.fill_between(tile_x, tile_l, tile_r, alpha=0.3, color=colors[1], edgecolor="none")
+ax4.fill_between(tile_x, tile_l - tile_center, tile_r - tile_center, alpha=0.3, color=colors[1], edgecolor="none")
 ax4.grid()
-ax4.text(3500, 1.4, "W Ring", fontsize=fontsize, bbox=dict(facecolor="white", edgecolor="none"), color=colors[1])
+ax4.text(3500, 1.4-tile_center, "W Ring", fontsize=fontsize, bbox=dict(facecolor="white", edgecolor="none"), color=colors[1])
 #ax4.set_xlabel("Time (ms)", fontsize=fontsize)
 ax4.text(0.025, 0.8, "c)", fontsize=fontsize, transform=ax4.transAxes)
+ax4.text(0.9, 0.65, "SOL", fontsize=fontsize-2, transform=ax4.transAxes, zorder=50)#, bbox={"facecolor":"white", "edgecolor":"white"})
+ax4.text(0.9, 0.20, "PFZ", fontsize=fontsize-2, transform=ax4.transAxes, zorder=51)#, bbox={"facecolor":"white", "edgecolor":"white"})
+ax4.arrow(0.99, 0.7, 0.0, 0.2, transform=ax4.transAxes, width=0.003, zorder=52)
+ax4.arrow(0.99, 0.3, 0.0, -0.2, transform=ax4.transAxes, width=0.003, zorder=53)
 
 ax5.plot(signals277["FS04"][0], signals277["FS04"][1], color=colors[2], lw=lw)
 ax5.plot(signals247["FS04"][0], signals247["FS04"][1], color=colors[3], lw=lw)
