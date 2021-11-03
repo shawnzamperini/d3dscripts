@@ -1,3 +1,4 @@
+# Plot the near-SOL C13 distribution for each flow case.
 # Simple script to plot far-SOL distributions of C13 just to get a sense of
 # what the C13 distribution feeding into the SOL could look like.
 import numpy as np
@@ -8,15 +9,15 @@ import oedge_plots
 from scipy.signal import savgol_filter
 
 
-include_lim_dist = True
+include_lim_dist = False
 lim_l = 13.79 + 32.39
 source_start = 13.79 - 2.00
 source_end = 13.79 - 0.01
-bkg_subs = [9.0e14, 6.5e14, 6.5e14, 6.5e14, 6.5e14]
+#bkg_subs = [9.0e14, 6.5e14, 6.5e14, 6.5e14, 6.5e14]
+bkg_subs = [0, 0, 0, 0, 0]
 
-farsol = 36  # Near the edge of the grid.
-nearsol = 13
-smooth = True
+farsol = 13  # Near the edge of the grid.
+smooth = False
 ncpaths = [
 "/Users/zamperini/Documents/d3d_work/184527/d3d-184527-inj-007.nc",  # No flows
 "/Users/zamperini/Documents/d3d_work/184527/d3d-184527-inj-009.nc",  # M = 0.1
@@ -92,15 +93,15 @@ ax.axvline(s_crown, color="k", linestyle="--")
 
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
-ax.set_xlim([0, 40])
+ax.set_xlim([0, 86])
 if include_lim_dist:
     ax.set_ylim([0, 1.1])
     #ax.plot(lim_x, lim_y)
     ax.fill_between(lim_x, lim_y, np.zeros(lim_y.shape), color="grey")
     ylabel = r"Normalized $\mathdefault{^{13}C\ Density\ }$"
 else:
-    ax.set_ylim([0.5e15, 2.5e15])
-    ax.set_yticks(np.arange(0.5e15, 3.0e15, 0.5e15))
+    ax.set_ylim([0.5e15, 6.0e15])
+    #ax.set_yticks(np.arange(0.5e15, 3.0e15, 0.5e15))
     ylabel = r"$\mathdefault{^{13}C\ Density\ m^{-3}}$"
 ax.set_ylabel(ylabel, fontsize=14)
 #ax.set_yticklabels(np.arange(0.5e15, 3.0e15, 0.5e15))

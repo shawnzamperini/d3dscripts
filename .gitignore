@@ -10,3 +10,8 @@ __pycache__/
 *.png
 
 *.xlsx
+
+*.DS_Store
+*.gif
+*.bound
+*.bounds
