@@ -11,8 +11,8 @@ from matplotlib.lines import Line2D
 # 969002:
 
 # Only things you need to change are here. This script has only been tested on 178351.
-shot        = 187105
-time        = 2900
+shot        = 180352
+time        = 2800
 tree        = "EFIT01"  # EFIT01 or EFITRT1
 cm_flux     = np.arange(1, 8) # Which cm flux surface to plot.
 #extra_mimes = 2  # How many extra cm to insert MiMES from the tube where it intercepts the tip of DiMES.
@@ -31,7 +31,7 @@ mimes_len = 10  # cm
 
 # Load gfile, scavenging the code from ThomsonClass.
 ts = ThomsonClass(shot, "core")
-gfile = ts.load_gfile_mds(shot, time, tree=tree)
+gfile = ts.load_gfile_mds(shot, time, tree=tree, tunnel=False)
 
 # Get the relevant arrays from the gfile.
 psin = gfile["psiRZn"]

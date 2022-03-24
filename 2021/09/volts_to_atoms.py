@@ -1,10 +1,12 @@
-# Simple thing to go from UOB volts to particles per second.
+# Simple script to go from UOB volts to particles per second.
 import numpy as np
 
 
-uob_volts = 1.2  # Same for 184267 and 184527.
+# Check signal (UOB_VOLTS?)
+#uob_volts = 1.2  # Same for 184267 and 184527.
+uob_volts = 5.7  # 187111
 
-# Calibration constants.
+# Calibration constants. Check gas valve calibrations on DIII-D wiki.
 p1 = 10.31
 p2 = 0.38
 flow3v = 5.26

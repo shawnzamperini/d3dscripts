@@ -15,7 +15,8 @@ eps0 = 8.85 * 10**(-12)  # F/m
 elec = 1.609 * 10**(-19)
 
 # Load the example RCP data.
-xl_path = "/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/Slides, Sheets and Documents/2019/07/lp_with_a2.xlsx"
+#xl_path = "/mnt/c/Users/Shawn/Google Drive/School/Tennessee/Research/Slides, Sheets and Documents/2019/07/lp_with_a2.xlsx"
+xl_path = "/Users/zamperini/My Drive/School/Tennessee/Research/Slides, Sheets and Documents/2019/07/lp_with_a2.xlsx"
 df = pd.read_excel(xl_path, sheet_name="Sheet3")
 
 # Estimates of plasma values at each location.
@@ -40,8 +41,8 @@ tau_s = 1.47E13 * mW_amu * te * np.sqrt(te / mD_amu) / \
 
 # Normalize alpha where it is zero at R-Rsep=0, and 1 at 10.
 rmrs_range = np.where(rmrs_rcp < 10)[0]
-alpha = 1 - (tau_s - tau_s[rmrs_range].min()) / (tau_s[rmrs_range].max() - tau_s[rmrs_range].min())
-#alpha = 0
+#alpha = 1 - (tau_s - tau_s[rmrs_range].min()) / (tau_s[rmrs_range].max() - tau_s[rmrs_range].min())
+alpha = 0
 
 # Estimate steps in connection length.
 conn = np.zeros(len(rmrs_rcp))
@@ -65,12 +66,22 @@ r2 = np.where(rmrs_rcp > 5)[0]
 vblob1 = (1000 - 2660) / (5 - 0.5) * (rmrs_rcp[r1] - 0.5) + 2660
 vblob2 = (330 - 1000) / (10 - 5) * (rmrs_rcp[r2] - 5) + 1000
 vblob = np.append(vblob1, vblob2)
+eblob1 = (1500 - 4000) / (5 - 0.5) * (rmrs_rcp[r1] - 0.5) + 4000
+eblob2 = (500 - 1500) / (10 - 5) * (rmrs_rcp[r2] - 5) + 1500
+eblob = np.append(eblob1, eblob2)
 
 # Just a simple exponential to represent the decreasing influence of collisionality.
 drag_coef = 25
 drag_mod = np.exp(rmrs_rcp / drag_coef) - 1
 
 drexb = vblob * (1 + drag_mod) * tblob * t_zpar * fblob
+
+# From new way.
+B = 1.5
+Bt = 1.5
+deltat = 2 * 10**(-5)
+drexb = Bt * eblob / np.square(B) * deltat
+
 dr_fric = alpha * vblob * t_zpar
 drrad = drexb + dr_fric
 

@@ -11,12 +11,15 @@ import os
 
 
 # Provide inputs and plot options here.
-ncpath = "/Users/zamperini/Documents/lim_runs/colprobe-a8-actual-001a.nc"
+#ncpath = "/Users/zamperini/Documents/lim_runs/colprobe-a8-actual-001a.nc"
+ncpath = "/Users/zamperini/Documents/lim_runs/184527-tor0_v3.nc"
 cmap = "magma"
 rad_sum_width = 0.01  # If None just go one radial bin at a time.
 #rad_sum_width = None
-xlims = [-6, 8]; xlabels = np.arange(-6, 10, 2, dtype=int)
-ylims = [-0.018, 0.018]
+#xlims = [-6, 8]; xlabels = np.arange(-6, 10, 2, dtype=int)
+xlims = [-50, 50]; xlabels = np.arange(-50, 50, 10, dtype=int)
+#ylims = [-0.018, 0.018]
+ylims = [-0.7, 0.7]
 extra_frames = 10
 cp_width = 0.015
 
@@ -95,7 +98,8 @@ summed_ddlim3 = np.array(summed_ddlim3)
 
 # Grab some values for the plot properties.
 #vmin = summed_ddlim3[np.nonzero(summed_ddlim3)].min()
-vmin = 0.01
+#vmin = 0.01
+vmin = summed_ddlim3.max() / 10
 vmax = summed_ddlim3.max()
 #lev_exp = np.linspace(np.floor(np.log10(vmin)-1),
 #  np.ceil(np.log10(vmax)+1), 10)
@@ -108,7 +112,9 @@ X2, Y2 = np.meshgrid(par_locs, rad_locs)
 # qualitatively.
 Z2 = ddlim3.sum(axis=0)
 Z2 = np.ma.masked_where(Z2 <= 0, Z2).T
-levs2 = np.geomspace(0.01, Z2.max(), 15)
+vmin2 = Z2.max() / 10
+vmax2 = Z2.max()
+levs2 = np.geomspace(vmin2, vmax2, 15)
 
 # Now create a list of plots and save them for putting into a gif later.
 print("Generating plots...")
@@ -130,10 +136,10 @@ for i in range(0, len(summed_ddlim3)-1):
 
         # Plot the 2D distribution.
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
-        c = ax1.contourf(X1, Y1, interp_ddlim3, levs, cmap=cmap,
-          norm=colors.LogNorm())
-        #c = ax1.pcolormesh(X1, Y1, interp_ddlim3, cmap=cmap,
-        #  norm=colors.LogNorm(vmin=vmin, vmax=vmax), shading="auto")
+        #c = ax1.contourf(X1, Y1, interp_ddlim3, levs, cmap=cmap,
+        #  norm=colors.LogNorm())
+        c = ax1.pcolormesh(X1, Y1, interp_ddlim3, cmap=cmap,
+          norm=colors.LogNorm(vmin=vmin, vmax=vmax), shading="auto")
 
         # Add in a little CP as well.
         cp1 = patches.Rectangle((-0.05, -cp_width), 0.1, cp_width*2,
@@ -156,7 +162,9 @@ for i in range(0, len(summed_ddlim3)-1):
         # This is an accompanying side plot to show the radial position of each
         # slice.
         ax2.set_facecolor("grey")
-        ax2.contourf(X2, Y2, Z2, levs2, norm=colors.LogNorm(), cmap=cmap)
+        #ax2.contourf(X2, Y2, Z2, levs2, norm=colors.LogNorm(), cmap=cmap)
+        ax2.pcolormesh(X2, Y2, Z2, cmap=cmap,
+          norm=colors.LogNorm(vmin=vmin2, vmax=vmax2), shading="auto")
         ax2.set_xlabel("Parallel to B (m)")
         ax2.set_ylabel("Radial (m)")
         cp2 = patches.Rectangle((-0.05, -0.15), 0.1, 0.15, color="grey", ec="k")

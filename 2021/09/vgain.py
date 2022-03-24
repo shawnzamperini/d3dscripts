@@ -10,6 +10,10 @@ E0 = 1500
 dt = 2 * 10**(-5)
 vr0 = 100
 
-dvr = (1/2) * (q / mw)**2 * (Bt*E0 - B**2*vr0) * dt**2
+#dvr = (1/2) * (q / mw)**2 * (Bt*E0 - B**2*vr0) * dt**2
 
-print("dvr = {:.3e}".format(dvr))
+#dvr = Bt * E0 * np.sqrt(2 * np.pi) / np.square(B)
+dvr = Bt * E0 / np.square(B)
+dr = dvr * dt
+
+print("dr = {:.3e}".format(dr))

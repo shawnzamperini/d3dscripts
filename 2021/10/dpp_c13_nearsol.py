@@ -20,10 +20,10 @@ farsol = 13  # Near the edge of the grid.
 smooth = False
 ncpaths = [
 "/Users/zamperini/Documents/d3d_work/184527/d3d-184527-inj-007.nc",  # No flows
-"/Users/zamperini/Documents/d3d_work/184527/d3d-184527-inj-009.nc",  # M = 0.1
-"/Users/zamperini/Documents/d3d_work/184527/d3d-184527-inj-010.nc",  # M = 0.2
-"/Users/zamperini/Documents/d3d_work/184527/d3d-184527-inj-008.nc",  # M = 0.3
-"/Users/zamperini/Documents/d3d_work/184527/d3d-184527-inj-011.nc"   # M = 0.4
+"/Users/zamperini/Documents/d3d_work/184527/d3d-184527-inj-009_2.nc",  # M = 0.1
+"/Users/zamperini/Documents/d3d_work/184527/d3d-184527-inj-010_2.nc",  # M = 0.2
+"/Users/zamperini/Documents/d3d_work/184527/d3d-184527-inj-008_2.nc",  # M = 0.3
+"/Users/zamperini/Documents/d3d_work/184527/d3d-184527-inj-011_2.nc"   # M = 0.4
 ]
 flows = [0.0, 0.1, 0.2, 0.3, 0.4]
 ops = [oedge_plots.OedgePlots(nc) for nc in ncpaths]
@@ -93,7 +93,7 @@ ax.axvline(s_crown, color="k", linestyle="--")
 
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
-ax.set_xlim([0, 86])
+#ax.set_xlim([0, 86])
 if include_lim_dist:
     ax.set_ylim([0, 1.1])
     #ax.plot(lim_x, lim_y)
