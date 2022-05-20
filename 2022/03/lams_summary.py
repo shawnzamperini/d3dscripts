@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
 
 
+show_si = True
+
 lams_path = "/Users/zamperini/My Drive/Research/Data/lams_data/methane_lams_master.xlsx"
 df = pd.read_excel(lams_path, sheet_name="For Export")
 raw_unf_itf_x = df["ml04_loc"].values
@@ -53,40 +55,44 @@ ax1.set_xlim([0, 10])
 ax1.set_ylabel("ITF C13 Counts", color="tab:red", fontsize=fontsize)
 ax1.tick_params(axis="y", color="tab:red", labelcolor="tab:red")
 ax1.set_title("#184527", fontsize=fontsize)
-ax11 = ax1.twinx()
-ax11.plot(unf_itf_x, unf_itf_si, color="tab:purple")
-ax11.set_ylim([0, 1.2e6])
-ax11.tick_params(axis="y", color="tab:purple", labelcolor="tab:purple")
+if show_si:
+    ax11 = ax1.twinx()
+    ax11.plot(unf_itf_x, unf_itf_si, color="tab:purple")
+    ax11.set_ylim([0, 1.2e6])
+    ax11.tick_params(axis="y", color="tab:purple", labelcolor="tab:purple")
 
 ax3.plot(unf_otf_x, unf_otf_c13, color="tab:red")
 ax3.set_ylim([0, 1750])
 ax3.tick_params(axis="y", color="tab:red", labelcolor="tab:red")
 ax3.set_xlabel("Distance along probe (cm)", fontsize=fontsize)
 ax3.set_ylabel("OTF C13 Counts", color="tab:red", fontsize=fontsize)
-ax33 = ax3.twinx()
-ax33.plot(unf_otf_x, unf_otf_si, color="tab:purple")
-ax33.set_ylim([0, 1.2e6])
-ax33.tick_params(axis="y", color="tab:purple", labelcolor="tab:purple")
+if show_si:
+    ax33 = ax3.twinx()
+    ax33.plot(unf_otf_x, unf_otf_si, color="tab:purple")
+    ax33.set_ylim([0, 1.2e6])
+    ax33.tick_params(axis="y", color="tab:purple", labelcolor="tab:purple")
 
 ax2.plot(fav_itf_x, fav_itf_c13, color="tab:red", label="C13")
 ax2.set_ylim([0, 1750])
 ax2.tick_params(axis="y", color="tab:red", labelcolor="tab:red")
 ax2.set_title("#184267", fontsize=fontsize)
-ax22 = ax2.twinx()
-ax22.plot(fav_itf_x, fav_itf_si, color="tab:purple", label="Si")
-ax22.set_ylim([0, 1.2e6])
-ax22.set_ylabel("ITF Si Counts", color="tab:purple", fontsize=fontsize)
-ax22.tick_params(axis="y", color="tab:purple", labelcolor="tab:purple")
+if show_si:
+    ax22 = ax2.twinx()
+    ax22.plot(fav_itf_x, fav_itf_si, color="tab:purple", label="Si")
+    ax22.set_ylim([0, 1.2e6])
+    ax22.set_ylabel("ITF Si Counts", color="tab:purple", fontsize=fontsize)
+    ax22.tick_params(axis="y", color="tab:purple", labelcolor="tab:purple")
 
 ax4.plot(fav_otf_x, fav_otf_c13, color="tab:red")
 ax4.set_ylim([0, 1750])
 ax4.tick_params(axis="y", color="tab:red", labelcolor="tab:red")
 ax4.set_xlabel("Distance along probe (cm)", fontsize=fontsize)
-ax44 = ax4.twinx()
-ax44.plot(fav_otf_x, fav_otf_si, color="tab:purple")
-ax44.set_ylim([0, 1.2e6])
-ax44.tick_params(axis="y", color="tab:purple", labelcolor="tab:purple")
-ax44.set_ylabel("OTF Si Counts", color="tab:purple", fontsize=fontsize)
+if show_si:
+    ax44 = ax4.twinx()
+    ax44.plot(fav_otf_x, fav_otf_si, color="tab:purple")
+    ax44.set_ylim([0, 1.2e6])
+    ax44.tick_params(axis="y", color="tab:purple", labelcolor="tab:purple")
+    ax44.set_ylabel("OTF Si Counts", color="tab:purple", fontsize=fontsize)
 
 fig.tight_layout()
 fig.show()

@@ -6,7 +6,8 @@ import numpy as np
 plt.rcParams['font.family'] = 'Century Gothic'
 
 # Load, select just columns with numbers, set question number as column.
-path = "/Users/zamperini/Documents/d3d_work/211025 DEI Survey (Responses).xlsx"
+#path = "/Users/zamperini/Documents/d3d_work/211025 DEI Survey (Responses).xlsx"
+path = "/Users/zamperini/Documents/d3d_work/dei/211025 DEI Survey (Responses).xlsx"
 df = pd.read_excel(path)
 
 answer_cols = df.columns[[1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 24]]
@@ -20,40 +21,44 @@ answers = df[answer_cols]
 answers.columns = answer_nums
 
 # Instead choose a representative subset.
-#numeric_answers = np.arange(1, 11, dtype=int)
-numeric_answers = np.array([1, 4, 7, 8])
+numeric_answers = np.arange(1, 11, dtype=int)
+#numeric_answers = np.array([1, 4, 7, 8])
 
 min_answers = answers[answers[13] == "Yes"][numeric_answers]
 maj_answers = answers[answers[13] == "No"][numeric_answers]
+
 
 # Average repsonses difference.
 avg_diff = ((maj_answers.mean() - min_answers.mean()) / maj_answers.mean()).mean()
 print("Minorities responded on average {:.1f}% lower".format(avg_diff * 100))
 
-#xlabels = ["Diversity is valued", "Diversity is valued\nby leadership",
-#  "Diversity is valued\nby supervisor", "Respected by\ncolleagues",
-#  "Identity is\nvalued", "Equal\nopportunity", "Supported in\ncareer",
-#  "Discussing DEI", "Good place\nto work", "Trust in\nhandling issues"]
-xlabels = ["Diversity is valued\nat DIII-D", "I am respected by\nmy colleagues",
-  "Everyone is\nsupported in their\ncareers at DIII-D",
-  "I feel comfortable\ndiscussing DEI issues\nwith my colleagues"]
+xlabels = ["Diversity is valued", "Diversity is valued\nby leadership",
+  "Diversity is valued\nby supervisor", "Respected by\ncolleagues",
+  "Identity is\nvalued", "Equal\nopportunity", "Supported in\ncareer",
+  "Discussing DEI", "Good place\nto work", "Trust in\nhandling issues"]
+#xlabels = ["Diversity is valued\nat DIII-D", "I am respected by\nmy colleagues",
+#  "Everyone is\nsupported in their\ncareers at DIII-D",
+#  "I feel comfortable\ndiscussing DEI issues\nwith my colleagues"]
+xlabels = np.array(xlabels)
+
 
 # Bar graph of the answers separated by minority or not.
 min_avg = min_answers.mean().values
 maj_avg = maj_answers.mean().values
+sort_idx = np.argsort(min_avg)[::-1]
 x = np.arange(len(min_avg))
 width = 0.35
 fig, ax = plt.subplots(figsize=(9, 5))
 ax.grid(zorder=0)
-ax.bar(x - width/2, maj_avg, width, label="Well-represented", color="tab:red", zorder=50)
-ax.bar(x + width/2, min_avg, width, label="Under-represented", color="tab:purple", zorder=51)
+ax.bar(x - width/2, maj_avg[sort_idx], width, label="Well-represented", color="tab:red", zorder=50)
+ax.bar(x + width/2, min_avg[sort_idx], width, label="Under-represented", color="tab:purple", zorder=51)
 ax.set_xticks(x)
 #ax.set_xticklabels(xlabels, rotation=0, ma="left", fontsize=14)
-ax.set_xticklabels(xlabels, rotation=0, ha="center", fontsize=14)
+ax.set_xticklabels(xlabels[sort_idx], rotation=270, ha="center", fontsize=14)
 ax.legend(fontsize=14, framealpha=1.0)
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
-ax.set_ylim([0, 6])
+ax.set_ylim([1, 5])
 ax.set_yticks(np.arange(1, 6, dtype=int))
 ylabels = ["Strongly\nDisagree", "Disagree", "Neutral", "Agree", "Strongly\nAgree"]
 ax.set_yticklabels(ylabels, fontsize=14)

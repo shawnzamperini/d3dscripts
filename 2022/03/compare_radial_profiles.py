@@ -7,6 +7,11 @@ import numpy as np
 from scipy.signal import savgol_filter
 
 
+# A note of Mach directions. For our set of USN DIVIMP runs, S=0 is at the
+# outer target, so a positive Mach number is towards the inner target. For the
+# RCP data, to line up with this convention, we need to multiply the RCP Mach
+# numbers by -1 for 184527.
+
 # Constants and inputs.
 shot = 184527
 
@@ -15,11 +20,13 @@ if shot == 184527:
     ts_path = "/Users/zamperini/Documents/d3d_work/divimp_files/184527/omfit_184527_ts_v4.xlsx"
     core_shift = 0.0
     div_shift = 0.0
+    mach_mult = -1
 elif shot == 184267:
     ncpath = "/Users/zamperini/Documents/d3d_work/divimp_files/184267/d3d-184267-bkg-003.nc"
     ts_path = "/Users/zamperini/Documents/d3d_work/divimp_files/184267/omfit_184267_ts.xlsx"
     core_shift = 0.02
     div_shift = 0.02
+    mach_mult = 1
 rcp_path = "/Users/zamperini/My Drive/Research/Data/rcp_data/rcp_master_detailed.xlsx"
 
 
@@ -100,24 +107,24 @@ t["s_ne"]   = sas["ne (m-3)"].values
 r["mp1_psin"] = mp1["Psin"]
 r["mp1_te"] = mp1["Te (eV)"]
 r["mp1_ne"] = mp1["ne (1e18 m-3)"] * 1e18
-r["mp1_m"]  = mp1["Mach"]
+r["mp1_m"]  = mp1["Mach"] * mach_mult
 r["mp1_vp"] = (mp1["Vf2 (V)"] + mp1["Vf3 (V)"]) / 2.0
 r["mp1_x"] = mp1["R (cm)"] / 100
 r["mp2_psin"] = mp2["Psin"]
 r["mp2_te"] = mp2["Te (eV)"]
 r["mp2_ne"] = mp2["ne (1e18 m-3)"] * 1e18
-r["mp2_m"] = mp2["Mach"]
+r["mp2_m"] = mp2["Mach"] * mach_mult
 r["mp2_vp"] = (mp2["Vf2 (V)"] + mp2["Vf3 (V)"]) / 2.0
 r["mp2_x"] = mp2["R (cm)"] / 100
 r["xp1_psin"] = xp1["Psin"]
 r["xp1_te"] = xp1["Te (eV)"]
 r["xp1_ne"] = xp1["ne (1e18 m-3)"] * 1e18
-r["xp1_m"] = xp1["Mach"]
+r["xp1_m"] = xp1["Mach"] * mach_mult
 r["xp1_x"] = xp1["Z (cm)"] / 100
 r["xp2_psin"] = xp2["Psin"]
 r["xp2_te"] = xp2["Te (eV)"]
 r["xp2_ne"] = xp2["ne (1e18 m-3)"] * 1e18
-r["xp2_m"] = xp2["Mach"]
+r["xp2_m"] = xp2["Mach"] * mach_mult
 r["xp2_x"] = xp2["Z (cm)"] / 100
 
 # Er from the RCPs needs to be calculated.

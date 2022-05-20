@@ -3,8 +3,9 @@ import numpy as np
 
 
 # Check signal (UOB_VOLTS?)
-#uob_volts = 1.2  # Same for 184267 and 184527.
-uob_volts = 5.7  # 187111
+uob_volts = 1.2  # Same for 184267 and 184527.
+#uob_volts = 5.7  # 187111
+uob_r = 1.42  # In m, location of UOB opening for the source.
 
 # Calibration constants. Check gas valve calibrations on DIII-D wiki.
 p1 = 10.31
@@ -29,3 +30,8 @@ n = f_tlps / (R * T)  # Number of moles/s.
 avog = 6.02214 * 10**(23)  # Avogadro's constant.
 N = n * avog  # Number of molecules/s.
 print("  Way #2: {:.3e} atoms/s".format(N))
+
+# For DIVIMP input need to divide by 2piR.
+print("\nFor DIVIMP ABSFAC")
+print("  Way #1: {:.3e} atoms/s/m".format(f_pps / (2 * np.pi * uob_r)))
+print("  Way #2: {:.3e} atoms/s/m".format(N / (2 * np.pi * uob_r)))

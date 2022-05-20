@@ -9,8 +9,9 @@ from tqdm import tqdm
 
 
 # Inputs.
-psins = np.linspace(1.13, 1.40, 50)
-shot = 167196
+#psins = np.linspace(1.13, 1.40, 50)   # 167196
+psins = np.linspace(1.18, 1.45, 50)   # 186914
+shot = 176971
 pol_lims = True
 
 # Choose correct paths for everything. There actually is no reason to separate
@@ -21,12 +22,28 @@ if pol_lims:
         gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/167196/167196_3500.pickle"
         output_dict = "ncoords_167196_pol.pickle"
         output_file = "for_mafot_167196_pol.dat"
+    elif shot == 186914:
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186914/186914_3500.pickle"
+        output_dict = "ncoords_186914_pol.pickle"
+        output_file = "for_mafot_186914_pol.dat"
+    elif shot == 176971:
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/176971/176971_3000.pickle"
+        output_dict = "ncoords_176971_pol.pickle"
+        output_file = "for_mafot_176971_pol.dat"
 else:
     wall_path = "/Users/zamperini/Documents/d3d_work/lwt/930116/mafot_wall_wide.dat"
     if shot == 167196:
         gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/167196/167196_3500.pickle"
         output_dict = "ncoords_167196_tor.pickle"
         output_file = "for_mafot_167196_tor.dat"
+    elif shot == 186914:
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186914/186914_3500.pickle"
+        output_dict = "ncoords_186914_tor.pickle"
+        output_file = "for_mafot_186914_tor.dat"
+    elif shot == 176971:
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/176971/176971_3000.pickle"
+        output_dict = "ncoords_176971_tor.pickle"
+        output_file = "for_mafot_176971_tor.dat"
 
 
 # Load gfile.

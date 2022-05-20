@@ -17,22 +17,33 @@ from LimWallToolkit import LimWallToolkit
 # Inputs
 shot = 167196
 pol_lims = False
+include_coils = True
 
 # Set the correct paths for each case.
 if pol_lims:
     wall_path = "/Users/zamperini/Documents/d3d_work/lwt/167196/mafot_3d_wall.dat"
     if shot == 167196:
-        mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/lam_with_pol_lims.dat"
-        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/167196/167196_3500.pickle"
-        ncoords_path = "ncoords_167196_pol.pickle"
-        gif_path = "psin_conns_167196_pol.gif"
+        if include_coils:
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/lam_167196_with_fci_coils_parametrized.dat"
+            gif_path = "psin_conns_167196_pol_coils.gif"
+        else:
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/lam_with_pol_lims.dat"
+            gif_path = "psin_conns_167196_pol.gif"
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/archive/167196/167196_3500.pickle"
+        ncoords_path = "/Users/zamperini/github/d3dscripts/2022/03/ncoords_167196_pol.pickle"
+
 else:
     wall_path = "/Users/zamperini/Documents/d3d_work/lwt/930116/mafot_wall_wide.dat"
     if shot == 167196:
-        mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/lam_with_tor_lims.dat"
-        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/167196/167196_3500.pickle"
-        ncoords_path = "ncoords_167196_tor.pickle"
-        gif_path = "psin_conns_167196_tor.gif"
+        if include_coils:
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/lam_167196_with_fci_coils_parametrized_tl.dat"
+            gif_path = "psin_conns_167196_tor_coils.gif"
+        else:
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/lam_with_tor_lims.dat"
+            gif_path = "psin_conns_167196_tor.gif"
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/archive/167196/167196_3500.pickle"
+        ncoords_path = "/Users/zamperini/github/d3dscripts/2022/03/ncoords_167196_tor.pickle"
+
 
 
 # Load in the mafot data into a dataframe.
