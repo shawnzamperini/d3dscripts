@@ -9,8 +9,8 @@ plt.rcParams["font.family"] = "Century Gothic"
 
 
 print("Loading runs...")
-diff_path = "/Users/zamperini/Documents/d3d_work/divimp_files/blob_test/d3d-167196-mrc-shifted-drifts-quick.nc"
-blob_path = "/Users/zamperini/Documents/d3d_work/divimp_files/blob_test/d3d-167196-blobtest-div6.nc"
+diff_path = "/Users/zamperini/Documents/d3d_work/divimp_files/blob_test/d3d-167196-blobtest-diffusion.nc"
+blob_path = "/Users/zamperini/Documents/d3d_work/divimp_files/blob_test/d3d-167196-blobtest-div8.nc"
 diff = oedge_plots.OedgePlots(diff_path)
 blob = oedge_plots.OedgePlots(blob_path)
 absfac = diff.absfac
@@ -27,8 +27,12 @@ print("Profiles at OMP plot...")
 zomp = float(diff.nc["Z0"][:])
 romp = 2.260
 rstart = 2.22; rend = 2.37
-diff_r, diff_nz = diff.fake_probe(rstart, rend, zomp, zomp, "nz", show_plot=False, plot="R")
-blob_r, blob_nz = blob.fake_probe(rstart, rend, zomp, zomp, "nz", show_plot=False, plot="R")
+diff_probe = diff.fake_probe(rstart, rend, zomp, zomp, "nz", show_plot=False, plot="R")
+blob_probe = blob.fake_probe(rstart, rend, zomp, zomp, "nz", show_plot=False, plot="R")
+diff_r = np.array(diff_probe["r"])
+diff_nz = np.array(diff_probe["nz"])
+blob_r = np.array(blob_probe["r"])
+blob_nz = np.array(blob_probe["nz"])
 dmask = diff_nz > 0
 bmask = blob_nz > 0
 fig, ax = plt.subplots(figsize=(5, 4))

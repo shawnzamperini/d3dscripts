@@ -33,7 +33,7 @@ fig, ax = plt.subplots(figsize=(5, 4))
 if include_lsn:
     #ax.plot(slsn, nzlsn, lw=3, color="k", linestyle="--", label="LSN")
     ax.plot(slsn, nzlsn, lw=3, color="k", linestyle="--", label="LSN (Open)")
-    ax.set_xlabel("Distance from outer target (normalized)", fontsize=fontsize)
+    ax.set_xlabel("Parallel distance from\nouter target (normalized)", fontsize=fontsize)
     ax.set_yscale("log")
     ax.grid()
     ax.set_ylim([1e14, 4e17])

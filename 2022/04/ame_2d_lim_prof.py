@@ -70,7 +70,8 @@ fig.show()
 # Just the not-flat distribution one.
 fig, ax2 = plt.subplots(1, 1, figsize=(8, 4))
 if not empty:
-    cont2 = ax2.pcolormesh(X, Y, d527["Z"]*absfac, shading="auto", vmin=vmin, vmax=vmax, cmap=cmap)
+    #cont2 = ax2.pcolormesh(X, Y, d527["Z"]*absfac, shading="auto", vmin=vmin, vmax=vmax, cmap=cmap)
+    cont2 = ax2.pcolormesh(X, Y, d527["Z"]/d527["Z"].max(), shading="auto", vmin=vmin/d527["Z"].max(), vmax=vmax/d527["Z"].max(), cmap=cmap)
     #cbar = fig.colorbar(cont2, ax=ax2)
     #cbar.set_label(r"$\mathdefault{^{13}C\ Density\ (m^{-3})}$", fontsize=14)
     #cbar.set_label(r"$\mathdefault{^{13}C\ Density\ (Arbitrary)}$", fontsize=14)

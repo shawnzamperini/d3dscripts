@@ -8,11 +8,12 @@ from matplotlib.colors import LogNorm
 
 
 # Inputs
-shot = 172410
+shot = 119432
 signals = ["FS0{}".format(i) for i in range(0, 9)]
 #signals = np.append(signals, ["FS{}MIDDA".format(i) for i in range(1,9)])
 #signals = np.append(signals, ["FS01DWDA", "FS04DWDA", "FS06DWDA", "FS11DWDA", "FS09DWDA", "FS12"])
-signals = ["ILEG15B000","ILEG13B008","ILEG15B060","ILEG13B068","ILEG15B150","ILEG13B158","ILEG15B240","ILEG13B248","ILEG15B315","ILEG13B315"]
+#signals = ["ILEG15B000","ILEG13B008","ILEG15B060","ILEG13B068","ILEG15B150","ILEG13B158","ILEG15B240","ILEG13B248","ILEG15B315","ILEG13B315"]
+signals = ["HCD34"]
 time_range = [2, 4]
 measured_fblob = 1600  # Hz
 cbar_lims = [1e20, 1e23]

@@ -30,12 +30,12 @@ for i in tqdm(range(0, R.shape[0])):
             inside[i, j] = True
 psin = np.ma.masked_where(~inside, psin)
 
-fig, ax = plt.subplots(figsize=(8, 10))
-
+fig, ax = plt.subplots(figsize=(4, 5))
 ax.plot(wall_r, wall_z, color="k", lw=2)
 ax.set_aspect("equal")
 ax.scatter(raxis, zaxis, marker="+", s=60, color="k")
-ax.contour(R, Z, psin, colors="k", levels=[1])
+ax.contour(R, Z, psin, colors="k", levels=[1], linewidths=2)
+ax.contour(R, Z, psin, colors="k", levels=np.linspace(1.0, 1.2, 6))
 ax.axis("off")
 fig.tight_layout()
 fig.show()
