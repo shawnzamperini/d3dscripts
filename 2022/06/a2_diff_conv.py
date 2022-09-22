@@ -24,7 +24,7 @@ diff_cp_itf_y = diff_cp_itf_y[mask]
 
 # Convective model.
 absfac_mod = 0.25
-ncpath = "/Users/zamperini/Documents/d3d_work/divimp_files/blob_test/d3d-167196-blobtest-div11.nc"
+ncpath = "/Users/zamperini/Documents/d3d_work/divimp_files/blob_test/d3d-167196-blobtest-div20a.nc"
 op = oedge_plots.OedgePlots(ncpath)
 conv_cp = op.collector_probe(2.27, -0.188, 2.37, -0.188, showplot=False, numlocs=30)
 conv_cp_itf_x = np.array(conv_cp["r"])
@@ -38,7 +38,8 @@ conv_cp_itf_y = conv_cp_itf_y[mask]
 # Load 3DLIM run. Absfac * shots * time of shot * fudge factor
 absfac = 1.647e14 * 25 * 5 * 10
 rtip = 2.282
-ncpath = "/Users/zamperini/Documents/d3d_work/lim_runs/blobtest/167196-a2-tor240_45-blob.nc"
+#ncpath = "/Users/zamperini/Documents/d3d_work/lim_runs/blobtest/167196-a2-tor240_45-blob.nc"
+ncpath = "/Users/zamperini/Documents/d3d_work/lim_runs/blobtest/167196-a2-tor240_44.nc"
 lp = LimPlots.LimPlots(ncpath)
 cent = lp.centerline(showplot=False)
 lim_otfx = cent["x1"] + rtip

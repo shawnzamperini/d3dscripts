@@ -11,7 +11,7 @@ from matplotlib.lines import Line2D
 # 969002:
 
 # Only things you need to change are here. This script has only been tested on 178351.
-shot        = 180352
+shot        = 189025
 time        = 2800
 tree        = "EFIT01"  # EFIT01 or EFITRT1
 cm_flux     = np.arange(1, 8) # Which cm flux surface to plot.

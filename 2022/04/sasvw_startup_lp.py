@@ -6,8 +6,8 @@ import numpy as np
 #shot = 189012
 #tstart = 2000
 #tend = 5500
-shot = 176508
-tstart = 2000
+shot = 191446
+tstart = 1000
 tend = 5000
 lp_dict = get_lp.get_dict_of_lps(shot, tunnel=False)
 data = get_lp.plot_contours(lp_dict, tstart, tend, te_vmax=75)

@@ -12,9 +12,9 @@ plt.rcParams["font.family"] = "Century Gothic"
 plt.rc('axes', unicode_minus=False)
 
 # Inputs.
-ncpath_flat = "/Users/zamperini/Documents/d3d_work/167196/167196-a2-tor240_36.nc"
-ncpath_old  = "/Users/zamperini/Documents/d3d_work/167196/167196-a2-old-001.nc"
-ncpath_good = "/Users/zamperini/Documents/d3d_work/167196/167196-a2-tor240_44.nc"
+ncpath_flat = "/Users/zamperini/Documents/d3d_work/archive/167196/167196-a2-tor240_36.nc"
+ncpath_old  = "/Users/zamperini/Documents/d3d_work/archive/167196/167196-a2-old-001.nc"
+ncpath_good = "/Users/zamperini/Documents/d3d_work/archive/167196/167196-a2-tor240_44.nc"
 
 # Trim the tips of the probes where it shoots up erronously.
 flat_keep = [None, None]
@@ -105,8 +105,10 @@ ax22.set_ylim([0, None])
 ax1.set_ylim([0, 40])
 ax2.set_ylim([0, 40])
 
-ax1.set_title("Flat (no near-SOL accumulation)", fontsize=12)
-ax2.set_title("DIVIMP (near-SOL accumulation)", fontsize=12)
+ax1.set_title("No near-SOL W accumulation", fontsize=12)
+ax2.set_title("DIVIMP coupling with \nnear-SOL W accumulation", fontsize=12)
 
 fig.tight_layout()
 fig.show()
+
+# A different plot for the weekly DIII-D email.

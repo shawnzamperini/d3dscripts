@@ -4,8 +4,11 @@ import numpy as np
 import pretty_plots as pp
 
 
-def run(shot, tag, units, mult=1):
-    conn = mds.Connection('localhost')
+def run(shot, tag, units, mult=1, tunnel=False):
+    if tunnel:
+        conn = mds.Connection('localhost')
+    else:
+        conn = mds.Connection("atlas.gat.com")
     ga_obj = gadata(tag, shot, connection=conn)
     time = ga_obj.xdata
     value = ga_obj.zdata * mult
@@ -69,4 +72,12 @@ def triang(shot):
 
 def q95(shot):
     ga_obj = run(shot, "Q95", "none")
+    return ga_obj
+
+def zxpt1(shot):
+    ga_obj = run(shot, "ZXPT1", "m")
+    return ga_obj
+
+def tinj(shot):
+    ga_obj = run(shot, "TINJ", "N/m?")
     return ga_obj

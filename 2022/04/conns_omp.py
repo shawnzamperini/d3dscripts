@@ -13,7 +13,8 @@ from LimWallToolkit import LimWallToolkit
 
 plt.rcParams['font.family'] = 'Century Gothic'
 # Inputs
-shot = 176971
+#shot = 176971
+shot = 167196
 pol_lims = False
 include_coils = True
 
@@ -245,6 +246,7 @@ fig.show()
 # A circular contour plot????
 cmap = "winter"   # winter,
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 6), sharex=True, sharey=True, subplot_kw=dict(projection='polar'))
+#fig, ax1 = plt.subplots(1, 1, figsize=(6, 6), subplot_kw=dict(projection='polar'))
 ax = fig.add_subplot(111, frameon=False)
 ax.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
 
@@ -270,3 +272,23 @@ ax2.set_title("Toroidal Limiters", fontsize=fontsize)
 #fig.tight_layout()
 fig.show()
 #plt.savefig("/Users/zamperini/My Drive/Research/Documents/2022/04/polar_limiter_comparison_fci.png", transparent=True)
+
+# Same plot just individual.
+fig, ax1 = plt.subplots(1, 1, figsize=(6, 6), subplot_kw=dict(projection='polar'))
+ax = fig.add_subplot(111, frameon=False)
+ax.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
+cont1 = ax1.contourf(np.radians(pol_fci_data[0]), pol_fci_data[3], pol_fci_data[2], vmin=vmin, vmax=vmax, cmap=cmap)
+fig.subplots_adjust(bottom=0.2)
+cbar_ax = fig.add_axes([0.25, 0.1, 0.5, 0.05])
+cbar = fig.colorbar(cont1, cax=cbar_ax, orientation="horizontal")
+cbar.set_label("Connection Length (m)", fontsize=fontsize)
+yticks = [2.31, 2.34, 2.37]
+ax1.set_yticks(yticks)
+ax1.set_yticklabels(["R=2.31", "2.34", "2.37"])
+ax1.tick_params(axis="both", labelsize=12)
+ax1.grid(False, axis="x")
+ax1.grid(axis="y", alpha=0.5)
+ax1.set_ylim([2.25, 2.375])
+ax1.set_title("Current Limiters", fontsize=fontsize)
+#fig.tight_layout()
+fig.show()

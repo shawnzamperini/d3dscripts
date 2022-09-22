@@ -10,8 +10,9 @@ from tqdm import tqdm
 
 # Inputs.
 #psins = np.linspace(1.13, 1.40, 50)   # 167196
-psins = np.linspace(1.18, 1.45, 50)   # 186914
-shot = 176971
+#psins = np.linspace(1.18, 1.45, 50)   # 186914
+psins = np.linspace(1.20, 1.50, 50)   # 167463
+shot = 174783
 pol_lims = True
 
 # Choose correct paths for everything. There actually is no reason to separate
@@ -22,6 +23,10 @@ if pol_lims:
         gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/167196/167196_3500.pickle"
         output_dict = "ncoords_167196_pol.pickle"
         output_file = "for_mafot_167196_pol.dat"
+    elif shot == 167463:
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167463/167463_3000.pickle"
+        output_dict = "ncoords_167463_pol.pickle"
+        output_file = "for_mafot_167463_pol.dat"
     elif shot == 186914:
         gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186914/186914_3500.pickle"
         output_dict = "ncoords_186914_pol.pickle"
@@ -30,12 +35,20 @@ if pol_lims:
         gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/176971/176971_3000.pickle"
         output_dict = "ncoords_176971_pol.pickle"
         output_file = "for_mafot_176971_pol.dat"
+    elif shot == 174783:
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/174783/174783_0.pickle"
+        output_dict = "ncoords_174783_svr.pickle"
+        output_file = "for_mafot_174783_svr.dat"
 else:
     wall_path = "/Users/zamperini/Documents/d3d_work/lwt/930116/mafot_wall_wide.dat"
     if shot == 167196:
         gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/167196/167196_3500.pickle"
         output_dict = "ncoords_167196_tor.pickle"
         output_file = "for_mafot_167196_tor.dat"
+    elif shot == 167463:
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167463/167463_3000.pickle"
+        output_dict = "ncoords_167463_tor.pickle"
+        output_file = "for_mafot_167463_tor.dat"
     elif shot == 186914:
         gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186914/186914_3500.pickle"
         output_dict = "ncoords_186914_tor.pickle"

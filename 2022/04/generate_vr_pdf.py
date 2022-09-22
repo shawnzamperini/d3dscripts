@@ -10,8 +10,8 @@ from scipy.interpolate import interp1d
 
 # Inputs
 vmin         = 0
-vmax         = 1700
-vmean        = 1000   # Mean of the Gaussian before applying the skew, see printout for true mean.
+vmax         = 1000
+vmean        = 500   # Mean of the Gaussian before applying the skew, see printout for true mean.
 skew         = 1
 blob_scale   = 1.0     # Multiplies the blob velocity PDF by this value. Hypothesis being that inertia of ions means not actually traveling at the blob velocity.
 pinch        = -1

@@ -1,4 +1,4 @@
-import pretty_plots as pp
+#import pretty_plots as pp
 import numpy as np
 from ThomsonClass import ThomsonClass
 from scipy.optimize import curve_fit
@@ -10,12 +10,12 @@ import MDSplus as mds
 # Enable interactive mode so user can input with graphs still up.
 plt.ion()
 
-def ts_fitting(shot, tmin, tmax, tmany):
+def ts_fitting(shot, tmin, tmax, tmany, tunnel):
 
     # Load the TS data.
     ts = ThomsonClass(shot, 'core')
-    ts.load_ts()
-    ts.map_to_efit(np.linspace(tmin, tmax, tmany))
+    ts.load_ts(tunnel=tunnel)
+    ts.map_to_efit(np.linspace(tmin, tmax, tmany), tree="EFIT01")
 
     # Pull out the arrays.
     r  = ts.avg_omp['RminRsep_omp'] * 100
@@ -34,7 +34,7 @@ def ts_fitting(shot, tmin, tmax, tmany):
     ax_te.set_xlabel('R-Rsep OMP(cm)')
     ax_ne.set_xlabel('R-Rsep OMP(cm)')
     ax_te.set_ylabel('Te (eV)')
-    ax_ne.set_ylabel(r'$\mathrm{ne\ (10^{18}\ m^{-3})}$')
+    ax_ne.set_ylabel(r'$\mathdefault{ne\ (10^{18}\ m^{-3})}$')
     for i, chord in enumerate(np.arange(0, len(r))):
         ax_te.annotate(chord, (r[i], te[i]))
         ax_ne.annotate(chord, (r[i], ne[i]))
@@ -58,6 +58,7 @@ def ts_fitting(shot, tmin, tmax, tmany):
         # Ask if any extra chords should be excluded.
         print('\nChords for fitting: ', end=''); print(*np.arange(0, len(r))[:include])
         exclude = input('Chords to exclude (separated by commas, press enter if none): ').split(',')
+        exclude = np.array(exclude, dtype=int)
 
         if exclude != ['']:
             r_tofit  = np.delete(r[:include],  exclude)
@@ -96,24 +97,27 @@ def ts_fitting(shot, tmin, tmax, tmany):
 
     return r, te, ne
 
-def flat_top(shot):
+def flat_top(shot, tunnel):
 
     # Load densv2 tag data.
-    conn = mds.Connection('localhost')
+    if tunnel:
+        conn = mds.Connection('localhost')
+    else:
+        conn = mds.Connection("atlas.gat.com")
     ga_obj = gadata('densv2', shot, connection=conn)
     time = ga_obj.xdata
     dens = ga_obj.zdata
 
     # Plot and ask for the flat top range.
-    fig = pp.pplot(time, dens, fmt='-',  xlabel='Time (ms)', ylabel=r'$\mathrm{\bar{n_e}\ (m^{-3})}$')
+    #fig = pp.pplot(time, dens, fmt='-',  xlabel='Time (ms)', ylabel=r'$\mathrm{\bar{n_e}\ (m^{-3})}$')
     minmax = input('Enter time min/max for analysis range (separated by commas): ').split(',')
 
     # Return requested time range for use in TS function (min, max).
     return int(minmax[0]), int(minmax[1])
 
-def run(shot, tmany=10):
+def run(shot, tmany=10, tunnel=False):
 
-    min, max = flat_top(shot)
-    r, te, ne = ts_fitting(shot, min, max, tmany)
+    min, max = flat_top(shot, tunnel)
+    r, te, ne = ts_fitting(shot, min, max, tmany, tunnel)
 
     return {'r':r, 'te':te, 'ne':ne}
