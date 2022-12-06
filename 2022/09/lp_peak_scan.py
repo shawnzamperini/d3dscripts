@@ -7,16 +7,18 @@ from scipy.optimize import curve_fit
 from scipy.special import erfc
 from scipy import interpolate
 from scipy.signal import medfilt
+from scipy.interpolate import interp1d
 
 
 # Candidates
 # 167195 4000-5000
 
-shot = 174175
+shot = 174176
 tstart = 2000
 tend = 3600
 region = "shelf"
 fit_range = [0.0, 0.2]
+include_dimes = True
 lpdict = get_lp.plot_lps(shot, tstart, tend, bins=100, tunnel=False, showplot=False)
 
 
@@ -32,7 +34,7 @@ colors = {}
 for i in range(0, len(labels)):
     colors[labels[i]] = "C{}".format(i)
 
-data = {"rmrs":[], "ne":[], "te":[], "color":[]}
+data = {"rmrs":[], "ne":[], "te":[], "q":[], "color":[]}
 for i in range(0, len(lpdict["labels"])):
 
     label = lpdict["labels"][i].strip()
@@ -40,12 +42,14 @@ for i in range(0, len(lpdict["labels"])):
         data["rmrs"].append(lpdict["rminrsep"][i])
         data["ne"].append(lpdict["ne (cm-3)"][i] * 1e6)
         data["te"].append(lpdict["Te (eV)"][i])
+        data["q"].append(lpdict["heatflux (W/cm2)"][i])
         data["color"].append(colors[label])
 
 sort_idx = np.argsort(data["rmrs"])
 data["rmrs"] = np.array(data["rmrs"])[sort_idx]
 data["ne"] = np.array(data["ne"])[sort_idx]
 data["te"] = np.array(data["te"])[sort_idx]
+data["q"] = np.array(data["q"])[sort_idx]
 data["color"] = np.array(data["color"])[sort_idx]
 
 # Fit a conv guass to the region to find the location of the peak value.
@@ -64,8 +68,10 @@ fit_idx = np.logical_and(data["rmrs"]>=fit_range[0], data["rmrs"]<=fit_range[1])
 # Median filter to the data.
 nefilt = medfilt(data["ne"], 35)
 tefilt = medfilt(data["te"], 35)
+qfilt = medfilt(data["q"], 35)
 data["nefilt"] = nefilt
 data["tefilt"] = tefilt
+data["qfilt"] = qfilt
 
 # Peak ne occurs at...
 peak_idx = np.argmax(nefilt)
@@ -80,11 +86,18 @@ q_knots = np.quantile(data["rmrs"], x_new)
 t, c, k = interpolate.splrep(data["rmrs"], nefilt/1e18, t=q_knots, s=1)
 nefit = interpolate.BSpline(t, c, k)(data["rmrs"]) * 1e18
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
+# Calculate parallel heat flux.
+mi = 931.49e6
+cs = np.sqrt(2*tefilt/mi) * 3e8
+qpar = 7.5 * tefilt * nefilt * cs * 1.619e-19 * 8.617*-5
 
+
+fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(12, 4))
+
+ax1.axvline(0, color="k", linestyle="--", lw=2)
 ax1.scatter(data["rmrs"], data["ne"], c=data["color"], zorder=5)
 ax1.plot(data["rmrs"], nefilt, color="k", zorder=10)
-#ax1.scatter(rpeak, nepeak, marker="*", s=200, color="r", edgecolors="k", zorder=15)
+ax1.scatter(rpeak, nepeak, marker="*", s=200, color="r", edgecolors="k", zorder=15)
 #ax1.plot(data["rmrs"], nefit, color="r")
 ax1.set_xlabel("R-Rsep (m)", fontsize=14)
 ax1.set_ylabel("ne (m-3)", fontsize=14)
@@ -93,6 +106,12 @@ ax2.scatter(data["rmrs"], data["te"], c=data["color"])
 ax2.plot(data["rmrs"], tefilt, color="k")
 ax2.set_xlabel("R-Rsep (m)", fontsize=14)
 ax2.set_ylabel("Te (eV)", fontsize=14)
+
+ax3.scatter(data["rmrs"], data["q"]/1e6*1e4, c=data["color"])
+ax3.plot(data["rmrs"], qfilt/1e3*1e4, color="k", lw=2)
+#ax3.plot(data["rmrs"], qpar)
+ax3.set_xlabel("R-Rsep (m)", fontsize=14)
+ax3.set_ylabel(r"$\mathdefault{q_{||}\ (MW/m^2)}$", fontsize=14)
 
 fig.tight_layout()
 fig.show()

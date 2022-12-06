@@ -9,7 +9,9 @@ import pandas as pd
 
 
 # Load background.
-ncpath = "/Users/zamperini/Documents/d3d_work/divimp_files/190423/d3d-190423-bkg-001.nc"
+#ncpath = "/Users/zamperini/Documents/d3d_work/divimp_files/190423/d3d-190423-bkg-002.nc"
+#ncpath = "/Users/zamperini/Documents/d3d_work/divimp_files/190423/d3d-190423-sput-004.nc"
+ncpath = "/Users/zamperini/Documents/d3d_work/divimp_files/190423/d3d-190423-tungsten-001.nc"
 op = oedge_plots.OedgePlots(ncpath)
 
 
@@ -78,6 +80,7 @@ op_tsd_ne = op.fake_probe(1.484, 1.484, -0.82, -1.17, data="ne", plot="psin", sh
 op_rcp_te = op.fake_probe(2.18, 2.30, -0.188, -0.188, data="Te", plot="R", show_plot=False)
 op_rcp_ne = op.fake_probe(2.18, 2.30, -0.188, -0.188, data="ne", plot="R", show_plot=False)
 op_rcp_m  = op.fake_probe(2.18, 2.30, -0.188, -0.188, data="Mach", plot="R", show_plot=False)
+
 
 # Pull out ring, psin values so we can plot vertical lines at them.
 ring_linex = []; ring_liney = []
@@ -161,6 +164,17 @@ ax6.set_title("RCP ne")
 ax6.axvline(2.2367, color="k", linestyle="--")
 ax6.set_xlim([2.23, 2.36])
 #ax5.set_ylim([0, 50])
+
+# RCP Mach.
+x = rcp["R(cm)"].values / 100
+y = rcp["Machn"].values
+ax7.axhline(0, color="k")
+ax7.scatter(x, y, s=15, color="k")
+ax7.plot(op_rcp_m["r"], op_rcp_m["Mach"], color="tab:red")
+ax7.set_xlabel("R (m)")
+ax7.set_title("RCP Mach")
+ax7.axvline(2.2367, color="k", linestyle="--")
+ax7.set_xlim([2.23, 2.36])
 
 fig.tight_layout()
 fig.show()

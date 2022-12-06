@@ -12,8 +12,9 @@ columns = ["R (m)", "Z (m)", "N_toroidal", "Lconn (km)", "psimin",
 df = pd.read_csv(path, skiprows=52, names=columns, delimiter="\t")
 
 # From input I know that there are 275 R points and 544 Z points equally spaced.
-r = np.linspace(1, 2.4, 275)
-z = np.linspace(-1.36, 1.36, 544)
+#r = np.linspace(1, 2.4, 275)
+#z = np.linspace(-1.36, 1.36, 544)
+
 #r = df["R (m)"].values
 #z = df["Z (m)"].values
 R, Z = np.meshgrid(r, z)

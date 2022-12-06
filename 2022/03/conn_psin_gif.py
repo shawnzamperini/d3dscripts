@@ -14,24 +14,23 @@ import matplotlib.tri as tri
 from LimWallToolkit import LimWallToolkit
 import sys
 
-
 # Inputs
-shot = 174783
-pol_lims = False
+shot = 190422
+lims = "torgap"  # One of pol, torfull or torgap.
 include_coils = True
 
 # Set the correct paths for each case.
-if pol_lims:
-    wall_path = "/Users/zamperini/Documents/d3d_work/lwt/167196/mafot_3d_wall.dat"
+if lims == "pol":
+    wall_path = "/Users/zamperini/Documents/d3d_work/mafot_files/wall_files/mafot_3d_wall.dat"
     if shot == 167196:
         if include_coils:
-            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/lam_167196_with_fci_coils_parametrized.dat"
-            gif_path = "psin_conns_167196_pol_coils.gif"
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167196/lam_pol_lims_parameterized.dat"
+            gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167196/psin_conns_167196_pol_coils.gif"
         else:
             mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/lam_with_pol_lims.dat"
-            gif_path = "psin_conns_167196_pol.gif"
-        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/archive/167196/167196_3500.pickle"
-        ncoords_path = "/Users/zamperini/github/d3dscripts/2022/03/ncoords_167196_pol.pickle"
+            gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167196/psin_conns_167196_pol.gif"
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167196/167196_3500.pickle"
+        ncoords_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167196/ncoords_167196_pol.pickle"
 
     elif shot == 167463:
         if include_coils:
@@ -53,17 +52,57 @@ if pol_lims:
         gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/174783/174783_0.pickle"
         ncoords_path = "/Users/zamperini/Documents/d3d_work/mafot_files/174783/ncoords_174783_svr.pickle"
 
-else:
-    wall_path = "/Users/zamperini/Documents/d3d_work/lwt/930116/mafot_wall_wide.dat"
+    elif shot == 180455:
+        if include_coils:
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/lam_param_pol.dat"
+            gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/psin_conns_180455_pol.gif"
+        else:
+            print("Not run without coils yet.")
+            sys.exit()
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/180455_3500.pickle"
+        ncoords_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/ncoords_180455.pickle"
+
+    elif shot == 186257:
+        if include_coils:
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/lam_param_pol.dat"
+            gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/psin_conns_186257_pol.gif"
+        else:
+            print("Not run without coils yet.")
+            sys.exit()
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/186257_3500.pickle"
+        ncoords_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/ncoords_186257.pickle"
+
+    elif shot == 186754:
+        if include_coils:
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/lam_param_pol.dat"
+            gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/psin_conns_186754_pol.gif"
+        else:
+            print("Not run without coils yet.")
+            sys.exit()
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/186754_3500.pickle"
+        ncoords_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/ncoords_186754.pickle"
+
+    elif shot == 190422:
+        if include_coils:
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/190422/lam_param_pol.dat"
+            gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/190422/psin_conns_190422_pol.gif"
+        else:
+            print("Not run without coils yet.")
+            sys.exit()
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/190422/190422_3500.pickle"
+        ncoords_path = "/Users/zamperini/Documents/d3d_work/mafot_files/190422/ncoords_190422.pickle"
+
+elif lims == "torfull":
+    wall_path = "/Users/zamperini/Documents/d3d_work/mafot_files/wall_files/mafot_wall_full_torlim.dat"
     if shot == 167196:
         if include_coils:
-            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/lam_167196_with_fci_coils_parametrized_tl.dat"
-            gif_path = "psin_conns_167196_tor_coils.gif"
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167196/lam_tor_lims_full_parameterized.dat"
+            gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167196/psin_conns_167196_torfull_coils.gif"
         else:
             mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/lam_with_tor_lims.dat"
             gif_path = "psin_conns_167196_tor.gif"
-        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/archive/167196/167196_3500.pickle"
-        ncoords_path = "/Users/zamperini/github/d3dscripts/2022/03/ncoords_167196_tor.pickle"
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167196/167196_3500.pickle"
+        ncoords_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167196/ncoords_167196_pol.pickle"
 
     elif shot == 167463:
         if include_coils:
@@ -85,11 +124,100 @@ else:
         gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/174783/174783_0.pickle"
         ncoords_path = "/Users/zamperini/Documents/d3d_work/mafot_files/174783/ncoords_174783_svr.pickle"
 
+    elif shot == 180455:
+        if include_coils:
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/lam_param_fulltor.dat"
+            gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/psin_conns_180455_fulltor.gif"
+        else:
+            print("Not run without coils yet.")
+            sys.exit()
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/180455_3500.pickle"
+        ncoords_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/ncoords_180455.pickle"
 
+    elif shot == 186257:
+        if include_coils:
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/lam_param_fulltor.dat"
+            gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/psin_conns_186257_fulltor.gif"
+        else:
+            print("Not run without coils yet.")
+            sys.exit()
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/186257_3500.pickle"
+        ncoords_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/ncoords_186257.pickle"
+
+    elif shot == 186754:
+        if include_coils:
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/lam_param_fulltor.dat"
+            gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/psin_conns_186754_fulltor.gif"
+        else:
+            print("Not run without coils yet.")
+            sys.exit()
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/186754_3500.pickle"
+        ncoords_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/ncoords_186754.pickle"
+
+    elif shot == 190422:
+        if include_coils:
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/190422/lam_param_fulltor.dat"
+            gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/190422/psin_conns_190422_torfull.gif"
+        else:
+            print("Not run without coils yet.")
+            sys.exit()
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/190422/190422_3500.pickle"
+        ncoords_path = "/Users/zamperini/Documents/d3d_work/mafot_files/190422/ncoords_190422.pickle"
+
+elif lims == "torgap":
+    wall_path = "/Users/zamperini/Documents/d3d_work/mafot_files/wall_files/mafot_wall_gap_torlim_v2.dat"
+    if shot == 167196:
+        if include_coils:
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167196/lam_tor_lims_gap_fixed.dat"
+            gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167196/psin_conns_167196_torgap_coils.gif"
+        else:
+            pass
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167196/167196_3500.pickle"
+        ncoords_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167196/ncoords_167196_pol.pickle"
+
+    elif shot == 180455:
+        if include_coils:
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/lam_param_gaptor.dat"
+            gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/psin_conns_180455_gaptor.gif"
+        else:
+            print("Not run without coils yet.")
+            sys.exit()
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/180455_3500.pickle"
+        ncoords_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/ncoords_180455.pickle"
+
+    elif shot == 186257:
+        if include_coils:
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/lam_param_gaptor.dat"
+            gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/psin_conns_186257_gaptor.gif"
+        else:
+            print("Not run without coils yet.")
+            sys.exit()
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/186257_3500.pickle"
+        ncoords_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/ncoords_186257.pickle"
+
+    elif shot == 186754:
+        if include_coils:
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/lam_param_gaptor.dat"
+            gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/psin_conns_186754_gaptor.gif"
+        else:
+            print("Not run without coils yet.")
+            sys.exit()
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/186754_3500.pickle"
+        ncoords_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/ncoords_186754.pickle"
+
+    elif shot == 190422:
+        if include_coils:
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/190422/lam_param_gaptor.dat"
+            gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/190422/psin_conns_190422_torgap.gif"
+        else:
+            print("Not run without coils yet.")
+            sys.exit()
+        gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/190422/190422_3500.pickle"
+        ncoords_path = "/Users/zamperini/Documents/d3d_work/mafot_files/190422/ncoords_190422.pickle"
 
 # Load in the mafot data into a dataframe.
 columns = ["R (m)", "Z (m)", "N_toroidal", "Lconn (km)", "psimin",
-  "psimax", "psiav", "pitch angle", "yaw angle", "theta", "psi"]
+           "psimax", "psiav", "pitch angle", "yaw angle", "theta", "psi"]
 df = pd.read_csv(mafot_path, skiprows=52, names=columns, delimiter="\t")
 r = df["R (m)"].values
 z = df["Z (m)"].values
@@ -121,10 +249,15 @@ psin_rz_out = psin_rz[:, outboard]
 # the next psin.
 conns = {}
 n = 0
-minz = 999; maxz = -999
-minl = 999; maxl = -999
+minz = 999;
+maxz = -999
+minl = 999;
+maxl = -999
 for psin, ncoord in ncoords.items():
-    tmp_l = []; tmp_r = []; tmp_z = []; tmp_d = []
+    tmp_l = [];
+    tmp_r = [];
+    tmp_z = [];
+    tmp_d = []
     for deg in range(0, 360, 2):
         for i in range(0, ncoord):
             tmp_l.append(l[n])
@@ -143,8 +276,8 @@ for psin, ncoord in ncoords.items():
                 maxl = l[n]
 
             n += 1
-    conns[psin] = {"l":np.array(tmp_l), "r":np.array(tmp_r),
-        "z":np.array(tmp_z), "d":np.array(tmp_d)}
+    conns[psin] = {"l": np.array(tmp_l), "r": np.array(tmp_r),
+                   "z": np.array(tmp_z), "d": np.array(tmp_d)}
 
 # These should match, otherwise we missed a point.
 if len(df) != n:
@@ -160,22 +293,21 @@ levels = np.arange(0, maxl, 2)
 fnames = []
 psins = list(conns.keys())
 for i in tqdm(range(0, len(psins))):
-
     l = conns[psins[i]]["l"]
     d = conns[psins[i]]["d"]
     z = conns[psins[i]]["z"]
 
     # Set zeros to something outside the colorbar range so they don't show up.
-    l[l==0] = -999
+    l[l == 0] = -999
 
     fig, (ax2, ax) = plt.subplots(1, 2, figsize=(9, 4))
     tri = ax.tricontourf(d, z, l, cmap="inferno", norm=norm, levels=levels,
-        extend="max")
+                         extend="max")
     ax.set_facecolor("grey")
     ax.set_ylim(minz, maxz)
     psin_label = r"$\mathdefault{\psi_n}$" + " = {:.3f}".format(psins[i])
     ax.text(0.5, 0.90, psin_label, transform=ax.transAxes,
-        bbox={"facecolor":"white", "edgecolor":"k"}, fontsize=16)
+            bbox={"facecolor": "white", "edgecolor": "k"}, fontsize=16)
     ax.set_xlabel("Toroidal Angle", fontsize=16)
     ax.set_ylabel("Z (m)", fontsize=16)
     cbar = fig.colorbar(tri, ax=ax, ticks=levels)
@@ -204,3 +336,11 @@ with imageio.get_writer(gif_path, mode="I") as writer:
         writer.append_data(image)
 for fname in fnames:
     os.remove(fname)
+
+# Saved pickled output.
+output = {}
+for psin in conns.keys():
+    output[psin] = {"d": np.array(d, dtype=np.float32), "z": np.array(z, dtype=np.float32), "l": np.array(l, dtype=np.float32)}
+pickle_path = mafot_path.rsplit("/", 1)[0] + "/" + str(shot) + "_conn_{}_dict.pickle".format(lims)
+with open(pickle_path, "wb") as f:
+    pickle.dump(output, f)

@@ -123,7 +123,7 @@ class BlobbyLP:
         return {"tesep":tesep, "nesep":nesep, "lambda_te":lambda_te,
             "lambda_ne":lambda_ne}
 
-    def calc_flux_expansion(self, shot, time, gfile_pickle_path):
+    def calc_flux_expansion(self, shot, time, gfile_pickle_path, target="shelf"):
         """
         Calculate the flux expansion along the target using the EFIT. This
         returns a dictionary of the flux expansion FROM THE X-POINT in relation
@@ -159,9 +159,20 @@ class BlobbyLP:
         #f_bp = RectBivariateSpline(gfile["R"], gfile["Z"], gfile["Bp"])
 
         # Get coordinates of a line for the shelf (easy) and OMP (harder).
-        shelf_r1 = 1.372
-        shelf_r2 = 1.678
-        shelf_z  = -1.25
+        if target == "shelf":
+            shelf_r1 = 1.372
+            shelf_r2 = 1.678
+            shelf_z1  = -1.25
+            shelf_z2 = shelf_z1
+
+        # This is a rough approximation where we just use the upper baffle,
+        # which is to say we don't think the flux expansion changes once you
+        # enter the slot. This is probably fine.
+        elif target == "sas":
+            shelf_r1 = 1.40
+            shelf_r2 = 1.80
+            shelf_z1 = 1.12
+            shelf_z2 = 1.065
 
         # REPLACING with the X-point, so that we are calculating the flux
         # expansion between the OMP and the X-point.
@@ -195,7 +206,8 @@ class BlobbyLP:
 
         # For the shelf see what range of psin it covers.
         shelf_rs = np.linspace(shelf_r1, shelf_r2, 100)
-        psin_shelf = f_psin(shelf_rs, np.full(len(shelf_rs), shelf_z))
+        shelf_zs = np.linspace(shelf_z1, shelf_z2, 100)
+        psin_shelf = f_psin(shelf_rs, shelf_zs)
 
         # Only need values where psin >= 1.
         mask = psin_shelf >= 1.0
@@ -241,7 +253,7 @@ class BlobbyLP:
         return {"r_targ":shelf_rs, "rmrs_targ":rmrs_shelf[:-1], "rmrs_xp":rmrs_xp,
             "xp_to_shelf_fe":xp_to_shelf_fe, "omp_to_xp_fe":omp_to_xp_fe}
 
-    def load_shelf_lp(self, shot, tstart, tend, bins=100):
+    def load_shelf_lp(self, shot, tstart, tend, bins=100, probes="shelf"):
         """
         Load the LP data just for the data along the shelf.
 
@@ -256,8 +268,13 @@ class BlobbyLP:
         from scipy.signal import medfilt
 
         lpdict = get_lp.plot_lps(shot, tstart, tend, bins=bins, tunnel=False, showplot=False)
-        labels = ["S-1", "S-2", "S-3", "S-4", "S-5", "S-6", "S-7", "S-8", "S-9",
-            "S10", "S11"]
+        if probes == "shelf":
+            labels = ["S-1", "S-2", "S-3", "S-4", "S-5", "S-6", "S-7", "S-8", "S-9",
+                "S10", "S11"]
+        elif probes == "sas":
+            labels = ["A-4", "A-5", "A-6", "A-7", "A-8", "A-9", "A10", "A11",
+                "A12", "A13", "A14", "A15", "A16", "A17", "A18", "A19", "A20",
+                "A21", "A22"]
 
         colors = {}
         for i in range(0, len(labels)):
@@ -350,7 +367,7 @@ class BlobbyLP:
 
     def run_blp(self, tsdata, lpdata, flux_exp, vr_mean, vr_std, vr_skew,
         xp_loc, nparts, prof_coef=1.0, dist_type="skewnorm", mu_pois=1.0,
-        temin=1.0, qtim=1e-7):
+        temin=1.0, qtim=1e-7, gamma_a=1.0, gamma_c=1.0):
         """
         Run the BlobbyLP (blp) Monte Carlo model to intepretively model the
         LP target patterns. A number of assumptions are built into this model.
@@ -376,10 +393,13 @@ class BlobbyLP:
             vr is pulled from.
         mu_pois (float): The mu parameter for the poisson distribution.
         temin (float): Minimum value of Te (bottoms out at this value).
+        qtim (float):
+        gamma_a (float):
+        gamma_c (float):
         """
 
         from tqdm import tqdm
-        from scipy.stats import skewnorm, poisson
+        from scipy.stats import skewnorm, poisson, gengamma, gamma
         from scipy.interpolate import interp1d
 
         try:
@@ -400,7 +420,7 @@ class BlobbyLP:
         # Establish inputs to the model.
         tesep = tsdata["tesep"]
         lambda_te = tsdata["lambda_te"] / 100  # cm to m
-        rs = np.linspace(0, 0.5, 500)
+        rs = np.linspace(0, 0.5, 1000)
 
         # Calculate sound speed. We use the flux expansion between the OMP (where
         # the Te measurements have been mapped to) and the X-point (where we
@@ -417,12 +437,13 @@ class BlobbyLP:
 
         # Using MAFOT, find the length of each field line along each of the
         # R coordinates we will consider.
-        rs_at_xp = self.rxpt + rs
-        xp_conns = []
-        for r in rs_at_xp:
-            idx = np.argmin(np.abs(self.mafot["R (m)"] - r))
-            xp_conns.append(self.mafot["Lconn (km)"].iloc[idx] * 1000)
-        f_xp_conns = interp1d(rs, xp_conns)
+        if mafot_loaded:
+            rs_at_xp = self.rxpt + rs
+            xp_conns = []
+            for r in rs_at_xp:
+                idx = np.argmin(np.abs(self.mafot["R (m)"] - r))
+                xp_conns.append(self.mafot["Lconn (km)"].iloc[idx] * 1000)
+            f_xp_conns = interp1d(rs, xp_conns)
 
         # Choose blobs vr's. Anything below zero remove.
         if dist_type == "skewnorm":
@@ -430,9 +451,18 @@ class BlobbyLP:
                 size=nparts)
         elif dist_type == "poisson":
             launch_vrs = poisson.rvs(mu=vr_mean, loc=0, size=nparts)
+        elif dist_type == "gamma":
+            launch_vrs = gamma.rvs(gamma_a, loc=vr_mean,
+                scale=vr_std, size=nparts)
+        elif dist_type == "gengamma":
+            launch_vrs = gengamma.rvs(gamma_a, gamma_c, loc=vr_mean,
+                scale=vr_std, size=nparts)
         below_zero = np.where(launch_vrs <= 0)
         launch_vrs = np.delete(launch_vrs, below_zero)
         print("Actual particles launched: {}".format(len(launch_vrs)))
+
+        # Print out some stats.
+        print("Mean velocity: {:}".format(launch_vrs.mean()))
 
         targ_locs = np.zeros(len(launch_vrs))
         warn_count = 0
@@ -478,16 +508,37 @@ class BlobbyLP:
 
         # Bin data into histogram, normalize.
         bin_locs = list(np.histogram(targ_locs, 50, density=False))
-        bin_locs[0] = bin_locs[0] / bin_locs[0].max()
         plotx = np.array([(bin_locs[1][i]+bin_locs[1][i+1])/2 for i in range(0, len(bin_locs[1])-1)])
 
         # Also include the vr pdf.
-        if dist_type == "skewnorm":
+        if dist_type in ["skewnorm", "gamma", "gengamma"]:
             plot_vr = np.linspace(0, vr_mean*100, 10000)
-            pdf = skewnorm.pdf(plot_vr, a=vr_skew, loc=vr_mean, scale=vr_std)
+            if dist_type == "skewnorm":
+                pdf = skewnorm.pdf(plot_vr, a=vr_skew, loc=vr_mean, scale=vr_std)
+                mean, var, skew, kurt = skewnorm.stats(a=vr_skew, loc=vr_mean,
+                    scale=vr_std, moments='mvsk')
+            elif dist_type == "gamma":
+                pdf = gamma.pdf(plot_vr, a=gamma_a, loc=vr_mean, scale=vr_std)
+                mean, var, skew, kurt = gamma.stats(a=gamma_a, loc=vr_mean,
+                    scale=vr_std, moments='mvsk')
+            elif dist_type == "gengamma":
+                pdf = gengamma.pdf(plot_vr, a=gamma_a, c=gamma_c, loc=vr_mean,
+                    scale=vr_std)
+                mean, var, skew, kurt = gengamma.stats(a=gamma_a, c=gamma_c,
+                    loc=vr_mean, scale=vr_std, moments='mvsk')
             cutoff = np.where(pdf >= 0.1 * pdf.max())
             plot_vr = plot_vr[cutoff]
             pdf = pdf[cutoff]
+
+            # Report the stats.
+            print("\n***********************")
+            print("Distribution Statistics")
+            print(" Mean:     {:.2f}".format(mean))
+            print(" Variance: {:.2f}".format(var))
+            print(" Skew:     {:.2f}".format(skew))
+            print(" Kurtosis: {:.2f}".format(kurt))
+            print("***********************\n")
+
         elif dist_type == "poisson":
             #pdf = poisson.pmf(plot_vr, mu=vr_mean, loc=0)
             vr_bins = np.histogram(launch_vrs, 100, density=True)
@@ -495,19 +546,42 @@ class BlobbyLP:
             pdf = vr_bins[0]
 
 
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9, 4))
+        # Determine if we are just showing normalized values or if we are trying
+        # to determine an appropriate scaling.
+        if prof_coef == 1.0:
+            max_ne = lpdata["nefilt"].max()
+            blp_ne = bin_locs[0] = bin_locs[0] / bin_locs[0].max()
+            lp_ne = lpdata["ne"]/max_ne
+            lp_ne_filt = lpdata["nefilt"]/max_ne
 
-        max_ne = lpdata["nefilt"].max()
-        ax1.scatter(lpdata["rmrs"]*100, lpdata["ne"]/max_ne, c=lpdata["color"], zorder=5)
-        ax1.plot(lpdata["rmrs"]*100, lpdata["nefilt"]/max_ne, color="k", zorder=10)
+        else:
+            blp_ne = bin_locs[0] = bin_locs[0] / bin_locs[0].sum() * prof_coef
+            lp_ne = lpdata["ne"]
+            lp_ne_filt = lpdata["nefilt"]
+
+        if mafot_loaded:
+            fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(12, 4))
+        else:
+            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9, 4))
+
+        ax1.scatter(lpdata["rmrs"]*100, lp_ne, c=lpdata["color"], zorder=5)
+        ax1.plot(lpdata["rmrs"]*100, lp_ne_filt, color="k", zorder=10, label="Data")
         ax1.set_xlabel("R-Rsep (cm)", fontsize=14)
-        ax1.set_ylabel("ne (m-3)", fontsize=14)
+        ax1.set_ylabel("ne (normalized)", fontsize=14)
         #ax1.set_ylabel("Counts", fontsize=14)
-        ax1.plot(plotx*100, prof_coef*bin_locs[0], color="r", lw=2, zorder=20)
+        ax1.plot(plotx*100, blp_ne, color="k", lw=3, zorder=20)
+        ax1.plot(plotx*100, blp_ne, color="r", lw=2, zorder=20, label="Model")
+        ax1.legend(fontsize=14)
 
         ax2.plot(plot_vr, pdf)
         ax2.set_xlabel("vr (m/s)", fontsize=14)
         ax2.set_ylabel("PDF", fontsize=14)
+
+        if mafot_loaded:
+            ax3.plot(rs, xp_conns, color="k", lw=2, label="Loaded")
+            ax3.set_xlabel("R-Rsep (cm)", fontsize=14)
+            ax3.set_ylabel("X-Point Distance (m)", fontsize=14)
+            ax3.legend()
 
         fig.tight_layout()
         fig.show()
