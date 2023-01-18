@@ -1,5 +1,5 @@
-# This script works in tandem with paramtrize_psin.py, with MAFOT as the
-# middleman. That script gives hthe points at which to run MAFOT for each
+# This script works in tandem with parametrize_psin.py, with MAFOT as the
+# middleman. That script gives the points at which to run MAFOT for each
 # flux surface, and this one takes the results and makes a gif out of them as
 # one progress outwards along the flux surfaces.
 import pandas as pd
@@ -15,7 +15,7 @@ from LimWallToolkit import LimWallToolkit
 import sys
 
 # Inputs
-shot = 190422
+shot = 186754
 lims = "torgap"  # One of pol, torfull or torgap.
 include_coils = True
 
@@ -54,7 +54,7 @@ if lims == "pol":
 
     elif shot == 180455:
         if include_coils:
-            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/lam_param_pol.dat"
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/lam_param_pol.tar.gz"
             gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/psin_conns_180455_pol.gif"
         else:
             print("Not run without coils yet.")
@@ -64,7 +64,7 @@ if lims == "pol":
 
     elif shot == 186257:
         if include_coils:
-            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/lam_param_pol.dat"
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/lam_param_pol.tar.gz"
             gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/psin_conns_186257_pol.gif"
         else:
             print("Not run without coils yet.")
@@ -74,7 +74,7 @@ if lims == "pol":
 
     elif shot == 186754:
         if include_coils:
-            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/lam_param_pol.dat"
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/lam_param_pol.tar.gz"
             gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/psin_conns_186754_pol.gif"
         else:
             print("Not run without coils yet.")
@@ -126,7 +126,7 @@ elif lims == "torfull":
 
     elif shot == 180455:
         if include_coils:
-            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/lam_param_fulltor.dat"
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/lam_param_fulltor.tar.gz"
             gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/psin_conns_180455_fulltor.gif"
         else:
             print("Not run without coils yet.")
@@ -136,7 +136,7 @@ elif lims == "torfull":
 
     elif shot == 186257:
         if include_coils:
-            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/lam_param_fulltor.dat"
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/lam_param_fulltor.tar.gz"
             gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/psin_conns_186257_fulltor.gif"
         else:
             print("Not run without coils yet.")
@@ -146,7 +146,7 @@ elif lims == "torfull":
 
     elif shot == 186754:
         if include_coils:
-            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/lam_param_fulltor.dat"
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/lam_param_fulltor.tar.gz"
             gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/psin_conns_186754_fulltor.gif"
         else:
             print("Not run without coils yet.")
@@ -177,7 +177,7 @@ elif lims == "torgap":
 
     elif shot == 180455:
         if include_coils:
-            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/lam_param_gaptor.dat"
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/lam_param_gaptor.tar.gz"
             gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/psin_conns_180455_gaptor.gif"
         else:
             print("Not run without coils yet.")
@@ -187,7 +187,7 @@ elif lims == "torgap":
 
     elif shot == 186257:
         if include_coils:
-            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/lam_param_gaptor.dat"
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/lam_param_gaptor.tar.gz"
             gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/psin_conns_186257_gaptor.gif"
         else:
             print("Not run without coils yet.")
@@ -197,7 +197,7 @@ elif lims == "torgap":
 
     elif shot == 186754:
         if include_coils:
-            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/lam_param_gaptor.dat"
+            mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/lam_param_gaptor.tar.gz"
             gif_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/psin_conns_186754_gaptor.gif"
         else:
             print("Not run without coils yet.")
@@ -340,7 +340,8 @@ for fname in fnames:
 # Saved pickled output.
 output = {}
 for psin in conns.keys():
-    output[psin] = {"d": np.array(d, dtype=np.float32), "z": np.array(z, dtype=np.float32), "l": np.array(l, dtype=np.float32)}
+    output[psin] = {"d": np.array(conns[psin]["d"], dtype=np.float32), "z": np.array(conns[psin]["z"],
+        dtype=np.float32), "l": np.array(conns[psin]["l"], dtype=np.float32)}
 pickle_path = mafot_path.rsplit("/", 1)[0] + "/" + str(shot) + "_conn_{}_dict.pickle".format(lims)
 with open(pickle_path, "wb") as f:
     pickle.dump(output, f)

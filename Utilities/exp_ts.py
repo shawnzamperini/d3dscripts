@@ -15,7 +15,7 @@ def ts_fitting(shot, tmin, tmax, tmany, tree):
     # Load the TS data.
     ts = ThomsonClass(shot, 'core')
     #ts = ThomsonClass(shot, 'divertor')
-    ts.load_ts()
+    ts.load_ts(tunnel=False)
     ts.map_to_efit(np.linspace(tmin, tmax, tmany), tree=tree, trunc_div=False)
 
     # Pull out the arrays.

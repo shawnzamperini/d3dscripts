@@ -12,7 +12,7 @@ from tqdm import tqdm
 #psins = np.linspace(1.13, 1.40, 50)   # 167196
 #psins = np.linspace(1.18, 1.45, 50)   # 186914
 #psins = np.linspace(1.20, 1.50, 50)   # 167463
-shot = 190422
+shot = 180455
 pol_lims = True  # Leave True
 
 # Choose correct paths for everything. There actually is no reason to separate
@@ -30,17 +30,17 @@ if pol_lims:
         output_dict = "/Users/zamperini/Documents/d3d_work/mafot_files/167463/ncoords_167463_pol.pickle"
         output_file = "/Users/zamperini/Documents/d3d_work/mafot_files/167463/for_mafot_167463_pol.dat"
     elif shot == 180455:
-        psins = np.linspace(1.20, 1.50, 50)
+        psins = np.linspace(1.10, 1.50, 75)
         gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/180455_3500.pickle"
         output_dict = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/ncoords_180455.pickle"
         output_file = "/Users/zamperini/Documents/d3d_work/mafot_files/180455/for_mafot_180455.dat"
     elif shot == 186257:
-        psins = np.linspace(1.20, 1.45, 50)
+        psins = np.linspace(1.10, 1.45, 75)
         gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/186257_3500.pickle"
         output_dict = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/ncoords_186257.pickle"
         output_file = "/Users/zamperini/Documents/d3d_work/mafot_files/186257/for_mafot_186257.dat"
     elif shot == 186754:
-        psins = np.linspace(1.18, 1.45, 50)
+        psins = np.linspace(1.10, 1.45, 75)
         gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/186754_3500.pickle"
         output_dict = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/ncoords_186754.pickle"
         output_file = "/Users/zamperini/Documents/d3d_work/mafot_files/186754/for_mafot_186754.dat"

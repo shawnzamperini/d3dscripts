@@ -11,13 +11,13 @@ from BlobbyLP import BlobbyLP
 #mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/176487/lam_xp_length.dat"
 #probes = "shelf"
 
-shot = 167195
-time = 2500
-tmin = 3800
-tmax = 5000
-gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167195/167195_2500.pickle"
-mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167195/lam_xp_length.dat"
-probes = "shelf"
+# shot = 167195
+# time = 2500
+# tmin = 3800
+# tmax = 5000
+# gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167195/167195_2500.pickle"
+# mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/167195/lam_xp_length.dat"
+# probes = "shelf"
 
 #shot = 174176
 #time = 2000
@@ -29,13 +29,14 @@ probes = "shelf"
 
 # MAFOT direction we want +1. Since same shapes, can use same parameters here
 # as for 190425 and 190427.
-#shot = 190423
-#time = 3000
-#tmin = 2100
-#tmax = 3000
-#gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/190423/190423_3000.pickle"
-#mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/190423/lam_xp_length.dat"
-#probes = "sas"
+shot = 190423
+time = 3000
+tmin = 2000
+tmax = 5000
+gfile_pickle_path = "/Users/zamperini/Documents/d3d_work/mafot_files/190423/190423_3000.pickle"
+mafot_path = "/Users/zamperini/Documents/d3d_work/mafot_files/190423/lam_xp_length.dat"
+probes = "sas"
+psin   = True
 
 # Here can be code to optionally load in data from a preset file.
 # To-do.
@@ -53,10 +54,14 @@ flux_exp = blp.calc_flux_expansion(shot, time, gfile_pickle_path, target=probes)
 #flux_exp = {}
 
 # Then pull the LP data.
-lpdata = blp.load_shelf_lp(shot, tmin, tmax, probes=probes)
+lpdata = blp.load_shelf_lp(shot, tmin, tmax, probes=probes, include_psin=psin)
 
 # Load in the X-point R location.
-rxpt = blp.load_xp_r_loc(shot, time)
+if shot == 190423:
+    rxpt = 1.398
+    blp.rxpt = 1.385
+else:
+    rxpt = blp.load_xp_r_loc(shot, time)
 
 # Load in the MAFOT connection length data.
 mafot = blp.load_mafot(mafot_path)
@@ -66,18 +71,22 @@ mafot = blp.load_mafot(mafot_path)
 # 174176: gengamma, mean=20, vr_std=140, gamma_a=1.8, gamma_c=0.75
 dist_type = "gengamma"
 mu_pois   = 10.0 # poisson only
-vr_mean   = 20  # skewnorm, poisson and gamma
-vr_std    = 375  # skewnorm, gengamma and gamma only
+vr_mean   = 5  # skewnorm, poisson and gamma
+vr_std    = 75  # skewnorm, gengamma and gamma only
 vr_skew   = 0    # skewnorm only
-gamma_a   = 1.8  # gengamma and gamma only
+gamma_a   = 2.0  # gengamma and gamma only
 gamma_c   = 0.80  # gengamma only, when 1.0 it's just a gamma dist.
 xp_loc    = 5.0  # Not used when MAFOT is loaded
 nparts    = 2000
 prof_coef = 1.0  # 1.0 = normalize values. Figure this out last.
 temin     = 1.0
 qtim      = 1e-7
+if psin:
+    plot_coord = "psin"
+else:
+    plot_coord = "r"
 blp.run_blp(tsdata, lpdata, flux_exp, vr_mean, vr_std, vr_skew, xp_loc, nparts,
-    prof_coef, dist_type, mu_pois, temin, qtim, gamma_a, gamma_c)
+    prof_coef, dist_type, mu_pois, temin, qtim, gamma_a, gamma_c, plot_coord)
 
 # For using in DIVIMP.
 import numpy as np

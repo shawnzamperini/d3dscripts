@@ -103,7 +103,7 @@ class BlobbyLP:
             # Plot the fit.
             ax_te.plot(r_fit, te_fit, 'k--', lw=5)
             ax_ne.plot(r_fit, ne_fit, 'k--', lw=5)
-            #fig.show()
+            fig.show()
 
             print('Te: {:.2f} * exp(-r / {:.2f})'.format(popt_te[0], 1/popt_te[1]))
             print('ne: {:.2f} * exp(-r / {:.2f})'.format(popt_ne[0], 1/popt_ne[1]))
@@ -253,7 +253,7 @@ class BlobbyLP:
         return {"r_targ":shelf_rs, "rmrs_targ":rmrs_shelf[:-1], "rmrs_xp":rmrs_xp,
             "xp_to_shelf_fe":xp_to_shelf_fe, "omp_to_xp_fe":omp_to_xp_fe}
 
-    def load_shelf_lp(self, shot, tstart, tend, bins=100, probes="shelf"):
+    def load_shelf_lp(self, shot, tstart, tend, bins=100, probes="shelf", include_psin=True):
         """
         Load the LP data just for the data along the shelf.
 
@@ -268,6 +268,12 @@ class BlobbyLP:
         from scipy.signal import medfilt
 
         lpdict = get_lp.plot_lps(shot, tstart, tend, bins=bins, tunnel=False, showplot=False)
+
+        # If we want psin coordinates we need to run again since I haven't written the get_lp scripts to do both
+        # at once. My bad, but not too costly.
+        if include_psin:
+            lpdict_psin = get_lp.plot_lps(shot, tstart, tend, bins=bins, tunnel=False, showplot=False, xtype="psin")
+
         if probes == "shelf":
             labels = ["S-1", "S-2", "S-3", "S-4", "S-5", "S-6", "S-7", "S-8", "S-9",
                 "S10", "S11"]
@@ -280,7 +286,7 @@ class BlobbyLP:
         for i in range(0, len(labels)):
             colors[labels[i]] = "C{}".format(i)
 
-        data = {"rmrs":[], "ne":[], "te":[], "color":[]}
+        data = {"rmrs":[], "ne":[], "te":[], "color":[], "psin":[]}
         for i in range(0, len(lpdict["labels"])):
 
             label = lpdict["labels"][i].strip()
@@ -289,12 +295,19 @@ class BlobbyLP:
                 data["ne"].append(lpdict["ne (cm-3)"][i] * 1e6)
                 data["te"].append(lpdict["Te (eV)"][i])
                 data["color"].append(colors[label])
+                if include_psin:
+                    data["psin"].append(lpdict_psin["psin"][i])
 
-        sort_idx = np.argsort(data["rmrs"])
+        if include_psin:
+            sort_idx = np.argsort(data["psin"])
+        else:
+            sort_idx = np.argsort(data["rmrs"])
         data["rmrs"] = np.array(data["rmrs"])[sort_idx]
         data["ne"] = np.array(data["ne"])[sort_idx]
         data["te"] = np.array(data["te"])[sort_idx]
         data["color"] = np.array(data["color"])[sort_idx]
+        if include_psin:
+            data["psin"] = np.array(data["psin"])[sort_idx]
 
         # Median filter to the data.
         nefilt = medfilt(data["ne"], 35)
@@ -367,7 +380,7 @@ class BlobbyLP:
 
     def run_blp(self, tsdata, lpdata, flux_exp, vr_mean, vr_std, vr_skew,
         xp_loc, nparts, prof_coef=1.0, dist_type="skewnorm", mu_pois=1.0,
-        temin=1.0, qtim=1e-7, gamma_a=1.0, gamma_c=1.0):
+        temin=1.0, qtim=1e-7, gamma_a=1.0, gamma_c=1.0, plot_coord="r"):
         """
         Run the BlobbyLP (blp) Monte Carlo model to intepretively model the
         LP target patterns. A number of assumptions are built into this model.
@@ -396,6 +409,7 @@ class BlobbyLP:
         qtim (float):
         gamma_a (float):
         gamma_c (float):
+        plot_coord (str): Either "r" for R-Rsep or "psin".
         """
 
         from tqdm import tqdm
@@ -427,7 +441,7 @@ class BlobbyLP:
         # want the measurements at) to expand the lambda_te accordingly. It
         # should be appropriate to just use the average flux expansion since Te
         # measurements have enough uncertainty in them as it is.
-        mi = 931.49e6
+        mi = 2 * 931.49e6
         avg_omp_to_xp_fe = flux_exp["omp_to_xp_fe"].mean()
         print("Average OMP to X-point flux expansion: {:.2f}".format(1/avg_omp_to_xp_fe))
         te = tesep * np.exp(-rs/(lambda_te/avg_omp_to_xp_fe))
@@ -440,9 +454,11 @@ class BlobbyLP:
         if mafot_loaded:
             rs_at_xp = self.rxpt + rs
             xp_conns = []
+            xp_psins = []
             for r in rs_at_xp:
                 idx = np.argmin(np.abs(self.mafot["R (m)"] - r))
                 xp_conns.append(self.mafot["Lconn (km)"].iloc[idx] * 1000)
+                xp_psins.append(self.mafot["psi"].iloc[idx])
             f_xp_conns = interp1d(rs, xp_conns)
 
         # Choose blobs vr's. Anything below zero remove.
@@ -465,6 +481,7 @@ class BlobbyLP:
         print("Mean velocity: {:}".format(launch_vrs.mean()))
 
         targ_locs = np.zeros(len(launch_vrs))
+        targ_psins = np.zeros(len(launch_vrs))
         warn_count = 0
         warn_flag = False
         for i in tqdm(range(0, len(launch_vrs))):
@@ -501,6 +518,7 @@ class BlobbyLP:
                     break_condition = xp_loc
                 if xpos > break_condition:
                     targ_locs[i] = rpos
+                    targ_psins[i] = xp_psins[ridx]
                     break
 
         if warn_flag:
@@ -509,6 +527,8 @@ class BlobbyLP:
         # Bin data into histogram, normalize.
         bin_locs = list(np.histogram(targ_locs, 50, density=False))
         plotx = np.array([(bin_locs[1][i]+bin_locs[1][i+1])/2 for i in range(0, len(bin_locs[1])-1)])
+        bin_locs_psin = list(np.histogram(targ_psins, 50, density=False))
+        plotx_psin = np.array([(bin_locs_psin[1][i] + bin_locs_psin[1][i + 1]) / 2 for i in range(0, len(bin_locs_psin[1]) - 1)])
 
         # Also include the vr pdf.
         if dist_type in ["skewnorm", "gamma", "gengamma"]:
@@ -545,17 +565,16 @@ class BlobbyLP:
             plot_vr = np.array([(vr_bins[1][i]+vr_bins[1][i+1])/2 for i in range(0, len(vr_bins[1])-1)])
             pdf = vr_bins[0]
 
-
         # Determine if we are just showing normalized values or if we are trying
         # to determine an appropriate scaling.
         if prof_coef == 1.0:
             max_ne = lpdata["nefilt"].max()
-            blp_ne = bin_locs[0] = bin_locs[0] / bin_locs[0].max()
+            blp_ne = bin_locs[0] / bin_locs[0].max()
             lp_ne = lpdata["ne"]/max_ne
             lp_ne_filt = lpdata["nefilt"]/max_ne
 
         else:
-            blp_ne = bin_locs[0] = bin_locs[0] / bin_locs[0].sum() * prof_coef
+            blp_ne = bin_locs[0] / bin_locs[0].sum() * prof_coef
             lp_ne = lpdata["ne"]
             lp_ne_filt = lpdata["nefilt"]
 
@@ -564,13 +583,20 @@ class BlobbyLP:
         else:
             fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9, 4))
 
-        ax1.scatter(lpdata["rmrs"]*100, lp_ne, c=lpdata["color"], zorder=5)
-        ax1.plot(lpdata["rmrs"]*100, lp_ne_filt, color="k", zorder=10, label="Data")
-        ax1.set_xlabel("R-Rsep (cm)", fontsize=14)
+        if plot_coord == "r":
+            ax1.scatter(lpdata["rmrs"]*100, lp_ne, c=lpdata["color"], zorder=5)
+            ax1.plot(lpdata["rmrs"]*100, lp_ne_filt, color="k", zorder=10, label="Data")
+            ax1.set_xlabel("R-Rsep (cm)", fontsize=14)
+            ax1.plot(plotx * 100, blp_ne, color="k", lw=3, zorder=20)
+            ax1.plot(plotx * 100, blp_ne, color="r", lw=2, zorder=20, label="Model")
+        elif plot_coord == "psin":
+            ax1.scatter(lpdata["psin"], lp_ne, c=lpdata["color"], zorder=5)
+            ax1.plot(lpdata["psin"], lp_ne_filt, color="k", zorder=10, label="Data")
+            ax1.set_xlabel("Psin", fontsize=14)
+            ax1.plot(plotx_psin, blp_ne, color="k", lw=3, zorder=20)
+            ax1.plot(plotx_psin, blp_ne, color="r", lw=2, zorder=20, label="Model")
         ax1.set_ylabel("ne (normalized)", fontsize=14)
         #ax1.set_ylabel("Counts", fontsize=14)
-        ax1.plot(plotx*100, blp_ne, color="k", lw=3, zorder=20)
-        ax1.plot(plotx*100, blp_ne, color="r", lw=2, zorder=20, label="Model")
         ax1.legend(fontsize=14)
 
         ax2.plot(plot_vr, pdf)
