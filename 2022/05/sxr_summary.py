@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-path = "/Users/zamperini/Documents/d3d_work/divimp_files/imp_analysis_167196.npz"
+path = "/Users/zamperini/Documents/d3d_work/files/imp_analysis_167196.npz"
 imps = np.load(path)
 rho = imps["rho"]
 cw = imps["cw"]
@@ -14,7 +14,7 @@ fig, ax1 = plt.subplots()
 
 ax1.plot(rho, cw_avg, color="r")
 ax1.fill_between(rho, cw_avg-cw_std, cw_avg+cw_std, color="r", alpha=0.3)
-
+ax1.set_yscale("log")
 ax1.set_xlabel("Rho")
 ax1.set_ylabel("cW")
 

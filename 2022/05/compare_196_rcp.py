@@ -9,12 +9,13 @@ import numpy as np
 
 #ncpath = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d-167196-modE-shelf-bg.nc"
 #ncpath = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d-167196-modE-shelf-bg-shifted-smooth-2.nc"
-ncpath = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d3d-167196-bg-shifted-ring-entry-06.nc"
+#ncpath = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d3d-167196-bg-shifted-ring-entry-06.nc"
+ncpath = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d3d-167196-bg-shifted-ring-entry-09.nc"
 print("Loading: {}...".format(ncpath))
 op = oedge_plots.OedgePlots(ncpath)
 print("Calculating fake_probe, could take a while...")
 numlocs = 20
-rings_only = True  # Turn on for highest resolution, takes a while to run...
+rings_only = False  # Turn on for highest resolution, takes a while to run...
 print("RCP ne")
 op_ne_rcp = op.fake_probe(2.12, 2.37, -0.188, -0.188, data="ne", show_plot=False, plot="psin", num_locs=numlocs, rings_only=rings_only)
 print("RCP Te")

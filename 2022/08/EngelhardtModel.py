@@ -85,6 +85,11 @@ class EngelhardtModel:
         self.Y_Si_SiC_C = interp1d(mm["Si-SiC,C_E"], mm["Si-SiC,C_Y"], fill_value=0, bounds_error=False)
         self.Y_Si_SiC_Si = interp1d(mm["Si-SiC,Si_E"], mm["Si-SiC,Si_Y"], fill_value=0, bounds_error=False)
 
+    def load_w_yields(self):
+        """
+        We add in the functionality to use similar C and D on W yields to calculate the sputtering flux of W.
+        """
+
     def run_mm_model(self):
 
         # Find out what te is at the limiter location.
@@ -226,7 +231,7 @@ class EngelhardtModel:
         print("neut_flux = {:.2e}".format(neut_flux))
 
         # Sound speed.
-        mi = 931.49e6
+        mi = 2 * 931.49e6
         cs = np.sqrt((te+ti)/mi) * 3e8
 
         # Root for the equations.

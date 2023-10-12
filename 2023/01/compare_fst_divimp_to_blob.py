@@ -8,12 +8,16 @@ import pickle
 
 print("Loading DIVIMP runs...")
 # Drifts OFF. Dperp = 0.3. Similar to used in FST paper but this uses a differnet background (d3d-167196-bg-shifted-ring-entry-10).
-fst_nc_path = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d3d-167196-mrc-shifted-nodrift-2-copy.nc"
+# fst_nc_path = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d3d-167196-mrc-shifted-nodrift-2-copy.nc"
+fst_nc_path = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d3d-167196-diff-001-predep.nc"
 # Drifts ON (60%). Dperp = 0.3. bkg 010.
 #fst_nc_path = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d3d-167196-mrc-shifted-drifts-3a.nc"
 fst = oedge_plots.OedgePlots(fst_nc_path)
 # Drifts ON. bkg 010.
-blob_nc_path = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d3d-167196-blobby-004.nc"
+# blob_nc_path = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d3d-167196-blobby-004.nc"
+# Drifts ON. bkg 13. tcorr = 5 us.
+# blob_nc_path = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d3d-167196-blobby-010f-predep.nc"
+blob_nc_path = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d3d-167196-fluc-002.nc"
 blob = oedge_plots.OedgePlots(blob_nc_path)
 absfac = fst.absfac
 
@@ -69,7 +73,8 @@ def get_lim_data(lim_path, lim_absfac):
     return {"psin":lim_psins, "nz":lim_nz}
 
 lim_fst = get_lim_data("/Users/zamperini/Documents/d3d_work/lim_runs/167196/167196-a2-tor240_44-noprobe.nc", 1e17)
-lim_blob = get_lim_data("/Users/zamperini/Documents/d3d_work/lim_runs/167196/167196-a2-tor240_44-blob-comp-001a.nc", 1e17)
+#lim_blob = get_lim_data("/Users/zamperini/Documents/d3d_work/lim_runs/167196/167196-a2-tor240_44-blob-comp-001a.nc", 1e17)
+lim_blob = get_lim_data("/Users/zamperini/Documents/d3d_work/lim_runs/167196/167196-a2-tor240-blob-011-noprobe.nc", 1e17)
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
 ax2.plot(blob_probe["psin"], blob_probe["nz"]*absfac, label="Blobby")
@@ -87,18 +92,20 @@ fig.tight_layout()
 fig.show()
 
 
-div_mask = np.array(blob_probe["psin"]) < 1.14
+# div_mask = np.array(blob_probe["psin"]) < 1.14
+div_mask = np.array(blob_probe["psin"]) < 9999
 div_psin = np.array(blob_probe["psin"])[div_mask]
 div_blob_nz = np.array(blob_probe["nz"])[div_mask]*absfac
 div_fst_nz = np.array(fst_probe["nz"])[div_mask]*absfac
 fig, ax = plt.subplots(figsize=(5, 4))
+ax.axvline(1.0, color="k")
 ax.plot(div_psin, div_blob_nz, label="Blobby", color="tab:red", lw=3)
 ax.plot(div_psin, div_fst_nz, label="Diffusive", color="tab:purple", lw=3)
 ax.plot(lim_blob["psin"], lim_blob["nz"], label="3DLIM", color="tab:cyan", lw=3)
 ax.set_yscale("log")
 ax.legend(fontsize=14)
 ax.grid(alpha=0.3)
-ax.set_xlabel("Psin", fontsize=14)
-ax.set_ylabel("W Density (m-3)", fontsize=14)
+ax.set_xlabel(r"$\mathdefault{\psi_N}$", fontsize=14)
+ax.set_ylabel(r"W Density $\mathdefault{(m^{-3})}$", fontsize=14)
 fig.tight_layout()
 fig.show()

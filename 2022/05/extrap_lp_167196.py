@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 
 datapath = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/data_for_167196.xlsx"
-lp = pd.read_excel(datapath, sheet_name="lp_data")
+lp = pd.read_excel(datapath, sheet_name="lp_data_v2").replace("", np.nan)
 
 # This values have already been filtered a bit, so we fit to them.
 lp_psin = lp["psin.1"].values
