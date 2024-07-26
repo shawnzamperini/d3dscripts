@@ -15,3 +15,10 @@ __pycache__/
 *.gif
 *.bound
 *.bounds
+
+*.mp4
+*.html
+*.pickle
+*.dat
+*.so
+*.o

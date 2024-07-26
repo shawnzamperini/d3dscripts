@@ -8,6 +8,7 @@ from scipy.signal import savgol_filter, medfilt
 import pandas as pd
 import oedge_plots
 import LimPlots
+from matplotlib import lines
 
 # Flags to turn on different plots.
 plot1 = False
@@ -244,7 +245,9 @@ if shot == 167196:
     # ncpath = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d3d-167196-blobby-018d.nc"
     # ncpath = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d3d-167196-blobby-010f.nc"
     # ncpath = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d3d-167196-blobby-013f-0.4exb.nc"
-    ncpath = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d3d-167196-fluc-002.nc"
+    # ncpath = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d3d-167196-fluc-002.nc"  # tcorr = 1.5e-6
+    ncpath = "/Users/zamperini/Documents/d3d_work/divimp_files/167196/d3d-167196-fluc-002-tcorrscan1.nc"  # tcorr = 3e-6, this is just simpler than 1.5, cleaner, otherwise the same results
+
     op = oedge_plots.OedgePlots(ncpath)
     div_data = op.fake_probe(2.17, 2.36, -0.188, -0.188, "nz", charge="all", rings_only=False)
 
@@ -394,8 +397,8 @@ if plot3:
     ax1.plot(lim_psins, lim_nz, color="k", lw=3)
     ax1.plot(lim_psins, lim_nz, color="tab:green", lw=2, label="3DLIM")
     ax1.set_yscale("log")
-    ax1.legend(fontsize=14)
-    #ax1.set_xlim([0.95, 1.45])
+    # ax1.legend(fontsize=14)
+    # ax1.set_xlim([0.95, 1.45])
     ax1.set_xlim([0, 1.45])
     if shot == 167196:
         ax1.set_ylim([1e9, 1e16])
@@ -404,6 +407,18 @@ if plot3:
     ax1.set_xlabel(r"$\mathdefault{\psi_n}$", fontsize=14)
     ax1.set_ylabel(r"W Density ($\mathdefault{m^{-3}}$)", fontsize=14)
     ax1.grid()
+
+    # The legend.
+    dotted_line1 = lines.Line2D([], [], linewidth=2, linestyle="--", color="tab:pink")
+    dotted_line2 = lines.Line2D([], [], linewidth=3, linestyle="-", color="k")
+    line1a = lines.Line2D([], [], linewidth=3, color="k")
+    line1b = lines.Line2D([], [], linewidth=2, color="tab:pink")
+    line2a = lines.Line2D([], [], linewidth=3, color="k")
+    line2b = lines.Line2D([], [], linewidth=2, color="tab:red")
+    line3a = lines.Line2D([], [], linewidth=3, color="k")
+    line3b = lines.Line2D([], [], linewidth=2, color="tab:green")
+    ax1.legend([(line2a, line2b), (line1a, line1b), (dotted_line2, dotted_line1), (line3a, line3b)],
+               ["SXR+TGYRO", "DIVIMP (fluctuation)", "DIVIMP (diffusive)", "3DLIM"], fontsize=14)
 
     #ax11 = ax1.twinx()
     #ax11.plot(mafot["psin"], mafot["conns"], color="tab:purple", lw=3)

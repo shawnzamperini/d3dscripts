@@ -77,9 +77,9 @@ lim_fst = get_lim_data("/Users/zamperini/Documents/d3d_work/lim_runs/167196/1671
 lim_blob = get_lim_data("/Users/zamperini/Documents/d3d_work/lim_runs/167196/167196-a2-tor240-blob-011-noprobe.nc", 1e17)
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
-ax2.plot(blob_probe["psin"], blob_probe["nz"]*absfac, label="Blobby")
+ax2.plot(blob_probe["psin"], np.array(blob_probe["nz"])*absfac, label="Blobby")
 ax2.plot(lim_blob["psin"], lim_blob["nz"], label="3DLIM")
-ax1.plot(fst_probe["psin"], fst_probe["nz"]*absfac, label="FST")
+ax1.plot(fst_probe["psin"], np.array(fst_probe["nz"])*absfac, label="FST")
 ax1.plot(lim_fst["psin"], lim_fst["nz"], label="3DLIM")
 ax1.set_yscale("log")
 ax1.legend()
