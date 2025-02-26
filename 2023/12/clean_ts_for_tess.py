@@ -6,6 +6,7 @@ from tqdm import tqdm
 import pandas as pd
 
 
+# 9/17/24: Load the data. Change as needed for your data.
 shot = 171646  # Either 171650 or 171646
 path = "/Users/zamperini/Documents/d3d_work/ts_{}.pickle".format(shot)
 with open(path, "rb") as f:
@@ -38,6 +39,9 @@ ne = ne[sort_idx]
 r = r[sort_idx]
 z = z[sort_idx]
 
+# 9/17/24: End data loading.
+
+# 9/17/24: This loads the data from a pickled gfile.
 # Will want to map to the outboard midplane.
 gfile_path = "/Users/zamperini/Documents/d3d_work/{}_2500.pickle".format(shot)
 with open(gfile_path, "rb") as f:
@@ -47,12 +51,20 @@ Z = gfile["Z"]
 Rs, Zs = np.meshgrid(R, Z)
 psins = gfile["PSIRZ_NORM"]
 Rtrunc = Rs > gfile["RMAXIS"]
+
+# 9/17/24: Change gfile["ZMAXIS"] to the Z location of your CER data (probably
+# is at Z=0). Note this is psin (from the data above) and not psins (the 2D 
+# array from the gfile). That extra "s" tripped me up for a second.
 coords = tuple(zip(psin, np.full(len(psin), gfile["ZMAXIS"])))
 Romps = []
 for i in tqdm(range(0, len(coords))):
     x = coords[i][0]
     y = coords[i][1]
     Romps.append(float(griddata((psins[Rtrunc].flatten(), Zs[Rtrunc].flatten()), Rs[Rtrunc].flatten(), (x, y))))
+
+# 9/17/24: At this point Romp will have the R coordinates of the data. I think
+# this is what you're after. You can stop here.
+
 # R_omps = griddata((psins[Rtrunc].flatten(), Zs[Rtrunc].flatten()), Rs[Rtrunc].flatten(), coords)
 # f_Romp = interp2d(psins[Rtrunc], Zs[Rtrunc], Rs[Rtrunc])
 Rsep_omp = float(griddata((psins[Rtrunc].flatten(), Zs[Rtrunc].flatten()), Rs[Rtrunc].flatten(), (1.0, gfile["ZMAXIS"])))

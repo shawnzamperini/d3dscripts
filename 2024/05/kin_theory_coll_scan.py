@@ -10,9 +10,10 @@ eps0 = 8.85e-12
 mi = amu * 2.014  # kg
 qi = ev  # C
 me = 9.10938188e-31  # kg
-#mz = amu * 183.38 # kg
-mz = me
-qz = -ev  # C
+mz = amu * 183.84 # kg
+#mz = me
+#qz = -ev  # C
+qz = 5 * ev  # C
 qe = -ev  # C
 
 
@@ -25,12 +26,15 @@ def run_coll_calc(te, ne, n=10000, show_output=False, flan_dt=1e-8):
     # Number of pairs of D+ and e the impurity encounters over dt
     lambda_d = np.sqrt(eps0 * te / (ne * np.square(ev))) 
     ni = ne
-    #n = int(np.pi * ni * np.power(lambda_d, 3))
+    n_all = int(np.pi * ni * np.power(lambda_d, 3))
+    if show_output:
+        print("n_all = {}".format(n_all))
     # n = 10000
     vz = np.sqrt(2 * te / mz)
     #n = int(np.pi * eps0 * te * dt * vz / (ev * ev))
     #dt = 1e-8  # s
-    dt = lambda_d / vz
+    #dt = lambda_d / vz
+    dt = lambda_d / vz / 2
     if show_output:
         print("Number of pairs: {}".format(n))
         print("Effective dt: {:.2e}".format(dt))
@@ -66,7 +70,8 @@ def run_coll_calc(te, ne, n=10000, show_output=False, flan_dt=1e-8):
     #bs_e = np.random.random(n) * lambda_d
 
     # Generate impacts parameters from a 1/r distribution. Need to define a non-zero minimum value.
-    min_b = 1e-8
+    #min_b = 1e-8
+    min_b = 1e-10
     max_b = lambda_d
     bs_i = max_b - min_b * np.exp(np.random.random(n) * np.log(max_b / min_b))
     bs_e = max_b - min_b * np.exp(np.random.random(n) * np.log(max_b / min_b))
@@ -163,7 +168,7 @@ for i in tqdm(range(len(tes))):
     #print("Te = {:.2f}".format(tes[i]/ev))
     for j in range(len(nes)):
         #print("  ne = {:.2e}".format(nes[j]))
-        d = run_coll_calc(tes[i], nes[j], n=int(1e5), show_output=False)
+        d = run_coll_calc(tes[i], nes[j], n=int(1e4), show_output=False)
         calc_vals_i.append(d["calc_avg_i"])
         theory_vals.append(d["theory"])
         avg_defl_ang[i,j] = d["avg_defl_ang"]
