@@ -22,3 +22,4 @@ __pycache__/
 *.dat
 *.so
 *.o
+*.swp
