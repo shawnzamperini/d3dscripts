@@ -160,7 +160,8 @@ xmax = 2.349
 #path = "/home/zamp/flandir/testcase01/coll_on_v3.nc"
 #path = "/home/zamp/flandir/testcase01/coll_on_v5.nc"
 #path = "/home/zamp/flandir/testcase01/coll_on_inelastic_v5.nc"
-path = "/home/zamp/flandir/testcase01/coll_high_var_v2.nc"
+#path = "/home/zamp/flandir/testcase01/coll_high_var_v2.nc"
+path = "/home/zamp/flandir/sh_outward_v1/sh_outward_v1.nc"
 coll_x, coll_vx, coll_nz, coll_dr, coll_gy, ex, ey, d, ne_fluc, coll_vx_2d = load(path, xmin, xmax)
 s_coll_x, s_coll_vx, s_coll_nz, s_coll_dr, coll_gy, ex, ey, d, ne_fluc, coll_vx_2d = load(path, xmin, xmax, True, 1e8, 
 	1e-8)
