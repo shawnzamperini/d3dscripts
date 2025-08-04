@@ -54,19 +54,23 @@ def ts_fitting(shot, tmin, tmax, tmany, tree):
 
         # Zoom into the fitting region on the plots.
         ax_te.set_xlim(1.1 * r[:include].min(), 1.1 * r[:include].max())
-        ax_te.set_ylim(1.1 * te[:include].min(), 1.1 * te[:include].max())
+        ax_te.set_ylim(0.9 * te[:include].min(), 1.1 * te[:include].max())
         ax_ne.set_xlim(1.1 * r[:include].min(), 1.1 * r[:include].max())
-        ax_ne.set_ylim(1.1 * ne[:include].min(), 1.1 * ne[:include].max())
+        ax_ne.set_ylim(0.9 * ne[:include].min(), 1.1 * ne[:include].max())
 
         # Ask if any extra chords should be excluded.
         print('\nChords for fitting: ', end=''); print(*np.arange(0, len(r))[:include])
-        exclude = input('Chords to exclude (separated by commas, press enter if none): ').split(',')
-        exclude = np.array(exclude, dtype=np.int)
+        exclude = input('Chords to exclude (separated by commas, press enter if none): ')
+        #exclude = np.array(exclude, dtype=int)
+        if exclude:
+            exclude_int = np.array(list(map(int, exclude.split())))
+        else:
+            exclude_int = np.array([])
 
-        if exclude != ['']:
-            r_tofit  = np.delete(r[:include],  exclude)
-            te_tofit = np.delete(te[:include], exclude)
-            ne_tofit = np.delete(ne[:include], exclude)
+        if exclude_int:
+            r_tofit  = np.delete(r[:include],  exclude_int)
+            te_tofit = np.delete(te[:include], exclude_int)
+            ne_tofit = np.delete(ne[:include], exclude_int)
         else:
             r_tofit  = np.array(r[:include])
             te_tofit = np.array(te[:include])
@@ -104,7 +108,8 @@ def ts_fitting(shot, tmin, tmax, tmany, tree):
 def flat_top(shot):
 
     # Load densv2 tag data.
-    conn = mds.Connection('localhost')
+    #conn = mds.Connection('localhost')
+    conn = mds.Connection('atlas.gat.com')
     ga_obj = gadata('densv2', shot, connection=conn)
     time = ga_obj.xdata
     dens = ga_obj.zdata
