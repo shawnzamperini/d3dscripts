@@ -1,0 +1,97 @@
+import get_lp
+import numpy as np
+import pickle
+import matplotlib.pyplot as plt
+
+
+# A list of key shots and the [tmin, tmax] to load data for
+shots = {200083: [1400,4000]}
+
+# Time window for median filter
+med_twin = 50  # ms
+
+shot_data = {}
+for shot, tminmax in shots.items():
+	print("-- {} --".format(shot))
+	
+	# Load LP data
+	lps = get_lp.get_dict_of_lps(shot, tunnel=False)
+
+	# Go through each probe
+	for pname, lp in lps.items():
+		
+		# Pull out data we care about
+		t = lp["time"]
+		te = lp["temp"]
+		ne = lp["dens"]
+
+		# Limit to tmin, tmax
+		mask = np.logical_and(t > tminmax[0], t < tminmax[1])
+		t = t[mask]
+		te = te[mask]
+		ne = ne[mask]
+
+		# Apply a median filter
+		med_te = []
+		med_ne = []
+		avg_t = []
+		med_t = 0
+		r = []
+		z = []
+		while med_t < t.max():
+
+			# Mask within median window size
+			mask = np.logical_and(t >= med_t, t < med_t + med_twin)
+			if mask.sum() == 0: 
+				med_t += med_twin
+				continue
+		
+			# Calculate median plasma data
+			med_te.append(np.median(te[mask]))
+			med_ne.append(np.median(ne[mask]))
+
+			# Logical to append average t to each data point
+			avg_t.append(t[mask].mean())
+
+			# Increment for next time window
+			med_t += med_twin
+
+			# Add R, Z data
+			r.append(lp["rprobe"])
+			z.append(lp["zprobe"])
+
+	# Store in shot_data for post-processing
+	shot_data[shot] = {"t":avg_t, "te":med_te, "ne":med_ne, "r":r, "z":z}
+
+# Additional arrays with the data consolidated
+all_te = []
+all_ne = []
+all_r = []
+all_z = []
+for shot, data in shot_data.items():
+	all_te.append(data["te"])
+	all_ne.append(data["ne"])
+	all_r.append(data["r"])
+	all_z.append(data["z"])
+all_te = np.array(all_te).flatten()
+all_ne = np.array(all_ne).flatten()
+all_r = np.array(all_r).flatten()
+all_z = np.array(all_z).flatten()
+
+# Sort each, creating a matching R, Z array for the plot
+te_idx = np.argsort(all_te)
+all_te = all_te[te_idx])
+all_ne = np.sort(all_ne)
+
+# Load a gfile to grab the wall coordinates
+with open("/home/zamp/data/203188_3000.pickle", "rb") as f:
+	gfile = pickle.load(f)
+
+# Figure with wall coordinates
+fig, ax1 = plt.subplots()
+ax1.set_aspect("equal")
+ax1.plot(gfile["RLIM"], gfile["ZLIM"], color="k", lw=3)
+
+# Plot circles normalized to the maximum data value
+
+

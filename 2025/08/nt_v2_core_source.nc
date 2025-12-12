@@ -1,0 +1,1 @@
+/home/zamp/flandir/nt_v2/nt_v2_core_source.nc

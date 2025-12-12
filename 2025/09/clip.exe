@@ -1,0 +1,49 @@
+lw = 3
+fontsize = 18
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(12, 10))
+
+for ax in [ax1, ax2, ax3, ax4]:
+	ax.tick_params(axis="both", which="both", labelsize=fontsize-2)
+
+ax1.axhline(0.0, color="k")
+ax1.plot(theta, v_perp_exb, label="ExB", lw=lw)
+ax1.plot(theta, v_perp_gradb, label="Grad-B", lw=lw)
+ax1.plot(theta, v_perp_pol, label="Polarization", lw=lw)
+ax1.plot(theta, v_perp_curv, label="Curvature", lw=lw)
+ax1.plot(theta, v_drift_total, lw=lw+1, color="k")
+ax1.plot(theta, v_drift_total, label="Total Drift", lw=lw)
+ax1.plot(theta, v_perp_actual, lw=lw+1, color="k")
+ax1.plot(theta, v_perp_actual, label="Flan", lw=lw)
+ax1.legend(fontsize=fontsize-2)
+ax1.set_xlabel("Poloidal Angle", fontsize=fontsize)
+ax1.set_ylabel("Speed Leaving Core (m/s)", fontsize=fontsize) 
+
+nX, binsX, patches = ax2.hist(criteria_X, bins=bins, density=True, color=bar_colors, 
+	linewidth=1, edgecolor="k")
+for patch, color in zip(patches, bar_colors):
+	patch.set_facecolor(color)
+ax2.set_xscale("log")
+ax2.axvline(0.1, color="k", lw=3)
+ax2.set_xlabel(r"$\mathdefault{\tau_{E_X} / \tau_{\omega_c}}$", 
+	fontsize=fontsize)
+
+nY, binsY, _ = ax3.hist(criteria_Y, bins=bins, density=True)
+ax3.set_xscale("log")
+ax3.axvline(0.1, color="k")
+ax3.set_xlabel(r"$\mathdefault{\tau_{E_Y} / \tau_{\omega_c}}$", 
+	fontsize=fontsize)
+
+nZ, binsZ, _ = ax4.hist(criteria_Z, bins=bins, density=True)
+ax4.set_xscale("log")
+ax4.axvline(0.1, color="k")
+ax4.set_xlabel(r"$\mathdefault{\tau_{E_Z} / \tau_{\omega_c}}$", 
+	fontsize=fontsize)
+
+fig.tight_layout()
+fig.show()
+
+# Some post-processing on the histogram
+for limit in [0.001, 0.01, 0.1, 1, 10]:
+	mask = binsX[:-1] > limit
+	frac_above = nX[mask].sum()
+	print("  {:.3f}      {:.3f}".format(limit, frac_above))
