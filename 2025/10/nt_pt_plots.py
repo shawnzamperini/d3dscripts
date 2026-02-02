@@ -10,10 +10,10 @@ sys.path.append("/global/homes/z/zamp/personal_gkyl_scripts/pygkyl")
 import pygkyl
 
 # Inputs here
-which = "NT"  # NT or PT
+which = "PT"  # NT or PT
 plot_param = "flan_nz"
-plot_polproj = False
-polproj_movie = True
+plot_polproj = True
+polproj_movie = False
 movie_frames = "all"  # "all" or [min, max]
 
 # Don't want Times New Roman, set in pygkyl
