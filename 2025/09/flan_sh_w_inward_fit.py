@@ -11,9 +11,9 @@ fp = flan_plots.FlanPlots(path)
 tmin_idx = -30
 tmax_idx = -1
 zidx = 8
-t = fp.nc["time"][:].data
-x = fp.nc["x"][:].data
-nz = fp.nc["nz"][tmin_idx:tmax_idx, :, :, zidx].data.mean(axis=0).mean(axis=1)
+t = fp.nc["geometry"]["time"][:].data
+x = fp.nc["geometry"]["x"][:].data
+nz = fp.nc["output"]["nz"][tmin_idx:tmax_idx, :, :, zidx].data.mean(axis=0).mean(axis=1)
 
 # Fit range
 fit_xmin = 2.31

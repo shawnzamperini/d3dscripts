@@ -6,12 +6,13 @@ import matplotlib.pyplot as plt
 
 # Use pygkyl from the actual repo location
 import sys
-sys.path.append("/global/homes/z/zamp/personal_gkyl_scripts/pygkyl")
+#sys.path.append("/global/homes/z/zamp/personal_gkyl_scripts/pygkyl")
+sys.path.append("/home/zamp/github/personal_gkyl_scripts/pygkyl")
 import pygkyl
 
 # Inputs here
-which = "PT"  # NT or PT
-plot_param = "flan_nz"
+which = "NT"  # NT or PT
+plot_param = "flan_B_R"
 plot_polproj = True
 polproj_movie = False
 movie_frames = "all"  # "all" or [min, max]
@@ -27,10 +28,12 @@ if which == "PT":
 		fileprefix)
 	path = '/pscratch/sd/z/zamp/flandir/pt_v5/sol_source_v1.nc'
 elif which == "NT":
-	simdir = "/global/cfs/cdirs/m3739/gkeyll/gkyl_for_flan/NT-high-time-res"
-	simulation = pygkyl.simulation_configs.import_config("D3D_NT", simdir, 
-		fileprefix)
-	path = '/pscratch/sd/z/zamp/flandir/nt_v5/sol_source_v1.nc'
+	#simdir = "/global/cfs/cdirs/m3739/gkeyll/gkyl_for_flan/NT-high-time-res"
+	simdir = "/home/zamp/gkyldir/NT-aug25-60x60x16res"
+	simulation = pygkyl.simulation_configs.import_config(configName="D3D_NT", 
+		simDir=simdir, filePrefix=fileprefix)
+	#path = '/pscratch/sd/z/zamp/flandir/nt_v5/sol_source_v1.nc'
+	path = "/home/zamp/flandir/nt_v5/nt_v5.nc"
 
 # Time in microseconds
 simulation.normalization.set("t", "mus")
@@ -55,6 +58,8 @@ else:
 plot_settings = {
 	"flan_nz": {"clim":[1e-9, 1e-6], "colorScale":"log", "colorMap":"inferno"},
 	"flan_E_X": {"clim":[-1000, 1000], "colorScale":"linear", "colorMap":"coolwarm"},
+	"flan_B_X": {"clim":[0, 3], "colorScale":"linear", "colorMap":"inferno"},
+	"flan_B_R": {"clim":[0, 3], "colorScale":"linear", "colorMap":"inferno"},
 	"ne": {"clim":[1e17, 1e20], "colorScale":"log", "colorMap":"inferno"}
 }
 
