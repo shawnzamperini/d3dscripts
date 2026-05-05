@@ -19,11 +19,20 @@ nt_fp = flan_plots.FlanPlots(nt_ncpath)
 # Frame to average over
 tidx_min = -20
 tidx_max = -1
+pt_tmin = pt_fp.nc["geometry"]["time"][tidx_min]
+pt_tmax = pt_fp.nc["geometry"]["time"][tidx_max]
+nt_tmin = nt_fp.nc["geometry"]["time"][tidx_min]
+nt_tmax = nt_fp.nc["geometry"]["time"][tidx_max]
+print("Time ranges averaged over (should match!)")
+print(f"  PT: {pt_tmin:.2e}  {pt_tmax:.2e}")
+print(f"  NT: {nt_tmin:.2e}  {nt_tmax:.2e}")
 
 # Radial index just OUTSIDE the LCFS. Important, the rest assumes this
 # is the case
 #xidx = 128  # For nt_v2
 xidx = 80 # For nt_v3
+xloc = pt_fp.nc["geometry"]["x"][xidx]
+print(f"x = {xloc}")
 
 # Radial coordinate and poloidal angle (same for both simulations)
 r = pt_fp.nc["geometry"]["x"][:]
