@@ -347,7 +347,8 @@ xmin = 2.305
 xmax = 2.345
 #xmin = -999
 #xmax = 999
-path = "/home/zamp/flandir/sh_v7/sh_v7_w_outward.nc"
+#path = "/home/zamp/flandir/sh_v7/sh_v7_w_outward.nc"
+path = "/home/zamp/flandir/test_main_merge/test_main_merge.nc"
 print(path)
 coll_x, coll_vx, coll_nz, coll_dr, coll_gy, ex, ey, d, eZ_fluc, coll_vx_2d, \
 	coll_dnz_dr, coll_gx, coll_vp = load(path, xmin, xmax)

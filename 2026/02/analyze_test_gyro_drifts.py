@@ -7,10 +7,10 @@ import flan_plots
 
 # Make plots for only the true cases
 make_curv = False
-make_exb  = False
+make_exb  = True
 make_dBdy = False
 make_dEdt = False
-make_ff   = True
+make_ff   = False
 make_num  = False
 
 # Load Excel sheet. Need to mount G Drive:

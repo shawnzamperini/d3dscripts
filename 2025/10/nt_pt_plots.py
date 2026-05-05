@@ -12,10 +12,11 @@ import pygkyl
 
 # Inputs here
 which = "NT"  # NT or PT
-plot_param = "flan_B_R"
+plot_param = "flan_nz"
 plot_polproj = True
 polproj_movie = False
 movie_frames = "all"  # "all" or [min, max]
+#movie_frames = [0, 99]  # "all" or [min, max]
 
 # Don't want Times New Roman, set in pygkyl
 plt.rcdefaults()
@@ -29,11 +30,12 @@ if which == "PT":
 	path = '/pscratch/sd/z/zamp/flandir/pt_v5/sol_source_v1.nc'
 elif which == "NT":
 	#simdir = "/global/cfs/cdirs/m3739/gkeyll/gkyl_for_flan/NT-high-time-res"
-	simdir = "/home/zamp/gkyldir/NT-aug25-60x60x16res"
+	#simdir = "/home/zamp/gkyldir/NT-aug25-60x60x16res"
+	simdir = "/mnt/d/gkeyll_results/NT-high-time-res"
 	simulation = pygkyl.simulation_configs.import_config(configName="D3D_NT", 
 		simDir=simdir, filePrefix=fileprefix)
-	#path = '/pscratch/sd/z/zamp/flandir/nt_v5/sol_source_v1.nc'
-	path = "/home/zamp/flandir/nt_v5/nt_v5.nc"
+	#path = '/pscratch/sd/z/zamp/flandir/nt_v7/nt_v7.nc'
+	path = "/home/zamp/flandir/nt_v7/nt_v7.nc"
 
 # Time in microseconds
 simulation.normalization.set("t", "mus")
@@ -58,8 +60,11 @@ else:
 plot_settings = {
 	"flan_nz": {"clim":[1e-9, 1e-6], "colorScale":"log", "colorMap":"inferno"},
 	"flan_E_X": {"clim":[-1000, 1000], "colorScale":"linear", "colorMap":"coolwarm"},
+	"flan_E_Y": {"clim":[-5000, 5000], "colorScale":"linear", "colorMap":"coolwarm"},
 	"flan_B_X": {"clim":[0, 3], "colorScale":"linear", "colorMap":"inferno"},
 	"flan_B_R": {"clim":[0, 3], "colorScale":"linear", "colorMap":"inferno"},
+	"flan_v_rad": {"clim":[-1, 1], "colorScale":"linear", "colorMap":"coolwarm"},
+	"flan_v_pol": {"clim":[-1, 1], "colorScale":"linear", "colorMap":"coolwarm"},
 	"ne": {"clim":[1e17, 1e20], "colorScale":"log", "colorMap":"inferno"}
 }
 
@@ -77,7 +82,8 @@ if plot_polproj:
 # Poloidal projection movie
 if polproj_movie:
 	print("Generating poloidal projection movie...")
-	polproj.movie(plot_param, moviePrefix='/global/homes/z/zamp/figures/flan_ex_mov_', 
+	#polproj.movie(plot_param, moviePrefix='/global/homes/z/zamp/figures/flan_ex_mov_', 
+	polproj.movie(plot_param, moviePrefix='/home/zamp/figures/flan_ex_mov_', 
 		colorScale=plot_settings[plot_param]["colorScale"],
 		clim=plot_settings[plot_param]["clim"], 
 		colorMap=plot_settings[plot_param]["colorMap"], 
