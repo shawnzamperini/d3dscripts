@@ -46,11 +46,12 @@ print("%g time frames available (%g to %g)" \
 
 # Load in Flan data
 #path = "/pscratch/sd/z/zamp/flandir/west_farsol_v1/nearsol_w_source.nc"
-path = "/pscratch/sd/z/zamp/flandir/west_nearsol_v1/ot_w_source.nc"
+#path = "/pscratch/sd/z/zamp/flandir/west_nearsol_v1/ot_w_source.nc"
+path = "/pscratch/sd/z/zamp/flandir/west_nearsol_point/ot_point_source.nc"
 print(path)
 simulation.set_flandata(path)
-#timeframe = simulation.flanframes[-1]  # last frame
-timeframe = simulation.flanframes[0]  # first frame
+timeframe = simulation.flanframes[-1]  # last frame
+#timeframe = simulation.flanframes[0]  # first frame
 #movie_frames = np.array(sim_frames[-10:])
 movie_frames = [i for i in range(1, 21)]
 
@@ -86,8 +87,8 @@ clim=plot_settings[plot_param]["clim"]
 #  ---- Begin toroidal angle selection ----
 
 # --- Choose a toroidal angle phi0 (in radians) ---
-phi0 = 0.0          # example: toroidal angle = 0
-# phi0 = np.pi/2    # example: 90 degrees toroidally
+#phi0 = 0.0          # example: toroidal angle = 0
+phi0 = np.pi    # example: 90 degrees toroidally
 
 # --- Choose the z location where particles start ---
 # In your case, z_min is the lower sheath boundary
@@ -110,13 +111,13 @@ print("Chosen toroidal angle φ0 =", phi0)
 print("Corresponding y-index =", iy0, "out of", len(y_grid))
 print("y value =", y_grid[iy0])
 
-flan_nz = simulation.get_flanfield('flan_nz', timeframe)
+#flan_nz = simulation.get_flanfield('flan_nz', timeframe)
 
 # Keep only the chosen y-index
-flan_nz_filtered = np.zeros_like(flan_nz)
-flan_nz_filtered[:, iy0:iy0+1, :] = flan_nz[:, iy0:iy0+1, :]
+#flan_nz_filtered = np.zeros_like(flan_nz)
+#flan_nz_filtered[:, iy0:iy0+1, :] = flan_nz[:, iy0:iy0+1, :]
 
-simulation.flanfields['flan_nz'][timeframe] = flan_nz_filtered
+#simulation.flanfields['flan_nz'][timeframe] = flan_nz_filtered
 
 #  ---- End toroidal angle selection ----
 
@@ -126,7 +127,8 @@ if polproj_plot:
 	polproj.plot(plot_param, timeFrame=timeframe, xlim=xlim, ylim=ylim, 
 		colorMap=plot_settings[plot_param]["colorMap"], 
 		colorScale=plot_settings[plot_param]["colorScale"],
-		clim=plot_settings[plot_param]["clim"], climInset=clim, show_limiter=False)
+		clim=plot_settings[plot_param]["clim"], climInset=clim, show_limiter=False,
+		yslice=None) # Added myself in hack
 
 # Poloidal projection movie
 if polproj_movie:
