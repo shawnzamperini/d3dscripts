@@ -98,17 +98,21 @@ if make_exb:
 	print("  Measured:   {:.2f}".format(vexb*1e4))
 	print("  Calculated: {:.2f}".format(calc_exb))
 
+	# To accomodate this bitch ass reviewer oh my god
+	xscale = 1 / 100
+
 	fontsize = 14
 	fig, ax1 = plt.subplots(figsize=(5, 4))
 	#ax1.axhline(0.0, color="k")
-	ax1.plot(t, x, zorder=5, lw=3, color="k")
-	ax1.plot(t, x, zorder=5, lw=2, color="tab:red")
-	ax1.plot(tfit, xfit, linestyle="--", color="k", lw=2)
-	ax1.scatter(t_peaks, x_peaks, zorder=15, color="tab:red", edgecolors="k", s=75)
+	ax1.plot(t, x*xscale, zorder=5, lw=3, color="k")
+	ax1.plot(t, x*xscale, zorder=5, lw=2, color="tab:red")
+	ax1.plot(tfit, xfit*xscale, linestyle="--", color="k", lw=2)
+	ax1.scatter(t_peaks, x_peaks*xscale, zorder=15, color="tab:red", edgecolors="k", s=75)
 	ax1.set_xlabel("Time (us)", fontsize=fontsize)
-	ax1.set_ylabel("x (cm)", fontsize=fontsize)
+	#ax1.set_ylabel("x (cm)", fontsize=fontsize)
+	ax1.set_ylabel("x (m)", fontsize=fontsize)
 	ax1.tick_params(axis='both', which='major', labelsize=fontsize-2)
-	ax1.set_ylim([-0.2, 4])
+	ax1.set_ylim([-0.2*xscale, 4*xscale])
 	ax1.text(0.15, 0.48, fr"$\mathdefault{{v_{{ExB}} = {vexb*1e4:.2f}}}$ m/s", 
 		transform=ax1.transAxes, fontsize=fontsize, color="k", rotation=25)
 	fig.tight_layout()

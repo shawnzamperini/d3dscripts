@@ -348,14 +348,16 @@ xmax = 2.345
 #xmin = -999
 #xmax = 999
 #path = "/home/zamp/flandir/sh_v7/sh_v7_w_outward.nc"
-path = "/home/zamp/flandir/test_main_merge/test_main_merge.nc"
+path = "/home/zamp/flandir/sh_v9/sh_v9_w_outward.nc"
 print(path)
 coll_x, coll_vx, coll_nz, coll_dr, coll_gy, ex, ey, d, eZ_fluc, coll_vx_2d, \
 	coll_dnz_dr, coll_gx, coll_vp = load(path, xmin, xmax)
 s_coll_x, s_coll_vx, s_coll_nz, s_coll_dr, coll_gy, ex, ey, d, eZ_fluc, \
 	coll_vx_2d, s_coll_dnz_dr, s_coll_gx, s_coll_vp = load(path, xmin, xmax, True, 2e4, 1e-8)
 
-path = "/home/zamp/flandir/sh_v7/sh_v7_w_outward_nocoll.nc"
+#path = "/home/zamp/flandir/sh_v7/sh_v7_w_outward_nocoll.nc"
+#path = "/home/zamp/flandir/sh_v9/sh_v9_w_outward_nocoll.nc"
+path = "/home/zamp/flandir/sh_v10/sh_v10_w_outward_nocoll.nc"
 print(path)
 no_x, no_vx, no_nz, no_dr, no_gy, ex, ey, d, eZ_fluc, no_vx_2d, no_dnz_dr, no_gx, \
 	no_vp = load(path, xmin, xmax)
