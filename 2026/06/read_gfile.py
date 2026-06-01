@@ -217,6 +217,10 @@ def read_gfile(path, iplcout=0, nfcoil=0, nesum=0, ishot=0, itime=0):
 				g["volp"]	= np.array(_read_floats(f, nw))
 				g["bpolss"] = np.array(_read_floats(f, nw))
 
+		# These are not included and must be created ourselves
+		g["rgrid"] = np.linspace(rleft, rleft + rdim, nw)
+		g["zgrid"] = np.linspace(zmid - zdim/2, zmid + zdim/2, nh)
+
 	return g
 
 
