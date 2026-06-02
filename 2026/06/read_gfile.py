@@ -222,6 +222,10 @@ def read_gfile(path, iplcout=0, nfcoil=0, nesum=0, ishot=0, itime=0):
 		g["zgrid"] = np.linspace(g["zmid"] - g["zdim"]/2, 
 			g["zmid"] + g["zdim"]/2, g["nh"])
 
+		# ── Uniform psi grid for all 1-D profile arrays ──────────────────────
+		# fpol, pres, ffprim, pprime, and qpsi are all sampled on this grid.
+		g["psi_grid"] = np.linspace(g["simag"], g["sibry"], nw)
+
 	return g
 
 
