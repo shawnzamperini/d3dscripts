@@ -12,6 +12,7 @@ import numpy as np
 
 # Which data to plot
 plot_param = "flan_nz"
+#plot_param = "flan_ne"
 polproj_plot = True
 polproj_movie = False
 
@@ -122,13 +123,14 @@ print("y value =", y_grid[iy0])
 #  ---- End toroidal angle selection ----
 
 climInset=clim
-#polproj.plot('ne',timeFrame=sim_frames[-1],xlim=xlim,ylim=ylim,colorMap='inferno', clim=clim, climInset=clim, show_limiter=False)
 if polproj_plot:
-	polproj.plot(plot_param, timeFrame=timeframe, xlim=xlim, ylim=ylim, 
-		colorMap=plot_settings[plot_param]["colorMap"], 
-		colorScale=plot_settings[plot_param]["colorScale"],
-		clim=plot_settings[plot_param]["clim"], climInset=clim, show_limiter=False,
-		yslice=None) # Added myself in hack
+	polproj.plot('ne',timeFrame=sim_frames[-1],xlim=xlim,ylim=ylim,
+		colorMap='inferno', clim=[1e17, 1e19], climInset=clim, show_limiter=False)
+	#polproj.plot(plot_param, timeFrame=timeframe, xlim=xlim, ylim=ylim, 
+	#	colorMap=plot_settings[plot_param]["colorMap"], 
+	#	colorScale=plot_settings[plot_param]["colorScale"],
+	#	clim=plot_settings[plot_param]["clim"], climInset=clim, show_limiter=False,
+	#	yslice=None) # Added myself in hack
 
 # Poloidal projection movie
 if polproj_movie:

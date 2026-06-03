@@ -13,22 +13,38 @@ gfile = read_gfile(path)
 rgrid = gfile["rgrid"]
 zgrid = gfile["zgrid"]
 psigrid = gfile["psi_grid"]
-psirz = gfile["psirz"]
+psirz = gfile["psirz"].T  # Indexing Fortran --> C (which is assumed in numpy)
 R_axis = gfile["rmaxis"]
 Z_axis = gfile["zmaxis"]
 psi_axis = gfile["simag"]
 psi_lcfs = gfile["sibry"]
 qpsi = gfile["qpsi"]
+rlim = gfile["rlim"]
+zlim = gfile["zlim"]
+
+# To simplify the geometry, Tess set the floor at a constant Z = -0.6 m. So in
+# our plot we should remove all data below this. It ends up causing issues
+# to have data below this because it lands data points on a countour outside
+# the vessel and simulation volume. 
+Zdiv = -0.6
+Zmask = zgrid > Zdiv
+zgrid = zgrid[Zmask]
+psirz = psirz[Zmask, :]
 
 # Then load Flan simulation
-path = "/mnt/c/Users/Shawn Zamperini/Documents/gkyldir_staging/ot_point_source.nc"
-#path = "/pscratch/sd/z/zamp/flandir/west_nearsol_point/ot_point_source.nc"
+#path = "/mnt/c/Users/Shawn Zamperini/Documents/gkyldir_staging/ot_point_source.nc"
+path = "/pscratch/sd/z/zamp/flandir/west_nearsol_point/ot_point_source.nc"
 fp = flan_plots.FlanPlots(path)
 
 # Pull out the grid coordinates
 x = fp.nc["geometry"]["x"][:]  # psi
 y = fp.nc["geometry"]["y"][:]  # alpha
 z = fp.nc["geometry"]["z"][:]  # chi or theta
+grid_x = fp.nc["geometry"]["grid_x"][:]  # psi
+
+# Limit to a spcific x range
+#xidx = [-1]  # 0 = SOL edge, -1 = separatrix
+#x = x[xidx]
 
 # ------------------------------------------------------------
 # 2. Extract a single flux surface ψ = ψ0
@@ -39,6 +55,10 @@ def extract_flux_surface(psirz, R, Z, psi0):
     Returns R_contour, Z_contour for the flux surface ψ = ψ0.
     """
     # skimage.find_contours expects array indexed as [Z, R]
+	# Each contour is in index space, it doesn't know about the R, Z
+	# coordinates. Fractional indices can be returned! So if you see 
+	# Ridx = 34.7, it means you should interpolate the values between idx
+	# 34 and 35 to see what value 34.7 gives you.
     contours = measure.find_contours(psirz, psi0)
 
     if len(contours) == 0:
@@ -48,10 +68,10 @@ def extract_flux_surface(psirz, R, Z, psi0):
     contour = max(contours, key=len)
 
     # Convert from index space to physical coordinates
-    #Z_idx = contour[:, 0]
-    #R_idx = contour[:, 1]
-    R_idx = contour[:, 0]
-    Z_idx = contour[:, 1]
+    Z_idx = contour[:, 0]
+    R_idx = contour[:, 1]
+    #R_idx = contour[:, 0]
+    #Z_idx = contour[:, 1]
 
     R_vals = np.interp(R_idx, np.arange(len(R)), R)
     Z_vals = np.interp(Z_idx, np.arange(len(Z)), Z)
@@ -130,7 +150,7 @@ for i, psi in enumerate(x):
 	R_vals, Z_vals = extract_flux_surface(psirz, rgrid, zgrid, psi)
 
 	# Parameterize the R and Z values of the flux surface by theta
-	z, R_theta, Z_theta = parameterize_by_theta(R_vals, Z_vals, R_axis, Z_axis, len(z))
+	theta_grid, R_theta, Z_theta = parameterize_by_theta(R_vals, Z_vals, R_axis, Z_axis, len(z))
 
 	R_psitheta[i, :] = R_theta
 	Z_psitheta[i, :] = Z_theta
@@ -143,7 +163,7 @@ Z_of_psitheta = RegularGridInterpolator(
 
 # Average over y (alpha), and since 
 # phi = (theta - alpha) / q(psi) = (z - y) / q(x)
-# a y-average is a toirodal average since phi ~ y at constant x, z
+# a y-average is a toroidal average since phi ~ y at constant x, z
 nz_yavg = fp.nc["output"]["nz"][:].mean(axis=0).mean(axis=1)  # t then y average
 
 # Assemble lists of the R, Z and toroidally average nz values
@@ -152,12 +172,43 @@ Zs = []
 nzs = []
 for i in range(len(x)):
 	for j in range(len(z)):
-		Rs.append(R_of_psitheta((x[i], z[j])))
-		Zs.append(Z_of_psitheta((x[i], z[j])))
+		Rs.append(R_of_psitheta((x[i], z[j])).item())
+		Zs.append(Z_of_psitheta((x[i], z[j])).item())
 		nzs.append(nz_yavg[i, j])
+		#nzs.append(nz_yavg[xidx[i], j])
+		#nzs.append(1.0)
 	
 # Plot of tricountourf
+#fig, ax = plt.subplots()
+#ax.tricontourf(Rs, Zs, nzs)
+#ax.axis('equal')
+#fig.show()
+
+# Create a mesh
+from scipy.interpolate import griddata
+
+# 1. Make a regular grid
+Rgrid = np.linspace(min(Rs), max(Rs), 200)
+Zgrid = np.linspace(min(Zs), max(Zs), 200)
+RR, ZZ = np.meshgrid(Rgrid, Zgrid)
+
+# 2. Interpolate nz onto this grid
+NZgrid = griddata((Rs, Zs), nzs, (RR, ZZ), method='linear')
+
+# 3. Plot
 fig, ax = plt.subplots()
-ax.tricontourf(Rs, Zs, nzs)
+ax.pcolormesh(RR, ZZ, NZgrid, shading='auto')
+#ax.tricontourf(Rs, Zs, nzs)
+
+# Plot white over everything outside the simulation's psi range
+#ax.contourf(rgrid, zgrid, psirz, 
+#            levels=[-np.inf, grid_x.min(), grid_x.max(), np.inf],
+#            colors=['white', 'none', 'white'])
+
+#ax.scatter(Rs, Zs, s=15)
+ax.contour(rgrid, zgrid, psirz, levels=[psi_lcfs], colors="r")
+ax.plot(rlim, zlim, color="k")
+ax.axis('equal')
 fig.show()
+
 
