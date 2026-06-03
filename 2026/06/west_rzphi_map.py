@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import flan_plots
 from skimage import measure
-from scipy.interpolate import interp1d, RegularGridInterpolator
+from scipy.interpolate import interp1d, RegularGridInterpolator, griddata
 
 
 # First load gfile for WEST #62104 and pull out the R, Z grid and the 2D psi
@@ -164,7 +164,9 @@ Z_of_psitheta = RegularGridInterpolator(
 # Average over y (alpha), and since 
 # phi = (theta - alpha) / q(psi) = (z - y) / q(x)
 # a y-average is a toroidal average since phi ~ y at constant x, z
-nz_yavg = fp.nc["output"]["nz"][:].mean(axis=0).mean(axis=1)  # t then y average
+#nz_yavg = fp.nc["output"]["nz"][:].mean(axis=0).mean(axis=1)  # t then y average
+nz_yavg = fp.nc["output"]["nz"][-1].mean(axis=1)  # last frame then y average
+#nz_yavg = fp.nc["background"]["Ui_Z"][-1].mean(axis=1)  # last frame then y average
 
 # Assemble lists of the R, Z and toroidally average nz values
 Rs = []
@@ -185,11 +187,10 @@ for i in range(len(x)):
 #fig.show()
 
 # Create a mesh
-from scipy.interpolate import griddata
 
 # 1. Make a regular grid
-Rgrid = np.linspace(min(Rs), max(Rs), 200)
-Zgrid = np.linspace(min(Zs), max(Zs), 200)
+Rgrid = np.linspace(min(Rs), max(Rs), 500)
+Zgrid = np.linspace(min(Zs), max(Zs), 500)
 RR, ZZ = np.meshgrid(Rgrid, Zgrid)
 
 # 2. Interpolate nz onto this grid
@@ -197,18 +198,38 @@ NZgrid = griddata((Rs, Zs), nzs, (RR, ZZ), method='linear')
 
 # 3. Plot
 fig, ax = plt.subplots()
-ax.pcolormesh(RR, ZZ, NZgrid, shading='auto')
-#ax.tricontourf(Rs, Zs, nzs)
+#ax.pcolormesh(RR, ZZ, NZgrid, shading='auto')
+#tcf = ax.tricontourf(Rs, Zs, nzs, levels=np.linspace(-10000, 10000), cmap="coolwarm")
+tcf = ax.tricontourf(Rs, Zs, nzs)
 
 # Plot white over everything outside the simulation's psi range
-#ax.contourf(rgrid, zgrid, psirz, 
-#            levels=[-np.inf, grid_x.min(), grid_x.max(), np.inf],
-#            colors=['white', 'none', 'white'])
+ax.contourf(rgrid, zgrid, psirz, 
+            levels=[-np.inf, grid_x.min(), grid_x.max(), np.inf],
+            colors=['white', 'none', 'white'])
+
+# Show where the cutoff is, which we call Zdiv
+ax.plot([2.1, 2.6], [Zdiv, Zdiv], linestyle="--", color="k")
 
 #ax.scatter(Rs, Zs, s=15)
 ax.contour(rgrid, zgrid, psirz, levels=[psi_lcfs], colors="r")
 ax.plot(rlim, zlim, color="k")
 ax.axis('equal')
+
+# Plot of the poloidal angle to help when referring where to start particles
+nang = 8
+line_len = 1.0
+for i in range(nang):
+	angle = 2.0 * np.pi * i / nang  
+
+	# End point of line
+	R1 = R_axis + line_len * np.cos(angle)
+	Z1 = Z_axis + line_len * np.sin(angle)
+
+	ax.plot([R_axis, R1], [Z_axis, Z1], color="k", linestyle="--")
+
+cbar = fig.colorbar(tcf, ax=ax)
+cbar.set_label("Ui_Z")
+
 fig.show()
 
 
