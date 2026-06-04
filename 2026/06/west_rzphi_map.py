@@ -1,5 +1,6 @@
 from read_gfile import read_gfile
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
 import numpy as np
 import flan_plots
 from skimage import measure
@@ -82,11 +83,10 @@ def extract_flux_surface(psirz, R, Z, psi0):
 # 3. Parameterize a flux surface by θ
 # ------------------------------------------------------------
 
+"""
 def parameterize_by_theta(R_vals, Z_vals, R_axis, Z_axis, Ntheta=256):
-    """
-    Given contour points (R_vals, Z_vals), return R(θ), Z(θ)
-    on a uniform θ grid.
-    """
+    #Given contour points (R_vals, Z_vals), return R(θ), Z(θ)
+    #on a uniform θ grid.
     theta = np.arctan2(Z_vals - Z_axis, R_vals - R_axis)
 
     # Sort by θ
@@ -103,7 +103,32 @@ def parameterize_by_theta(R_vals, Z_vals, R_axis, Z_axis, Ntheta=256):
     Z_theta = interp1d(theta_sorted, Z_sorted, fill_value="extrapolate")(theta_grid)
 
     return theta_grid, R_theta, Z_theta
+"""
 
+def parameterize_by_theta(R_vals, Z_vals, R_axis, Z_axis, Ntheta=256):
+    theta = np.arctan2(Z_vals - Z_axis, R_vals - R_axis)
+
+    idx = np.argsort(theta)
+    theta_sorted = theta[idx]
+    R_sorted = R_vals[idx]
+    Z_sorted = Z_vals[idx]
+
+    # Close the periodic gap by appending the first point shifted by 2*pi
+    #theta_sorted = np.append(theta_sorted, theta_sorted[0] + 2*np.pi)
+    #R_sorted = np.append(R_sorted, R_sorted[0])
+    #Z_sorted = np.append(Z_sorted, Z_sorted[0])
+
+    # Wrap both ends to guarantee coverage of [-pi, pi]
+    theta_sorted = np.concatenate([[theta_sorted[0] - 2*np.pi], theta_sorted, [theta_sorted[-1] + 2*np.pi]])
+    R_sorted = np.concatenate([[R_sorted[-1]], R_sorted, [R_sorted[0]]])
+    Z_sorted = np.concatenate([[Z_sorted[-1]], Z_sorted, [Z_sorted[0]]])
+
+    theta_grid = np.linspace(-np.pi, np.pi, Ntheta)
+
+    R_theta = interp1d(theta_sorted, R_sorted)(theta_grid)
+    Z_theta = interp1d(theta_sorted, Z_sorted)(theta_grid)
+
+    return theta_grid, R_theta, Z_theta
 
 # ------------------------------------------------------------
 # 4. Build R(ψ,θ) and Z(ψ,θ)
@@ -161,25 +186,76 @@ R_of_psitheta = RegularGridInterpolator(
 Z_of_psitheta = RegularGridInterpolator(
 	(x, z), Z_psitheta, bounds_error=False, fill_value=None)
 
+# ---------------------------------
+import postgkyl as pg
+data = pg.GData("/global/cfs/cdirs/m3739/gkeyll/gkyl_for_flan/west-sol-62104/gk_west_lsn_sol_3x2v_p1-nodes.gkyl")
+data
+print(data.get_grid())
+print(data.get_values().shape)
+
+nodes = data.get_values()  # shape (17, 9, 25, 3)
+
+# Check the range of each component to identify what they are
+for i in range(3):
+    print(f"Component {i}: min={nodes[..., i].min():.4f}, max={nodes[..., i].max():.4f}")
+
+
+# nodes[i, :, k, :] gives the physical coords at all y nodes
+# for psi index i and z index k.
+# Average over y (axis=1) to get the R, Z at each (psi, z) point
+R_nodes = nodes[:, :, :, 0].mean(axis=1)  # shape (17, 25)
+Z_nodes = nodes[:, :, :, 1].mean(axis=1)  # shape (17, 25)
+
+# x and z node coordinates
+x_nodes = data.get_grid()[0]  # length 17 - actually 18
+z_nodes = data.get_grid()[2]  # length 25 - actually 26
+x_centers = 0.5 * (x_nodes[:-1] + x_nodes[1:])  # length 17
+z_centers = 0.5 * (z_nodes[:-1] + z_nodes[1:])  # length 25
+
+from scipy.interpolate import RegularGridInterpolator
+R_of_xz = RegularGridInterpolator((x_centers, z_centers), R_nodes, bounds_error=False, fill_value=None)
+Z_of_xz = RegularGridInterpolator((x_centers, z_centers), Z_nodes, bounds_error=False, fill_value=None)
+
+# Build interpolators
+#R_of_xz = RegularGridInterpolator((x_nodes, z_nodes), R_nodes)
+#Z_of_xz = RegularGridInterpolator((x_nodes, z_nodes), Z_nodes)
+
 # Average over y (alpha), and since 
 # phi = (theta - alpha) / q(psi) = (z - y) / q(x)
 # a y-average is a toroidal average since phi ~ y at constant x, z
 #nz_yavg = fp.nc["output"]["nz"][:].mean(axis=0).mean(axis=1)  # t then y average
-nz_yavg = fp.nc["output"]["nz"][-1].mean(axis=1)  # last frame then y average
+#nz_yavg = fp.nc["output"]["nz"][-1].mean(axis=1)  # last frame then y average
+nz_yavg = fp.nc["output"]["nz"][0].mean(axis=1)  # first frame then y average
 #nz_yavg = fp.nc["background"]["Ui_Z"][-1].mean(axis=1)  # last frame then y average
 
 # Assemble lists of the R, Z and toroidally average nz values
 Rs = []
 Zs = []
 nzs = []
+xs = []
+zs = []
 for i in range(len(x)):
 	for j in range(len(z)):
-		Rs.append(R_of_psitheta((x[i], z[j])).item())
-		Zs.append(Z_of_psitheta((x[i], z[j])).item())
+		#Rs.append(R_of_psitheta((x[i], z[j])).item())
+		#Zs.append(Z_of_psitheta((x[i], z[j])).item())
+		Rs.append(R_of_xz((x[i], z[j])).item())
+		Zs.append(Z_of_xz((x[i], z[j])).item())
 		nzs.append(nz_yavg[i, j])
 		#nzs.append(nz_yavg[xidx[i], j])
 		#nzs.append(1.0)
+		xs.append(x[i])
+		zs.append(z[j])
 	
+# set zeros to nan's so the logscale doesn't get tripped up by the zeros
+nzs = np.where(np.array(nzs) <= 0, np.nan, nzs)
+
+mask = np.isfinite(nzs)
+Rs2 = np.array(Rs)[mask]
+Zs2 = np.array(Zs)[mask]
+nzs2 = np.array(nzs)[mask]
+xs2 = np.array(xs)[mask]
+zs2 = np.array(zs)[mask]
+
 # Plot of tricountourf
 #fig, ax = plt.subplots()
 #ax.tricontourf(Rs, Zs, nzs)
@@ -200,7 +276,15 @@ NZgrid = griddata((Rs, Zs), nzs, (RR, ZZ), method='linear')
 fig, ax = plt.subplots()
 #ax.pcolormesh(RR, ZZ, NZgrid, shading='auto')
 #tcf = ax.tricontourf(Rs, Zs, nzs, levels=np.linspace(-10000, 10000), cmap="coolwarm")
-tcf = ax.tricontourf(Rs, Zs, nzs)
+#tcf = ax.tricontourf(Rs, Zs, nzs)
+tcf = ax.tricontourf(
+    Rs2, Zs2, nzs2,
+    norm=LogNorm(vmin=np.nanmin(nzs), vmax=np.nanmax(nzs)),
+    levels=np.logspace(np.log10(np.nanmin(nzs)), np.log10(np.nanmax(nzs)), 50),
+    cmap="inferno"
+)
+
+
 
 # Plot white over everything outside the simulation's psi range
 ax.contourf(rgrid, zgrid, psirz, 
@@ -210,7 +294,14 @@ ax.contourf(rgrid, zgrid, psirz,
 # Show where the cutoff is, which we call Zdiv
 ax.plot([2.1, 2.6], [Zdiv, Zdiv], linestyle="--", color="k")
 
-#ax.scatter(Rs, Zs, s=15)
+# Labels of (x,z). Only visible if you zoom in
+ax.scatter(Rs, Zs, s=15)
+#for Ri, Zi, xi, zi in zip(Rs2, Zs2, xs2, zs2):
+#    ax.text(Ri, Zi, f"({xi:.4f}, {zi:.2f})",
+#            fontsize=8, color="k",
+#            ha="center", va="center", zorder=1e10)
+
+
 ax.contour(rgrid, zgrid, psirz, levels=[psi_lcfs], colors="r")
 ax.plot(rlim, zlim, color="k")
 ax.axis('equal')
@@ -228,8 +319,24 @@ for i in range(nang):
 	ax.plot([R_axis, R1], [Z_axis, Z1], color="k", linestyle="--")
 
 cbar = fig.colorbar(tcf, ax=ax)
-cbar.set_label("Ui_Z")
+cbar.set_label("nZ")
 
+fig.show()
+
+# After building R_psitheta and Z_psitheta, check what R,Z
+# a point at z = pi/2 maps to for your starting psi value
+i_start = 0  # whatever psi index your particles start at
+j_start = np.argmin(np.abs(z - np.pi/2))
+
+print(f"z[j_start] = {z[j_start]}")
+print(f"R at (psi_start, pi/2) = {R_psitheta[i_start, j_start]}")
+print(f"Z at (psi_start, pi/2) = {Z_psitheta[i_start, j_start]}")
+
+fig, ax = plt.subplots()
+ax.plot(R_psitheta[i_start, :], Z_psitheta[i_start, :], 'b-')
+ax.contour(rgrid, zgrid, psirz, levels=[x[i_start]], colors='r')
+ax.plot(rlim, zlim, color='k')
+ax.axis('equal')
 fig.show()
 
 
