@@ -401,7 +401,7 @@ Z_ext = extend_node_grid(Z_node_grid)  # shape (Nx+1, Nz+1)
 verts = []
 colors = []
 
-for i in range(Nx-1):
+for i in range(Nx):
     for j in range(Nz-1):
         # 4 corners, ordered as a closed polygon
         quad = np.array([
@@ -411,8 +411,17 @@ for i in range(Nx-1):
             [R_ext[i,   j+1], Z_ext[i,   j+1]],
         ])
         verts.append(quad)
+
+		# The nodes are made from a high resolution grid that isn't what the
+		# simulation is carried out on, so we need to grab the nearest value
+		# Find nearest simulation indices
+        i_sim = np.argmin(np.abs(x - x_centers[i]))
+        j_sim = np.argmin(np.abs(z - z_centers[j]))
+        colors.append(nz_yavg[i_sim, j_sim])
+
+		#dist = 
         #colors.append(nz_yavg[i, j])
-        colors.append(1.0)
+        #colors.append(1.0)
 
 colors = np.array(colors)
 
@@ -437,6 +446,20 @@ ax.plot(rlim, zlim, color="k")
 ax.plot([2.1, 2.6], [Zdiv, Zdiv], linestyle="--", color="k")
 ax.axis('equal')
 ax.autoscale_view()
+
+
+# Plot of the poloidal angle to help when referring where to start particles
+nang = 8
+line_len = 1.0
+for i in range(nang):
+	angle = 2.0 * np.pi * i / nang  
+
+	# End point of line
+	R1 = R_axis + line_len * np.cos(angle)
+	Z1 = Z_axis + line_len * np.sin(angle)
+
+	ax.plot([R_axis, R1], [Z_axis, Z1], color="k", linestyle="--")
+
 
 cbar = fig.colorbar(coll, ax=ax)
 cbar.set_label("nZ")
