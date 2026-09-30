@@ -48,13 +48,16 @@ xvalues_norm = scaler.fit_transform(xvalues)
 # Some quick 2D plots that are used in the presentation
 ncpath = "{}/d3d-w-wall-param-scan-v6-w-all-1.nc".format(root)
 op = oedge_plots.OedgePlots(ncpath)
-ktebs = op.read_data_2d("KTEBS")
-ones = np.ones(ktebs.shape)
-op.plot_contour_polygon("KTEBS", own_data=ones, vmin=0, vmax=2, cmap="coolwarm")
+knbs = op.read_data_2d("KNBS")
+nw = op.read_data_2d("DDLIMS", charge="all", scaling=op.absfac)
+ones = np.ones(knbs.shape)
+#op.plot_contour_polygon("KTEBS", own_data=ones, vmin=0, vmax=2, cmap="coolwarm")
 #op.plot_contour_polygon("KTEBS", normtype="log", cbar_label="Te (eV)", 
 #    cmap="inferno", vmin=1)
 #op.plot_contour_polygon("DDLIMS", normtype="log", cbar_label="W Density (m-3)",
 #    charge="all", cmap="inferno", scaling=op.absfac, vmin=1e16, vmax=1e19)
+op.plot_contour_polygon("DDLIMS", own_data=nw/knbs, normtype="log", cbar_label="W Concentration",
+    cmap="inferno", vmin=1e-5, vmax=1)
 
 # OpenADAS interface for calculating line radiation. First import it.
 import sys
