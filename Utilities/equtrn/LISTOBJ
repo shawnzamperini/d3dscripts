@@ -1,0 +1,1 @@
+OBJS = cropequ.o culham.o dg2dg.o dg2ef.o dg2vr.o dg_minuspsi_dg.o ef2dg.o jt2dg.o nk2dg.o pb2dg.o prinequ.o pt2dg.o rdefit.o rdeqjh.o rdeqjt.o rdeqnk.o rdeqpb.o rdeqvr.o risepsi.o vr2dg.o wrefit.o wreqdg.o wreqvr.o rdeqdg.o rdeqlh.o
